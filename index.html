@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ReclaimX — AI-Powered Campus Lost & Found</title>
+  <link rel="stylesheet" href="assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg"/>
+  <link rel="manifest" href="manifest.json"/>
+  <style>
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,212,170,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 720px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--violet-dim); border: 1px solid rgba(124,92,252,0.25);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: 0.75rem; font-family: var(--font-mono);
+      color: var(--violet); letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-title {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+    }
+    .hero-title span { color: var(--accent); }
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 36px;
+    }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    .features {
+      padding: 80px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .features-title { text-align: center; font-size: 2rem; margin-bottom: 12px; }
+    .features-sub { text-align: center; color: var(--text-secondary); margin-bottom: 48px; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      transition: all 0.3s;
+    }
+    .feature-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,212,170,0.06);
+    }
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,212,170,0.2);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+    .feature-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+    .feature-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.65; }
+
+    .stats-section {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 48px;
+    }
+    .stats-row {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0; text-align: center;
+    }
+    .stats-item { padding: 20px; border-right: 1px solid var(--border); }
+    .stats-item:last-child { border-right: none; }
+    .stats-num { font-family: var(--font-display); font-size: 2.4rem; font-weight: 800; color: var(--accent); letter-spacing: -1px; }
+    .stats-label { font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+    .footer {
+      padding: 32px 48px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.78rem; color: var(--text-muted);
+    }
+    .footer-logo { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; }
+    .footer-logo span { color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .features { padding: 48px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .stats-item:nth-child(2) { border-right: none; }
+      .footer { flex-direction: column; gap: 12px; text-align: center; }
+      .navbar { padding: 0 16px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">Reclaim<span>X</span></a>
+  <div class="nav-links">
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="pages/browse.html" class="nav-link">Browse Items</a>
+  </div>
+  <div class="nav-cta">
+    <a href="pages/login.html" class="btn btn-ghost btn-sm">Sign In</a>
+    <a href="pages/register.html" class="btn btn-primary btn-sm">Get Started</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--violet);animation:pulse-glow 2s infinite"></span>
+      AI-Powered Campus Recovery System
+    </div>
+    <h1 class="hero-title">
+      Lost something on<br/>campus? We'll find it<br/>with <span>AI</span>.
+    </h1>
+    <p class="hero-subtitle">
+      ReclaimX uses a hybrid AI engine to match lost and found items in real time — with privacy-first design and smart ownership verification to prevent fraud.
+    </p>
+    <div class="hero-cta">
+      <a href="pages/register.html" class="btn btn-primary btn-lg">Start Reporting Free</a>
+      <a href="pages/browse.html" class="btn btn-ghost btn-lg">Browse Lost Items</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-section">
+  <div class="stats-row">
+    <div class="stats-item">
+      <div class="stats-num">87%</div>
+      <div class="stats-label">Match Accuracy</div>
+    </div>
+    <div class="stats-item">
+      <div class="stats-num">2hr</div>
+      <div class="stats-label">Avg. Recovery Time</div>
+    </div>
+    <div class="stats-item">
+      <div class="stats-num">0</div>
+      <div class="stats-label">Sensitive Data Stored</div>
+    </div>
+    <div class="stats-item">
+      <div class="stats-num">100%</div>
+      <div class="stats-label">Free for Students</div>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="features" id="features">
+  <h2 class="features-title">Everything your campus needs</h2>
+  <p class="features-sub">Built for students, by design. Privacy-first, fraud-proof, AI-powered.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-title">Hybrid AI Matching</div>
+      <div class="feature-desc">TF-IDF text similarity + MobileNet image embeddings + location proximity + time decay — combined into one weighted confidence score.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">Privacy First</div>
+      <div class="feature-desc">Only the item name is publicly visible. Descriptions, images, and personal details are encrypted and only shared during verified claims.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛡️</div>
+      <div class="feature-title">Fraud Prevention</div>
+      <div class="feature-desc">3-question dynamic verification generated from private report attributes. 3 failed attempts trigger account suspension and fraud logging.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⭐</div>
+      <div class="feature-title">Trust Score System</div>
+      <div class="feature-desc">Earn points for successful returns. Bronze → Silver → Gold. Higher trust means faster claim processing and special privileges.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">Works Offline</div>
+      <div class="feature-desc">Full PWA support. Install on your phone, report items even offline — submissions sync automatically when you reconnect.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏫</div>
+      <div class="feature-title">Multi-Campus</div>
+      <div class="feature-desc">Designed to scale across campuses. Items are matched only within the same campus to ensure relevance and quick recovery.</div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" style="padding:60px 48px;background:var(--bg-surface);border-top:1px solid var(--border)">
+  <div style="max-width:800px;margin:0 auto;text-align:center">
+    <h2 style="margin-bottom:12px">How it works</h2>
+    <p style="margin-bottom:48px">Four simple steps to recover your lost item</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center">
+      <div>
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(0,212,170,0.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 14px">📝</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px">1. Report</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5">Describe your lost item with hidden verification details</div>
+      </div>
+      <div>
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--violet-dim);border:1px solid rgba(124,92,252,0.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 14px">🤖</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px">2. AI Matches</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5">Our engine scans all found items and notifies you instantly</div>
+      </div>
+      <div>
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(0,212,170,0.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 14px">🔐</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px">3. Verify</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5">Answer 3 private questions only the real owner would know</div>
+      </div>
+      <div>
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(0,212,170,0.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 14px">🤝</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px">4. Collect</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5">Meet at a safe campus location and confirm handover</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:80px 48px;text-align:center">
+  <h2 style="margin-bottom:12px">Ready to find your lost item?</h2>
+  <p style="margin-bottom:32px;max-width:420px;margin-left:auto;margin-right:auto">Join your campus community on ReclaimX. It's free, private, and takes under 2 minutes to register.</p>
+  <a href="pages/register.html" class="btn btn-primary btn-lg">Create Free Account</a>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-logo">Reclaim<span>X</span></div>
+  <div>AI-powered campus lost &amp; found · Privacy first · Free for students</div>
+  <div style="font-family:var(--font-mono);font-size:0.7rem">v1.0.0</div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile — ReclaimX</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <style>
+    .profile-header { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; display:flex; align-items:center; gap:24px; margin-bottom:20px; }
+    .profile-avatar-lg { width:80px; height:80px; border-radius:50%; background:var(--accent-dim); border:2px solid rgba(0,212,170,0.4); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700; color:var(--accent); flex-shrink:0; font-family:var(--font-display); }
+    .profile-name { font-size:1.4rem; font-weight:700; margin-bottom:4px; }
+    .profile-email { font-size:0.82rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:10px; }
+    .trust-bar-wrap { display:flex; align-items:center; gap:12px; margin-top:8px; }
+    .trust-bar-bg { flex:1; height:6px; background:var(--bg-elevated); border-radius:3px; overflow:hidden; }
+    .trust-bar-fill { height:100%; background:linear-gradient(90deg,var(--accent),#00ffcc); border-radius:3px; transition:width 1s ease; }
+    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
+    .activity-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; }
+    .activity-item { display:flex; gap:14px; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-icon { width:38px; height:38px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; background:var(--bg-elevated); border:1px solid var(--border); }
+    .activity-info { flex:1; }
+    .activity-name { font-size:0.875rem; font-weight:600; }
+    .activity-meta { font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px; }
+    @media(max-width:700px){ .stats-row{grid-template-columns:1fr 1fr;} .profile-header{flex-direction:column;text-align:center;} }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-placeholder"></div>
+
+  <main class="main-content">
+    <header class="main-header">
+      <div><h1>My Profile</h1><p>Your account overview and activity history.</p></div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="profile-avatar-lg" id="profileAvatar">?</div>
+        <div style="flex:1">
+          <div class="profile-name" id="profileName">Loading…</div>
+          <div class="profile-email" id="profileEmail">—</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-accent" id="profileLevel">🥉 Bronze</span>
+            <span class="badge badge-violet" id="profileCampus">Campus A</span>
+          </div>
+          <div class="trust-bar-wrap" style="margin-top:12px">
+            <span style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);white-space:nowrap">Trust Score</span>
+            <div class="trust-bar-bg">
+              <div class="trust-bar-fill" id="trustBarFill" style="width:0%"></div>
+            </div>
+            <span style="font-size:0.82rem;font-weight:700;font-family:var(--font-display);color:var(--accent);min-width:28px;text-align:right" id="trustScore">0</span>
+          </div>
+          <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:4px" id="trustNextMsg"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Items Returned</div>
+          <div class="stat-value text-accent" id="statReturned">0</div>
+          <div class="stat-change">+10 pts each</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Reports</div>
+          <div class="stat-value" style="color:var(--violet)" id="statActive">0</div>
+          <div class="stat-change">Open lost / found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Failed Claims</div>
+          <div class="stat-value" style="color:var(--danger)" id="statFailed">0</div>
+          <div class="stat-change">Suspends at 3</div>
+        </div>
+      </div>
+
+      <!-- Account Actions -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="activity-card">
+          <div class="section-title" style="margin-bottom:16px">Account Settings</div>
+          <div class="form-group">
+            <label class="form-label">Display Name</label>
+            <input class="form-input" type="text" id="editName" placeholder="Your full name"/>
+          </div>
+          <button class="btn btn-primary" style="width:100%" id="saveBtn">Save Changes</button>
+        </div>
+        <div class="activity-card">
+          <div class="section-title" style="margin-bottom:16px">How Trust Score Works</div>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:0.82rem;color:var(--text-secondary)">
+            <div style="display:flex;gap:10px"><span style="color:var(--accent)">+10</span> Successful item return</div>
+            <div style="display:flex;gap:10px"><span style="color:var(--accent)">+5</span> Report verified by AI</div>
+            <div style="display:flex;gap:10px"><span style="color:var(--danger)">-5</span> Failed claim attempt</div>
+            <div class="divider" style="margin:8px 0"></div>
+            <div>🥉 Bronze: 0–49 pts</div>
+            <div>🥈 Silver: 50–99 pts</div>
+            <div>🥇 Gold: 100+ pts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="activity-card">
+        <div class="section-header">
+          <div class="section-title">Recent Activity</div>
+        </div>
+        <div id="activityList">
+          <div class="activity-item">
+            <div class="activity-icon">👜</div>
+            <div class="activity-info">
+              <div class="activity-name">Black Wallet — Lost Report</div>
+              <div class="activity-meta">Reported 2hr ago · AI matching active</div>
+            </div>
+            <span class="badge badge-danger">Lost</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">✅</div>
+            <div class="activity-info">
+              <div class="activity-name">Blue Backpack — Returned</div>
+              <div class="activity-meta">Resolved Jan 12 · +10 trust points</div>
+            </div>
+            <span class="badge badge-accent">+10 pts</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🎒</div>
+            <div class="activity-info">
+              <div class="activity-name">Laptop Bag — Found Report</div>
+              <div class="activity-meta">Reported 3d ago · Pending match</div>
+            </div>
+            <span class="badge badge-violet">Found</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="../assets/js/main.js"></script>
+<script>
+  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+  fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
+
+  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+  if (!user) { window.location.href = 'login.html'; }
+  else {
+    const name   = user.name || user.email || 'User';
+    const score  = user.trustScore || 0;
+    const level  = score >= 100 ? '🥇 Gold Hero' : score >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
+    const pct    = Math.min((score / 100) * 100, 100);
+    const nextAt = score < 50 ? 50 : score < 100 ? 100 : null;
+
+    document.getElementById('profileAvatar').textContent = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('profileName').textContent   = name;
+    document.getElementById('profileEmail').textContent  = user.email || '—';
+    document.getElementById('profileLevel').textContent  = level;
+    document.getElementById('trustScore').textContent    = score;
+    document.getElementById('editName').value            = name;
+
+    setTimeout(() => { document.getElementById('trustBarFill').style.width = pct + '%'; }, 300);
+
+    if (nextAt) {
+      document.getElementById('trustNextMsg').textContent = `${nextAt - score} pts to next level`;
+    }
+  }
+
+  // Save name
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    const newName = document.getElementById('editName').value.trim();
+    if (!newName) { window.ReclaimX?.toast('Name cannot be empty.', 'error'); return; }
+    const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
+    u.name = newName;
+    sessionStorage.setItem('rx_user', JSON.stringify(u));
+    window.ReclaimX?.toast('Profile updated!', 'success');
+  });
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+  });
+
+  // Fetch live stats
+  fetch(`${window.API_BASE}/api/auth/me`, {
+    headers: { 'Authorization': `Bearer ${sessionStorage.getItem('rx_token')}` }
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('statReturned').textContent = data.trustScore ? Math.floor(data.trustScore/10) : 0;
+    document.getElementById('statFailed').textContent   = data.failedClaims || 0;
+  })
+  .catch(() => {});
+</script>
+</body>
+</html>

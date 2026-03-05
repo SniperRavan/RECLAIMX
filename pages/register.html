@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — ReclaimX</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-left">
+    <div style="max-width:400px;text-align:center">
+      <div style="font-size:5rem;margin-bottom:20px">🎓</div>
+      <h2 style="font-size:1.6rem;margin-bottom:12px">Join your campus community</h2>
+      <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:28px">
+        ReclaimX is free for all students. Report lost items, help others find theirs, and build your trust score.
+      </p>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;text-align:left">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Trust Score System</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:0.82rem;color:var(--text-secondary)">
+          <div>🥉 <strong style="color:var(--text-primary)">Bronze</strong> — New member (0–49 pts)</div>
+          <div>🥈 <strong style="color:var(--text-primary)">Silver</strong> — Trusted helper (50–99 pts)</div>
+          <div>🥇 <strong style="color:var(--text-primary)">Gold</strong> — Campus hero (100+ pts)</div>
+        </div>
+        <div style="margin-top:14px;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono)">+10 pts per successful return</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right" style="overflow-y:auto;padding-top:32px;padding-bottom:32px">
+    <div class="auth-logo">Reclaim<span>X</span></div>
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-subtitle">Join your campus lost &amp; found network</p>
+
+    <form id="registerForm" novalidate>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">First Name</label>
+          <input class="form-input" type="text" id="firstName" placeholder="Sniper" required/>
+          <span class="form-error" id="firstNameError"></span>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" type="text" id="lastName" placeholder="Ravan" required/>
+        </div>
+      </div>
+      <div style="margin-bottom:18px"></div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <input class="form-input" type="email" id="email" placeholder="you@college.edu" required/>
+        </div>
+        <span class="form-error" id="emailError"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Campus</label>
+        <select class="form-select" id="campus" required>
+          <option value="">Select your campus…</option>
+          <option value="campus_a">Campus A — Main Campus</option>
+          <option value="campus_b">Campus B — North Wing</option>
+          <option value="campus_c">Campus C — Engineering Block</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input class="form-input" type="password" id="password" placeholder="Min. 8 characters" required/>
+          <button type="button" class="input-action" id="togglePwd">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="strength-bars">
+          <div class="strength-bar" id="bar1"></div>
+          <div class="strength-bar" id="bar2"></div>
+          <div class="strength-bar" id="bar3"></div>
+          <div class="strength-bar" id="bar4"></div>
+        </div>
+        <div class="strength-text" id="strengthText">Minimum 8 characters</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input class="form-input" type="password" id="confirmPassword" placeholder="Repeat password" required/>
+        </div>
+        <span class="form-error" id="confirmError"></span>
+      </div>
+
+      <label class="checkbox-wrap" style="margin-bottom:20px">
+        <input type="checkbox" id="terms"/>
+        <span>I agree to the <a href="#" style="color:var(--accent)">Terms of Service</a> and <a href="#" style="color:var(--accent)">Privacy Policy</a></span>
+      </label>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn" style="width:100%;padding:13px">
+        Create My Account
+      </button>
+    </form>
+
+    <div class="auth-switch">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────
+  const firebaseConfig = {
+    apiKey:            "PASTE_YOUR_apiKey",
+    authDomain:        "PASTE_YOUR_authDomain",
+    projectId:         "PASTE_YOUR_projectId",
+    storageBucket:     "PASTE_YOUR_storageBucket",
+    messagingSenderId: "PASTE_YOUR_messagingSenderId",
+    appId:             "PASTE_YOUR_appId"
+  };
+  // ─────────────────────────────────────────────────────────────
+
+  const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000'
+    : 'https://YOUR-RAILWAY-URL.up.railway.app'; // ← replace after deploy
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Password toggle
+  document.getElementById('togglePwd').addEventListener('click', () => {
+    const pwd = document.getElementById('password');
+    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+  });
+
+  // Strength meter
+  document.getElementById('password').addEventListener('input', (e) => {
+    updateStrength(e.target.value);
+  });
+
+  function updateStrength(pwd) {
+    let score = 0;
+    if (pwd.length >= 8)  score++;
+    if (pwd.length >= 12) score++;
+    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+    if (/\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
+
+    const labels  = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+    const classes = ['', 'weak', 'medium', 'strong', 'strong'];
+    const colors  = ['', 'var(--danger)', 'var(--warning)', 'var(--accent)', 'var(--accent)'];
+
+    ['bar1','bar2','bar3','bar4'].forEach((id, i) => {
+      const bar = document.getElementById(id);
+      bar.className = 'strength-bar';
+      if (i < score) bar.classList.add(classes[score]);
+    });
+
+    const text = document.getElementById('strengthText');
+    text.textContent = pwd.length === 0 ? 'Minimum 8 characters' : labels[score];
+    text.style.color = colors[score];
+  }
+
+  // Blocked disposable email domains
+  const BLOCKED = ['mailinator.com','guerrillamail.com','tempmail.com','10minutemail.com','yopmail.com','throwam.com'];
+
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const campus    = document.getElementById('campus').value;
+    const password  = document.getElementById('password').value;
+    const confirm   = document.getElementById('confirmPassword').value;
+    const terms     = document.getElementById('terms').checked;
+    const btn       = document.getElementById('submitBtn');
+
+    // Clear errors
+    ['emailError','confirmError'].forEach(id => {
+      document.getElementById(id).classList.remove('visible');
+    });
+
+    let valid = true;
+
+    if (!firstName || !lastName) {
+      document.getElementById('firstNameError').textContent = 'First and last name required.';
+      document.getElementById('firstNameError').classList.add('visible');
+      valid = false;
+    }
+
+    const domain = email.split('@')[1] || '';
+    if (BLOCKED.includes(domain)) {
+      document.getElementById('emailError').textContent = 'Disposable emails are not allowed.';
+      document.getElementById('emailError').classList.add('visible');
+      valid = false;
+    }
+
+    if (password !== confirm) {
+      document.getElementById('confirmError').textContent = 'Passwords do not match.';
+      document.getElementById('confirmError').classList.add('visible');
+      valid = false;
+    }
+
+    if (password.length < 8) {
+      alert('Password must be at least 8 characters.'); valid = false;
+    }
+    if (!campus) { alert('Please select your campus.'); valid = false; }
+    if (!terms)  { alert('Please accept the Terms of Service.'); valid = false; }
+    if (!valid) return;
+
+    btn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+    btn.disabled  = true;
+
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(cred.user);
+
+      // Save user profile to MongoDB
+      try {
+        const token = await cred.user.getIdToken();
+        await fetch(`${API_BASE}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ firebaseUid: cred.user.uid, name: `${firstName} ${lastName}`, email, campusId: campus })
+        });
+      } catch (backendErr) {
+        console.warn('Backend not yet connected:', backendErr.message);
+      }
+
+      btn.textContent = '✓ Account Created!';
+      alert(`Account created! We sent a verification email to ${email}. Please verify before logging in.`);
+      window.location.href = 'login.html';
+    } catch (err) {
+      btn.textContent = 'Create My Account';
+      btn.disabled    = false;
+      const msgs = {
+        'auth/email-already-in-use': 'An account with this email already exists.',
+        'auth/invalid-email':        'Please enter a valid email.',
+        'auth/weak-password':        'Password is too weak.',
+      };
+      document.getElementById('emailError').textContent = msgs[err.code] || err.message;
+      document.getElementById('emailError').classList.add('visible');
+    }
+  });
+</script>
+
+</body>
+</html>

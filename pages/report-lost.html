@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Lost Item — ReclaimX</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <style>
+    .form-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
+    .form-card-title { font-size:1rem; font-weight:700; margin-bottom:4px; }
+    .form-card-sub { font-size:0.78rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:20px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .privacy-note { background:var(--accent-dim); border:1px solid rgba(0,212,170,0.2); border-radius:var(--radius-md); padding:12px 16px; font-size:0.78rem; color:var(--accent); display:flex; gap:10px; align-items:flex-start; margin-bottom:6px; }
+    .danger-note { background:rgba(255,77,109,0.08); border:1px solid rgba(255,77,109,0.2); border-radius:var(--radius-md); padding:12px 16px; font-size:0.78rem; color:var(--danger); display:flex; gap:10px; align-items:flex-start; margin-bottom:20px; }
+    .image-preview-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+    .image-preview { width:100%; aspect-ratio:1; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--border); }
+    @media(max-width:700px) { .two-col { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-placeholder"></div>
+
+  <main class="main-content">
+    <header class="main-header">
+      <div>
+        <h1>Report Lost Item</h1>
+        <p>Only the item name is public. All other details are private and encrypted.</p>
+      </div>
+      <a href="browse.html" class="btn btn-ghost btn-sm">← Browse</a>
+    </header>
+
+    <div class="page-content" style="max-width:760px">
+
+      <div class="privacy-note">
+        🔒 <span><strong>Privacy first:</strong> Only the item name is publicly listed. Description, images, and verification details are never shown to other users.</span>
+      </div>
+
+      <form id="lostForm" novalidate>
+
+        <!-- Section 1: Basic Info -->
+        <div class="form-card">
+          <div class="form-card-title">Item Information</div>
+          <div class="form-card-sub">PUBLIC — Item name will appear in the browse feed</div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Item Name <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" type="text" id="itemName" placeholder="e.g. Black Leather Wallet" required maxlength="80"/>
+              <span class="form-hint">Keep it brief — max 80 chars</span>
+              <span class="form-error" id="itemNameError"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category <span style="color:var(--danger)">*</span></label>
+              <select class="form-select" id="category" required>
+                <option value="">Select category…</option>
+                <option>Accessories</option><option>Bags</option><option>Books</option>
+                <option>Clothing</option><option>Documents</option><option>Electronics</option>
+                <option>Keys</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Campus <span style="color:var(--danger)">*</span></label>
+              <select class="form-select" id="campus" required>
+                <option value="">Select campus…</option>
+                <option value="campus_a">Campus A — Main Campus</option>
+                <option value="campus_b">Campus B — North Wing</option>
+                <option value="campus_c">Campus C — Engineering Block</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Seen Location <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" type="text" id="lastSeen" placeholder="e.g. Library Ground Floor, Table 4" required/>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Brief Description <span style="color:var(--text-muted)">(private)</span></label>
+            <textarea class="form-textarea" id="description" rows="3" placeholder="Colour, brand, approximate size… (this stays private)"></textarea>
+            <span class="form-hint" id="sensitiveWarning" style="color:var(--danger);display:none">⚠️ Sensitive data detected — please remove ID/card numbers.</span>
+          </div>
+        </div>
+
+        <!-- Section 2: Verification Details (private) -->
+        <div class="form-card">
+          <div class="form-card-title">🔐 Verification Details</div>
+          <div class="form-card-sub">PRIVATE — Only you can see these. Used to verify genuine ownership during a claim.</div>
+
+          <div class="danger-note">
+            ⚠️ <span>Do <strong>NOT</strong> enter Aadhaar numbers, ATM/card numbers, PAN, or phone numbers here.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Interior color or lining</label>
+            <input class="form-input" type="text" id="hColor" placeholder="e.g. Red lining, beige inside…"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unique marks, scratches, stickers, or engravings</label>
+            <input class="form-input" type="text" id="hMarks" placeholder="e.g. Scratch on bottom left corner, initials 'AS' written in blue…"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">What does it contain?</label>
+            <input class="form-input" type="text" id="hContains" placeholder="e.g. 3 debit cards, college ID, some cash…"/>
+          </div>
+        </div>
+
+        <!-- Section 3: Photo Upload -->
+        <div class="form-card">
+          <div class="form-card-title">📸 Photos (optional)</div>
+          <div class="form-card-sub">PRIVATE — Photos help AI matching but are never shown publicly</div>
+
+          <label class="file-upload-area" id="uploadArea" for="imageInput">
+            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" multiple/>
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Click to upload or drag &amp; drop</div>
+            <div class="upload-hint">JPEG · PNG · WebP · Max 5MB each · Up to 2 photos</div>
+          </label>
+          <div class="image-preview-grid" id="previewGrid"></div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:4px">
+          <a href="dashboard.html" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+            Submit Lost Report
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/pwa.js"></script>
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+  fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
+
+  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+  if (!user) { window.location.href = 'login.html'; }
+
+  // Image preview
+  document.getElementById('imageInput').addEventListener('change', (e) => {
+    const grid = document.getElementById('previewGrid');
+    grid.innerHTML = '';
+    const files = Array.from(e.target.files).slice(0,2);
+    files.forEach(file => {
+      const img = document.createElement('img');
+      img.className = 'image-preview';
+      img.src = URL.createObjectURL(file);
+      grid.appendChild(img);
+    });
+  });
+
+  // Drag & drop
+  const area = document.getElementById('uploadArea');
+  area.addEventListener('dragover',  e => { e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', ()=> area.classList.remove('drag-over'));
+  area.addEventListener('drop', e => {
+    e.preventDefault(); area.classList.remove('drag-over');
+    document.getElementById('imageInput').files = e.dataTransfer.files;
+    document.getElementById('imageInput').dispatchEvent(new Event('change'));
+  });
+
+  // Sensitive data detection
+  document.getElementById('description').addEventListener('input', (e) => {
+    const has = window.ReclaimX?.hasSensitiveData(e.target.value);
+    document.getElementById('sensitiveWarning').style.display = has ? 'block' : 'none';
+  });
+
+  // Form submit
+  document.getElementById('lostForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const itemName = document.getElementById('itemName').value.trim();
+    const category = document.getElementById('category').value;
+    const campus   = document.getElementById('campus').value;
+    const lastSeen = document.getElementById('lastSeen').value.trim();
+    const desc     = document.getElementById('description').value.trim();
+    const btn      = document.getElementById('submitBtn');
+
+    if (!itemName) { document.getElementById('itemNameError').textContent='Item name is required.'; document.getElementById('itemNameError').classList.add('visible'); return; }
+    if (!category) { alert('Please select a category.'); return; }
+    if (!campus)   { alert('Please select your campus.'); return; }
+    if (!lastSeen) { alert('Please enter the last seen location.'); return; }
+    if (window.ReclaimX?.hasSensitiveData(desc)) { alert('Sensitive data detected in description. Please remove it.'); return; }
+
+    btn.innerHTML = '<span class="loading-spinner"></span> Submitting…';
+    btn.disabled  = true;
+
+    const formData = new FormData();
+    formData.append('itemName', itemName);
+    formData.append('category', category);
+    formData.append('campusId', campus);
+    formData.append('lastSeenLocation', lastSeen);
+    formData.append('description', desc);
+    formData.append('hiddenAttributes', JSON.stringify({
+      colorInside: document.getElementById('hColor').value.trim(),
+      uniqueMarks: document.getElementById('hMarks').value.trim(),
+      contains:    document.getElementById('hContains').value.trim(),
+    }));
+    Array.from(document.getElementById('imageInput').files).forEach(f => formData.append('images', f));
+
+    try {
+      const token = sessionStorage.getItem('rx_token');
+      const res   = await fetch(`${window.API_BASE}/api/items/lost`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Submission failed');
+      window.ReclaimX?.toast('Lost item reported! AI matching is running…', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+    } catch (err) {
+      window.ReclaimX?.toast(err.message || 'Failed to submit. Please try again.', 'error');
+      btn.textContent = 'Submit Lost Report';
+      btn.disabled    = false;
+    }
+  });
+</script>
+</body>
+</html>

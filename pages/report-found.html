@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Found Item — ReclaimX</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <style>
+    .form-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
+    .form-card-title { font-size:1rem; font-weight:700; margin-bottom:4px; }
+    .form-card-sub { font-size:0.78rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:20px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .found-hero { background:var(--accent-dim); border:1px solid rgba(0,212,170,0.2); border-radius:var(--radius-lg); padding:20px 24px; margin-bottom:20px; display:flex; gap:16px; align-items:center; }
+    .image-preview { width:100%; max-width:200px; aspect-ratio:1; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--border); margin-top:12px; }
+    @media(max-width:700px){ .two-col{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-placeholder"></div>
+
+  <main class="main-content">
+    <header class="main-header">
+      <div>
+        <h1>Report Found Item</h1>
+        <p>You're helping someone recover their lost item — thank you! 🙏</p>
+      </div>
+      <a href="browse.html" class="btn btn-ghost btn-sm">← Browse</a>
+    </header>
+
+    <div class="page-content" style="max-width:760px">
+
+      <div class="found-hero">
+        <div style="font-size:2.4rem">🎉</div>
+        <div>
+          <div style="font-weight:700;margin-bottom:4px">You found something!</div>
+          <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5">
+            Submit this report and our AI will instantly try to match it with active lost reports on your campus. +10 trust points when successfully returned.
+          </div>
+        </div>
+      </div>
+
+      <form id="foundForm" novalidate>
+
+        <div class="form-card">
+          <div class="form-card-title">Item Information</div>
+          <div class="form-card-sub">Only item name and found location will be publicly visible</div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Item Name <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" type="text" id="itemName" placeholder="e.g. Blue Backpack" required maxlength="80"/>
+              <span class="form-error" id="itemNameError"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category <span style="color:var(--danger)">*</span></label>
+              <select class="form-select" id="category" required>
+                <option value="">Select category…</option>
+                <option>Accessories</option><option>Bags</option><option>Books</option>
+                <option>Clothing</option><option>Documents</option><option>Electronics</option>
+                <option>Keys</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Campus <span style="color:var(--danger)">*</span></label>
+              <select class="form-select" id="campus" required>
+                <option value="">Select campus…</option>
+                <option value="campus_a">Campus A — Main Campus</option>
+                <option value="campus_b">Campus B — North Wing</option>
+                <option value="campus_c">Campus C — Engineering Block</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Where did you find it? <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" type="text" id="foundLocation" placeholder="e.g. Admin Block, 2nd Floor Corridor" required/>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Description <span style="color:var(--text-muted)">(helps AI match better)</span></label>
+            <textarea class="form-textarea" id="description" rows="3" placeholder="Color, brand, condition, any visible markings…"></textarea>
+            <span class="form-hint" id="sensitiveWarning" style="color:var(--danger);display:none">⚠️ Sensitive data detected — please remove ID/card numbers.</span>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-title">📸 Photo of Found Item</div>
+          <div class="form-card-sub">A photo greatly improves AI match accuracy</div>
+          <label class="file-upload-area" for="imageInput">
+            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp"/>
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Click to upload photo</div>
+            <div class="upload-hint">JPEG · PNG · WebP · Max 5MB</div>
+          </label>
+          <img id="imagePreview" class="image-preview" style="display:none"/>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:4px">
+          <a href="dashboard.html" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+            Submit Found Report
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/pwa.js"></script>
+<script type="module">
+  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+  fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
+
+  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+  if (!user) { window.location.href = 'login.html'; }
+
+  // Image preview
+  document.getElementById('imageInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const preview = document.getElementById('imagePreview');
+    preview.src     = URL.createObjectURL(file);
+    preview.style.display = 'block';
+  });
+
+  // Sensitive data
+  document.getElementById('description').addEventListener('input', (e) => {
+    document.getElementById('sensitiveWarning').style.display =
+      window.ReclaimX?.hasSensitiveData(e.target.value) ? 'block' : 'none';
+  });
+
+  document.getElementById('foundForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const itemName      = document.getElementById('itemName').value.trim();
+    const category      = document.getElementById('category').value;
+    const campus        = document.getElementById('campus').value;
+    const foundLocation = document.getElementById('foundLocation').value.trim();
+    const desc          = document.getElementById('description').value.trim();
+    const btn           = document.getElementById('submitBtn');
+
+    if (!itemName)      { document.getElementById('itemNameError').textContent='Item name required.'; document.getElementById('itemNameError').classList.add('visible'); return; }
+    if (!category)      { alert('Please select a category.'); return; }
+    if (!campus)        { alert('Please select your campus.'); return; }
+    if (!foundLocation) { alert('Please enter the found location.'); return; }
+    if (window.ReclaimX?.hasSensitiveData(desc)) { alert('Sensitive data detected. Please remove it.'); return; }
+
+    btn.innerHTML = '<span class="loading-spinner"></span> Submitting…';
+    btn.disabled  = true;
+
+    const formData = new FormData();
+    formData.append('itemName',      itemName);
+    formData.append('category',      category);
+    formData.append('campusId',      campus);
+    formData.append('foundLocation', foundLocation);
+    formData.append('description',   desc);
+    const imgFile = document.getElementById('imageInput').files[0];
+    if (imgFile) formData.append('image', imgFile);
+
+    try {
+      const token = sessionStorage.getItem('rx_token');
+      const res   = await fetch(`${window.API_BASE}/api/items/found`, {
+        method:  'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body:    formData,
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Submission failed');
+      window.ReclaimX?.toast('Found item reported! AI matching is running…', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+    } catch (err) {
+      window.ReclaimX?.toast(err.message || 'Failed to submit. Try again.', 'error');
+      btn.textContent = 'Submit Found Report';
+      btn.disabled    = false;
+    }
+  });
+</script>
+</body>
+</html>

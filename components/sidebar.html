@@ -1,0 +1,93 @@
+<!-- components/sidebar.html — shared sidebar fragment -->
+<!-- Loaded via fetch() into every app page -->
+<aside class="sidebar" id="appSidebar">
+  <a href="../pages/dashboard.html" class="sidebar-logo">Reclaim<span>X</span></a>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="../pages/dashboard.html"    class="sidebar-link" data-page="dashboard.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="../pages/browse.html"       class="sidebar-link" data-page="browse.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Browse Items
+    </a>
+    <a href="../pages/matches.html"      class="sidebar-link" data-page="matches.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      My Matches
+      <span class="badge badge-accent" id="sidebarMatchBadge" style="margin-left:auto;display:none;font-size:0.65rem;padding:2px 7px"></span>
+    </a>
+
+    <div class="sidebar-section-label">Reports</div>
+    <a href="../pages/report-lost.html"  class="sidebar-link" data-page="report-lost.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Report Lost
+    </a>
+    <a href="../pages/report-found.html" class="sidebar-link" data-page="report-found.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Report Found
+    </a>
+
+    <div class="sidebar-section-label">Account</div>
+    <a href="../pages/profile.html"      class="sidebar-link" data-page="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      My Profile
+    </a>
+    <a href="#" class="sidebar-link" id="sidebarLogout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </a>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name" id="sidebarName">Loading…</div>
+      <div class="sidebar-user-level" id="sidebarLevel">🥉 Bronze Helper</div>
+    </div>
+  </div>
+</aside>
+
+<script>
+(function() {
+  // ── Active link highlight ───────────────────────────────────
+  const current = window.location.pathname.split('/').pop() || 'dashboard.html';
+  document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
+    if (link.dataset.page === current) link.classList.add('active');
+  });
+
+  // ── Load user from sessionStorage ──────────────────────────
+  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+  if (user) {
+    const name    = user.name || user.email || 'User';
+    const initials= name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+    const trust   = user.trustScore || 0;
+    const level   = trust >= 100 ? '🥇 Gold Hero' : trust >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
+
+    document.getElementById('sidebarAvatar').textContent = initials;
+    document.getElementById('sidebarName').textContent   = name;
+    document.getElementById('sidebarLevel').textContent  = level;
+  }
+
+  // ── Match badge ─────────────────────────────────────────────
+  const matchCount = parseInt(sessionStorage.getItem('rx_match_count') || '0');
+  if (matchCount > 0) {
+    const badge = document.getElementById('sidebarMatchBadge');
+    badge.textContent = matchCount;
+    badge.style.display = 'inline-flex';
+  }
+
+  // ── Logout ──────────────────────────────────────────────────
+  document.getElementById('sidebarLogout').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+      const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+      const auth = getAuth();
+      await signOut(auth);
+    } catch (_) {}
+    sessionStorage.clear();
+    window.location.href = '../pages/login.html';
+  });
+})();
+</script>

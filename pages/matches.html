@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Matches — ReclaimX</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <style>
+    .stats-strip { display:flex; border-bottom:1px solid var(--border); background:var(--bg-surface); }
+    .stat-strip-item { flex:1; padding:16px 24px; text-align:center; border-right:1px solid var(--border); }
+    .stat-strip-item:last-child { border-right:none; }
+    .stat-strip-num { font-family:var(--font-display); font-size:1.5rem; font-weight:800; letter-spacing:-0.5px; }
+    .stat-strip-label { font-size:0.68rem; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+    .match-tabs { display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+    .match-tab { padding:10px 18px; font-size:0.82rem; font-weight:500; color:var(--text-secondary); border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; font-family:var(--font-body); }
+    .match-tab:hover { color:var(--text-primary); }
+    .match-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+    .tab-count { display:inline-flex; align-items:center; justify-content:center; background:var(--accent-dim); color:var(--accent); border-radius:100px; font-size:0.62rem; font-family:var(--font-mono); min-width:18px; height:18px; padding:0 5px; margin-left:6px; }
+    .match-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; transition:all 0.25s; margin-bottom:16px; }
+    .match-card:hover { border-color:var(--border-hover); }
+    .match-card.high-confidence   { border-top:2px solid var(--accent); }
+    .match-card.medium-confidence { border-top:2px solid var(--violet); }
+    .match-card-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px; }
+    .match-icon { width:44px; height:44px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; background:var(--bg-elevated); border:1px solid var(--border); }
+    .match-header-info { flex:1; }
+    .match-item-name { font-size:1rem; font-weight:600; }
+    .match-meta { font-size:0.75rem; color:var(--text-muted); margin-top:2px; display:flex; gap:12px; flex-wrap:wrap; }
+    .score-dial { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+    .score-ring { width:52px; height:52px; border-radius:50%; background:conic-gradient(var(--accent) calc(var(--pct) * 1%), var(--bg-elevated) 0); display:flex; align-items:center; justify-content:center; position:relative; }
+    .score-ring::before { content:''; position:absolute; inset:6px; border-radius:50%; background:var(--bg-card); }
+    .score-num { position:relative; z-index:2; font-family:var(--font-display); font-size:0.8rem; font-weight:800; }
+    .score-label { font-size:0.6rem; font-family:var(--font-mono); color:var(--text-muted); margin-top:4px; text-transform:uppercase; }
+    .match-card-body { padding:18px 20px; }
+    .item-comparison { display:grid; grid-template-columns:1fr 40px 1fr; align-items:center; margin-bottom:18px; gap:0; }
+    .comp-item { background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px; }
+    .comp-label { font-size:0.62rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+    .comp-label.lost { color:var(--danger); } .comp-label.found { color:var(--accent); }
+    .comp-item-name { font-size:0.9rem; font-weight:600; margin-bottom:4px; }
+    .comp-details { font-size:0.75rem; color:var(--text-secondary); line-height:1.5; }
+    .comp-arrow { display:flex; align-items:center; justify-content:center; color:var(--text-muted); }
+    .score-breakdown-title { font-size:0.7rem; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+    .score-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+    .score-row-label { font-size:0.72rem; color:var(--text-secondary); width:80px; flex-shrink:0; }
+    .score-row-bar { flex:1; height:4px; background:var(--bg-elevated); border-radius:2px; overflow:hidden; }
+    .score-row-fill { height:100%; border-radius:2px; transition:width 1s ease; }
+    .fill-text { background:linear-gradient(90deg,var(--accent),#00ffcc); }
+    .fill-image { background:linear-gradient(90deg,var(--violet),#a78bfa); }
+    .fill-location { background:linear-gradient(90deg,#fbbf24,#f59e0b); }
+    .fill-time { background:var(--accent); }
+    .score-row-pct { font-size:0.68rem; font-family:var(--font-mono); color:var(--text-muted); width:32px; text-align:right; }
+    .match-card-footer { padding:14px 20px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; background:rgba(0,0,0,0.15); }
+    .match-status-info { font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:6px; }
+    .match-actions { display:flex; gap:8px; }
+    .resolved-banner { background:rgba(0,212,170,0.08); border-top:1px solid rgba(0,212,170,0.15); padding:10px 20px; font-size:0.78rem; color:var(--accent); display:flex; align-items:center; gap:8px; }
+    .pending-banner  { background:rgba(251,191,36,0.06); border-top:1px solid rgba(251,191,36,0.15); padding:10px 20px; font-size:0.78rem; color:var(--warning); display:flex; align-items:center; gap:8px; }
+    .question-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:14px; }
+    .question-num  { font-size:0.65rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; }
+    .question-text { font-size:0.875rem; color:var(--text-primary); margin-bottom:10px; font-weight:500; }
+    .attempt-counter { text-align:center; font-size:0.75rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:16px; padding:8px; background:var(--bg-elevated); border-radius:var(--radius-sm); border:1px solid var(--border); }
+    .modal-warning { background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2); border-radius:var(--radius-md); padding:12px 14px; font-size:0.78rem; color:var(--warning); margin-bottom:20px; line-height:1.5; }
+    @media(max-width:900px) {
+      .sidebar { display:none; } .main-content { margin-left:0; }
+      .item-comparison { grid-template-columns:1fr; }
+      .comp-arrow svg { transform:rotate(90deg); }
+      .stats-strip { flex-wrap:wrap; }
+      .stat-strip-item { flex:1 1 50%; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-placeholder"></div>
+
+  <main class="main-content">
+    <header class="main-header">
+      <div>
+        <h1>My Matches <span class="ai-badge"><span class="ai-dot"></span>AI Engine</span></h1>
+        <p>Items the AI matched to your reports — review and verify your claims below.</p>
+      </div>
+      <a href="browse.html" class="btn btn-ghost btn-sm">Browse All Items</a>
+    </header>
+
+    <div class="stats-strip">
+      <div class="stat-strip-item"><div class="stat-strip-num text-accent" id="sNew">2</div><div class="stat-strip-label">New Matches</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-num" style="color:var(--warning)" id="sPending">1</div><div class="stat-strip-label">Pending Handover</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-num" style="color:var(--text-secondary)" id="sResolved">3</div><div class="stat-strip-label">Resolved</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-num text-muted" id="sDismissed">1</div><div class="stat-strip-label">Dismissed</div></div>
+    </div>
+
+    <div style="padding:28px 36px">
+      <div class="match-tabs">
+        <button class="match-tab active" onclick="setTab(this,'new')">New<span class="tab-count">2</span></button>
+        <button class="match-tab" onclick="setTab(this,'pending')">Pending<span class="tab-count">1</span></button>
+        <button class="match-tab" onclick="setTab(this,'resolved')">Resolved<span class="tab-count">3</span></button>
+        <button class="match-tab" onclick="setTab(this,'dismissed')">Dismissed</button>
+      </div>
+
+      <!-- Match Card 1 — High confidence -->
+      <div class="match-card high-confidence" data-tab="new">
+        <div class="match-card-header">
+          <div class="match-icon">👜</div>
+          <div class="match-header-info">
+            <div class="match-item-name">Black Wallet — Possible Match Found</div>
+            <div class="match-meta"><span>📍 Library, Ground Floor</span><span>🏷️ Accessories</span><span>⏱ Found 2hr ago</span></div>
+          </div>
+          <div class="score-dial">
+            <div class="score-ring" style="--pct:87"><span class="score-num text-accent">87%</span></div>
+            <div class="score-label">Confidence</div>
+          </div>
+        </div>
+        <div class="match-card-body">
+          <div class="item-comparison">
+            <div class="comp-item">
+              <div class="comp-label lost">Your Lost Report</div>
+              <div class="comp-item-name">Black Wallet</div>
+              <div class="comp-details">Last seen: Canteen Area<br/>11 minutes ago · Accessories</div>
+            </div>
+            <div class="comp-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="comp-item">
+              <div class="comp-label found">Found by User247</div>
+              <div class="comp-item-name">Black Wallet</div>
+              <div class="comp-details">Found: Library Ground Floor<br/>2 hours ago · Accessories</div>
+            </div>
+          </div>
+          <div class="score-breakdown-title">Match Score Breakdown</div>
+          <div class="score-row"><span class="score-row-label">Text Match</span><div class="score-row-bar"><div class="score-row-fill fill-text" style="width:0%" data-w="92%"></div></div><span class="score-row-pct">92%</span></div>
+          <div class="score-row"><span class="score-row-label">Image Match</span><div class="score-row-bar"><div class="score-row-fill fill-image" style="width:0%" data-w="78%"></div></div><span class="score-row-pct">78%</span></div>
+          <div class="score-row"><span class="score-row-label">Location</span><div class="score-row-bar"><div class="score-row-fill fill-location" style="width:0%" data-w="85%"></div></div><span class="score-row-pct">85%</span></div>
+          <div class="score-row"><span class="score-row-label">Time</span><div class="score-row-bar"><div class="score-row-fill fill-time" style="width:0%" data-w="91%"></div></div><span class="score-row-pct">91%</span></div>
+        </div>
+        <div class="match-card-footer">
+          <div class="match-status-info">⏱ Expires in 48hrs if unclaimed</div>
+          <div class="match-actions">
+            <button class="btn btn-ghost btn-sm" onclick="dismissMatch(this)">Dismiss</button>
+            <button class="btn btn-primary btn-sm" onclick="openVerify('wallet-1')">Verify Claim 🔐</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Match Card 2 — Medium confidence -->
+      <div class="match-card medium-confidence" data-tab="new">
+        <div class="match-card-header">
+          <div class="match-icon">🪪</div>
+          <div class="match-header-info">
+            <div class="match-item-name">Student ID Card — Possible Match Found</div>
+            <div class="match-meta"><span>📍 Block B Corridor</span><span>🏷️ Documents</span><span>⏱ Found 5hr ago</span></div>
+          </div>
+          <div class="score-dial">
+            <div class="score-ring" style="--pct:72;background:conic-gradient(var(--violet) calc(var(--pct) * 1%),var(--bg-elevated) 0)"><span class="score-num" style="color:var(--violet)">72%</span></div>
+            <div class="score-label">Confidence</div>
+          </div>
+        </div>
+        <div class="match-card-body">
+          <div class="item-comparison">
+            <div class="comp-item">
+              <div class="comp-label lost">Your Lost Report</div>
+              <div class="comp-item-name">Student ID Card</div>
+              <div class="comp-details">Last seen: Block B<br/>34 min ago · Documents</div>
+            </div>
+            <div class="comp-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="comp-item">
+              <div class="comp-label found">Found by User112</div>
+              <div class="comp-item-name">ID Card</div>
+              <div class="comp-details">Found: Block B Corridor<br/>5 hours ago · Documents</div>
+            </div>
+          </div>
+          <div class="score-breakdown-title">Match Score Breakdown</div>
+          <div class="score-row"><span class="score-row-label">Text Match</span><div class="score-row-bar"><div class="score-row-fill fill-text" style="width:0%" data-w="68%"></div></div><span class="score-row-pct">68%</span></div>
+          <div class="score-row"><span class="score-row-label">Image Match</span><div class="score-row-bar"><div class="score-row-fill fill-image" style="width:0%" data-w="60%"></div></div><span class="score-row-pct">60%</span></div>
+          <div class="score-row"><span class="score-row-label">Location</span><div class="score-row-bar"><div class="score-row-fill fill-location" style="width:0%" data-w="95%"></div></div><span class="score-row-pct">95%</span></div>
+          <div class="score-row"><span class="score-row-label">Time</span><div class="score-row-bar"><div class="score-row-fill fill-time" style="width:0%" data-w="73%"></div></div><span class="score-row-pct">73%</span></div>
+        </div>
+        <div class="match-card-footer">
+          <div class="match-status-info">⏱ Expires in 48hrs if unclaimed</div>
+          <div class="match-actions">
+            <button class="btn btn-ghost btn-sm" onclick="dismissMatch(this)">Dismiss</button>
+            <button class="btn btn-primary btn-sm" onclick="openVerify('id-2')">Verify Claim 🔐</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending card -->
+      <div class="match-card high-confidence" data-tab="pending" style="display:none">
+        <div class="match-card-header">
+          <div class="match-icon">🎒</div>
+          <div class="match-header-info">
+            <div class="match-item-name">Blue Backpack — Verification Passed ✓</div>
+            <div class="match-meta"><span>📍 Admin Block</span><span>🏷️ Bags</span><span>⏱ Verified 30min ago</span></div>
+          </div>
+          <div class="score-dial">
+            <div class="score-ring" style="--pct:91"><span class="score-num text-accent">91%</span></div>
+            <div class="score-label">Confidence</div>
+          </div>
+        </div>
+        <div class="pending-banner">⏱ Verification passed — awaiting physical handover confirmation from both parties.</div>
+        <div class="match-card-footer">
+          <div class="match-status-info">Meet at a public campus location to hand over</div>
+          <div class="match-actions">
+            <button class="btn btn-ghost btn-sm">Contact Finder</button>
+            <button class="btn btn-primary btn-sm" onclick="confirmHandover(this)">Confirm Handover ✓</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resolved card -->
+      <div class="match-card" data-tab="resolved" style="display:none;opacity:0.6">
+        <div class="match-card-header">
+          <div class="match-icon" style="opacity:0.5">👜</div>
+          <div class="match-header-info">
+            <div class="match-item-name">Wallet — Resolved ✓</div>
+            <div class="match-meta"><span>📍 Library</span><span>✓ Resolved Jan 12</span></div>
+          </div>
+          <div class="score-dial">
+            <div class="score-ring" style="--pct:87;background:conic-gradient(#4a5568 calc(var(--pct)*1%),var(--bg-elevated) 0)"><span class="score-num text-muted">87%</span></div>
+            <div class="score-label">Confidence</div>
+          </div>
+        </div>
+        <div class="resolved-banner">✅ Successfully resolved — both parties confirmed handover. +10 trust points earned.</div>
+        <div class="match-card-footer">
+          <div class="match-status-info">Matched with User247 · Campus A</div>
+          <span class="badge badge-accent">Resolved</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Verification Modal -->
+<div class="modal-overlay" id="verifyModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeVerify()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div style="margin-bottom:24px">
+      <h2 style="font-size:1.2rem;margin-bottom:4px">🔐 Verify Your Claim</h2>
+      <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5">Answer the questions below to prove ownership. Generated from the private details of the original report.</p>
+    </div>
+    <div class="modal-warning">⚠️ <strong>3 chances only.</strong> Failed attempts reduce your trust score and may suspend your account.</div>
+    <div class="attempt-counter">Attempts remaining: <span id="attemptsLeft">3</span> / 3</div>
+    <div class="question-card">
+      <div class="question-num">Question 1 of 3</div>
+      <div class="question-text">What is the interior color or lining of the item?</div>
+      <input class="form-input" type="text" id="q1" placeholder="Describe inside color…"/>
+    </div>
+    <div class="question-card">
+      <div class="question-num">Question 2 of 3</div>
+      <div class="question-text">Describe any unique mark, scratch, sticker, or identifying feature.</div>
+      <input class="form-input" type="text" id="q2" placeholder="e.g. scratch on bottom, initials written inside…"/>
+    </div>
+    <div class="question-card">
+      <div class="question-num">Question 3 of 3</div>
+      <div class="question-text">What does the item contain? (no sensitive numbers)</div>
+      <input class="form-input" type="text" id="q3" placeholder="e.g. 3 cards, college ID, some cash…"/>
+    </div>
+    <div id="verifyError" style="display:none;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);border-radius:var(--radius-md);padding:10px 14px;font-size:0.78rem;color:var(--danger);margin-bottom:14px">
+      ❌ Answers don't match our records. Attempt logged.
+    </div>
+    <div id="verifySuccess" style="display:none;background:var(--accent-dim);border:1px solid rgba(0,212,170,0.3);border-radius:var(--radius-md);padding:12px 14px;font-size:0.82rem;color:var(--accent);margin-bottom:14px">
+      ✅ Verification passed! Item status is now "Pending Handover".
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeVerify()">Cancel</button>
+      <button class="btn btn-primary" id="submitVerifyBtn" onclick="submitVerify()">Submit Answers</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/pwa.js"></script>
+<script>
+  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+
+  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+  if (!user) window.location.href = 'login.html';
+
+  // Tabs
+  function setTab(btn, tab) {
+    document.querySelectorAll('.match-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.match-card').forEach(c => {
+      c.style.display = c.dataset.tab === tab ? '' : 'none';
+    });
+  }
+
+  // Dismiss
+  function dismissMatch(btn) {
+    const card = btn.closest('.match-card');
+    card.style.transition = 'opacity 0.3s, transform 0.3s';
+    card.style.opacity = '0'; card.style.transform = 'translateX(20px)';
+    setTimeout(() => card.remove(), 300);
+    window.ReclaimX?.toast('Match dismissed.', 'info');
+  }
+
+  // Confirm handover
+  async function confirmHandover(btn) {
+    btn.textContent = 'Confirming…'; btn.disabled = true;
+    await new Promise(r => setTimeout(r, 800));
+    btn.closest('.match-card').querySelector('.pending-banner').outerHTML =
+      '<div class="resolved-banner">✅ Handover confirmed! +10 trust points earned.</div>';
+    btn.closest('.match-actions').innerHTML = '<span class="badge badge-accent">Resolved</span>';
+    window.ReclaimX?.toast('Handover confirmed! Trust points added.', 'success');
+  }
+
+  // Verification modal
+  let attempts = 3;
+  function openVerify(id) {
+    attempts = 3;
+    document.getElementById('attemptsLeft').textContent = 3;
+    ['q1','q2','q3'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('verifyError').style.display   = 'none';
+    document.getElementById('verifySuccess').style.display = 'none';
+    document.getElementById('submitVerifyBtn').disabled    = false;
+    document.getElementById('submitVerifyBtn').textContent = 'Submit Answers';
+    document.getElementById('verifyModal').classList.add('open');
+  }
+  function closeVerify() { document.getElementById('verifyModal').classList.remove('open'); }
+  document.getElementById('verifyModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeVerify(); });
+
+  async function submitVerify() {
+    const a1 = document.getElementById('q1').value.trim();
+    const a2 = document.getElementById('q2').value.trim();
+    const a3 = document.getElementById('q3').value.trim();
+    if (!a1 || !a2 || !a3) { window.ReclaimX?.toast('Please answer all 3 questions.', 'warning'); return; }
+
+    const btn = document.getElementById('submitVerifyBtn');
+    btn.textContent = 'Verifying…'; btn.disabled = true;
+
+    // TODO: replace with real API call
+    // POST /api/matches/verify { claimId, answers: {q1:a1, q2:a2, q3:a3} }
+    await new Promise(r => setTimeout(r, 1200));
+    const passed = a1.length >= 3 && a2.length >= 3 && a3.length >= 3; // demo logic
+
+    if (passed) {
+      document.getElementById('verifySuccess').style.display = 'block';
+      btn.textContent = '✓ Verified';
+      window.ReclaimX?.toast('Claim verified! Arrange handover with the finder.', 'success');
+    } else {
+      attempts--;
+      document.getElementById('attemptsLeft').textContent = attempts;
+      document.getElementById('verifyError').style.display = 'block';
+      if (attempts <= 0) {
+        btn.textContent = 'No Attempts Left'; btn.disabled = true;
+        window.ReclaimX?.toast('3 failed attempts. Account flagged.', 'error');
+      } else {
+        btn.textContent = 'Submit Answers'; btn.disabled = false;
+      }
+    }
+  }
+
+  // Animate score bars on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.score-row-fill[data-w]').forEach(bar => {
+        const w = bar.dataset.w;
+        requestAnimationFrame(() => { setTimeout(() => { bar.style.width = w; }, 100); });
+      });
+    }, 300);
+  });
+</script>
+</body>
+</html>

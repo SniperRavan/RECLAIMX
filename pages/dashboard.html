@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — ReclaimX</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <link rel="manifest" href="../manifest.json"/>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- Main -->
+  <main class="main-content">
+    <header class="main-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p id="greetMsg">Loading your campus feed…</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <a href="report-lost.html" class="btn btn-ghost btn-sm">+ Report Lost</a>
+        <a href="report-found.html" class="btn btn-primary btn-sm">+ Report Found</a>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Active Lost Reports</div>
+          <div class="stat-value text-accent" id="statLost">—</div>
+          <div class="stat-change">On your campus</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Items Found</div>
+          <div class="stat-value" style="color:var(--violet)" id="statFound">—</div>
+          <div class="stat-change">Waiting to be claimed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">AI Matches Today</div>
+          <div class="stat-value text-accent" id="statMatches">—</div>
+          <div class="stat-change">Across campus</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Your Trust Score</div>
+          <div class="stat-value" id="statTrust">0</div>
+          <div class="stat-change" id="trustLevel">🥉 Bronze Helper</div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="section-header">
+        <div class="section-title">Recent Campus Activity</div>
+        <a href="browse.html" style="font-size:0.78rem;color:var(--accent);font-family:var(--font-mono)">View all →</a>
+      </div>
+
+      <div class="items-grid" id="recentItems">
+        <!-- Placeholder cards while loading -->
+        <div class="item-card" style="animation:fadeUp 0.4s ease both">
+          <div class="item-card-thumb">👜</div>
+          <div class="item-card-body">
+            <div class="item-card-name">Black Wallet</div>
+            <div class="item-card-meta">
+              <span>📍 Library</span><span>🏷️ Accessories</span>
+            </div>
+          </div>
+          <div class="item-card-footer">
+            <span class="badge badge-danger">Lost</span>
+            <span style="font-family:var(--font-mono)">2 hr ago</span>
+          </div>
+        </div>
+        <div class="item-card" style="animation:fadeUp 0.4s 0.1s ease both">
+          <div class="item-card-thumb">🎒</div>
+          <div class="item-card-body">
+            <div class="item-card-name">Blue Backpack</div>
+            <div class="item-card-meta">
+              <span>📍 Admin Block</span><span>🏷️ Bags</span>
+            </div>
+          </div>
+          <div class="item-card-footer">
+            <span class="badge badge-accent">Found</span>
+            <span style="font-family:var(--font-mono)">5 hr ago</span>
+          </div>
+        </div>
+        <div class="item-card" style="animation:fadeUp 0.4s 0.2s ease both">
+          <div class="item-card-thumb">🪪</div>
+          <div class="item-card-body">
+            <div class="item-card-name">Student ID Card</div>
+            <div class="item-card-meta">
+              <span>📍 Block B</span><span>🏷️ Documents</span>
+            </div>
+          </div>
+          <div class="item-card-footer">
+            <span class="badge badge-danger">Lost</span>
+            <span style="font-family:var(--font-mono)">1 day ago</span>
+          </div>
+        </div>
+        <div class="item-card" style="animation:fadeUp 0.4s 0.3s ease both">
+          <div class="item-card-thumb">⌚</div>
+          <div class="item-card-body">
+            <div class="item-card-name">Casio Watch</div>
+            <div class="item-card-meta">
+              <span>📍 Canteen</span><span>🏷️ Accessories</span>
+            </div>
+          </div>
+          <div class="item-card-footer">
+            <span class="badge badge-accent">Found</span>
+            <span style="font-family:var(--font-mono)">3 hr ago</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Active Reports -->
+      <div class="section-header" style="margin-top:32px">
+        <div class="section-title">My Active Reports</div>
+        <a href="report-lost.html" style="font-size:0.78rem;color:var(--accent);font-family:var(--font-mono)">+ New report</a>
+      </div>
+
+      <div id="myReports" style="display:flex;flex-direction:column;gap:10px">
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 20px">
+          <div style="font-size:1.8rem">👜</div>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:0.9rem">Black Wallet</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:2px">Reported 2 hr ago · Library Area</div>
+          </div>
+          <span class="badge badge-danger">Lost</span>
+          <a href="matches.html" class="btn btn-ghost btn-sm">View Matches</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/pwa.js"></script>
+<script>
+  // Load sidebar component
+  fetch('../components/sidebar.html')
+    .then(r => r.text())
+    .then(html => { document.getElementById('sidebar-placeholder').innerHTML = html; });
+
+  // Load toast component
+  fetch('../components/toast.html')
+    .then(r => r.text())
+    .then(html => { document.body.insertAdjacentHTML('beforeend', html); });
+
+  // Auth guard
+  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+  if (!user) { window.location.href = 'login.html'; }
+  else {
+    const name  = user.name || user.email;
+    const hour  = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greetMsg').textContent = `${greet}, ${name.split(' ')[0]} 👋`;
+    document.getElementById('statTrust').textContent = user.trustScore || 0;
+  }
+
+  // Fetch live stats from backend
+  const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000'
+    : 'https://YOUR-RAILWAY-URL.up.railway.app';
+
+  fetch(`${API_BASE}/api/items`)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('statLost').textContent  = data.lost?.length  || 0;
+      document.getElementById('statFound').textContent = data.found?.length || 0;
+      document.getElementById('statMatches').textContent = Math.floor(Math.random() * 5) + 1; // demo
+    })
+    .catch(() => {
+      // Backend not yet connected — show demo numbers
+      document.getElementById('statLost').textContent   = '12';
+      document.getElementById('statFound').textContent  = '7';
+      document.getElementById('statMatches').textContent = '3';
+    });
+</script>
+</body>
+</html>

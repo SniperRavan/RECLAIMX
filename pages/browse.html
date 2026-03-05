@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browse Items — ReclaimX</title>
+  <link rel="stylesheet" href="../assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <link rel="manifest" href="../manifest.json"/>
+  <style>
+    .browse-tabs { display:flex; gap:6px; margin-bottom:20px; }
+    .browse-tab { padding:9px 20px; border-radius:100px; font-size:0.82rem; font-weight:500; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-secondary); transition:all 0.2s; font-family:var(--font-body); }
+    .browse-tab.active { background:var(--accent-dim); color:var(--accent); border-color:rgba(0,212,170,0.3); }
+    .browse-tab:hover:not(.active) { background:var(--bg-elevated); color:var(--text-primary); }
+    .items-count { font-size:0.72rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:16px; }
+    .empty-state { text-align:center; padding:64px 24px; }
+    .empty-state h3 { font-size:1.1rem; color:var(--text-secondary); margin-bottom:8px; }
+    .empty-state p { font-size:0.85rem; color:var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-placeholder"></div>
+
+  <main class="main-content">
+    <header class="main-header">
+      <div>
+        <h1>Browse Items</h1>
+        <p>All lost and found reports on your campus — only item names are visible publicly.</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <a href="report-lost.html"  class="btn btn-ghost btn-sm">+ Lost</a>
+        <a href="report-found.html" class="btn btn-primary btn-sm">+ Found</a>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <!-- Filters -->
+      <div class="filter-bar">
+        <div class="filter-search-wrap">
+          <svg class="filter-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input class="form-input" type="text" id="searchInput" placeholder="Search by item name…"/>
+        </div>
+        <select class="form-select" id="categoryFilter" style="width:160px">
+          <option value="">All Categories</option>
+          <option value="Accessories">Accessories</option>
+          <option value="Bags">Bags</option>
+          <option value="Documents">Documents</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Keys">Keys</option>
+          <option value="Books">Books</option>
+          <option value="Other">Other</option>
+        </select>
+        <select class="form-select" id="campusFilter" style="width:160px">
+          <option value="">All Campuses</option>
+          <option value="campus_a">Campus A</option>
+          <option value="campus_b">Campus B</option>
+          <option value="campus_c">Campus C</option>
+        </select>
+      </div>
+
+      <!-- Tabs -->
+      <div class="browse-tabs">
+        <button class="browse-tab active" onclick="setTab(this,'lost')">Lost Items</button>
+        <button class="browse-tab" onclick="setTab(this,'found')">Found Items</button>
+        <button class="browse-tab" onclick="setTab(this,'all')">All</button>
+      </div>
+
+      <div class="items-count" id="itemsCount">Loading…</div>
+
+      <!-- Items Grid -->
+      <div class="items-grid" id="itemsGrid">
+        <!-- Demo cards shown before API connects -->
+        <div class="item-card"><div class="item-card-thumb">👜</div><div class="item-card-body"><div class="item-card-name">Black Wallet</div><div class="item-card-meta"><span>📍 Library</span><span>🏷️ Accessories</span></div></div><div class="item-card-footer"><span class="badge badge-danger">Lost</span><span>2hr ago</span></div></div>
+        <div class="item-card"><div class="item-card-thumb">🎒</div><div class="item-card-body"><div class="item-card-name">Blue Backpack</div><div class="item-card-meta"><span>📍 Admin Block</span><span>🏷️ Bags</span></div></div><div class="item-card-footer"><span class="badge badge-accent">Found</span><span>5hr ago</span></div></div>
+        <div class="item-card"><div class="item-card-thumb">🪪</div><div class="item-card-body"><div class="item-card-name">Student ID Card</div><div class="item-card-meta"><span>📍 Block B</span><span>🏷️ Documents</span></div></div><div class="item-card-footer"><span class="badge badge-danger">Lost</span><span>1d ago</span></div></div>
+        <div class="item-card"><div class="item-card-thumb">⌚</div><div class="item-card-body"><div class="item-card-name">Casio Watch</div><div class="item-card-meta"><span>📍 Canteen</span><span>🏷️ Accessories</span></div></div><div class="item-card-footer"><span class="badge badge-accent">Found</span><span>3hr ago</span></div></div>
+        <div class="item-card"><div class="item-card-thumb">📱</div><div class="item-card-body"><div class="item-card-name">Samsung Phone</div><div class="item-card-meta"><span>📍 Lecture Hall A</span><span>🏷️ Electronics</span></div></div><div class="item-card-footer"><span class="badge badge-danger">Lost</span><span>6hr ago</span></div></div>
+        <div class="item-card"><div class="item-card-thumb">🔑</div><div class="item-card-body"><div class="item-card-name">Key Bundle</div><div class="item-card-meta"><span>📍 Parking Lot</span><span>🏷️ Keys</span></div></div><div class="item-card-footer"><span class="badge badge-accent">Found</span><span>30min ago</span></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/pwa.js"></script>
+<script>
+  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+
+  const EMOJIS = { Accessories:'👜', Bags:'🎒', Documents:'🪪', Electronics:'📱', Clothing:'👕', Keys:'🔑', Books:'📚', Other:'📦' };
+  let allItems = { lost: [], found: [] };
+  let activeTab = 'lost';
+
+  const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://YOUR-RAILWAY-URL.up.railway.app';
+
+  async function loadItems() {
+    try {
+      const params = new URLSearchParams();
+      const cat    = document.getElementById('categoryFilter').value;
+      const campus = document.getElementById('campusFilter').value;
+      if (cat)    params.set('category', cat);
+      if (campus) params.set('campus', campus);
+
+      const res  = await fetch(`${API_BASE}/api/items?${params}`);
+      const data = await res.json();
+      allItems = data;
+      renderItems();
+    } catch {
+      document.getElementById('itemsCount').textContent = 'Showing demo data — backend not yet connected.';
+    }
+  }
+
+  function renderItems() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    let items = activeTab === 'lost'  ? allItems.lost  :
+                activeTab === 'found' ? allItems.found :
+                [...(allItems.lost||[]), ...(allItems.found||[])];
+
+    if (search) items = items.filter(i => i.itemName.toLowerCase().includes(search));
+
+    document.getElementById('itemsCount').textContent = `${items.length} item${items.length !== 1 ? 's' : ''} found`;
+
+    if (!items.length) {
+      document.getElementById('itemsGrid').innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div style="font-size:3rem;margin-bottom:16px">🔍</div>
+          <h3>No items found</h3>
+          <p>Try different filters or be the first to report one.</p>
+        </div>`;
+      return;
+    }
+
+    document.getElementById('itemsGrid').innerHTML = items.map((item, i) => {
+      const isLost   = item.status === 'Lost';
+      const location = item.lastSeenLocation || item.foundLocation || '—';
+      const emoji    = EMOJIS[item.category] || '📦';
+      const ago      = window.ReclaimX?.timeAgo(item.createdAt) || 'Recently';
+      return `
+        <div class="item-card" style="animation:fadeUp 0.4s ${i*0.05}s ease both">
+          <div class="item-card-thumb">${emoji}</div>
+          <div class="item-card-body">
+            <div class="item-card-name">${item.itemName}</div>
+            <div class="item-card-meta">
+              <span>📍 ${location}</span>
+              <span>🏷️ ${item.category}</span>
+            </div>
+          </div>
+          <div class="item-card-footer">
+            <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status}</span>
+            <span style="font-family:var(--font-mono)">${ago}</span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function setTab(btn, tab) {
+    document.querySelectorAll('.browse-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab = tab;
+    renderItems();
+  }
+
+  // Search & filter debounce
+  let debounce;
+  ['searchInput','categoryFilter','campusFilter'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(loadItems, 300);
+    });
+  });
+
+  loadItems();
+</script>
+</body>
+</html>
