@@ -6,6 +6,27 @@
   <title>Register — ReclaimX</title>
   <link rel="stylesheet" href="../assets/css/global.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+
+  <style>
+  .social-btn {
+    width: 100%; padding: 11px; background: var(--bg-elevated); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    font-size: 0.88rem; font-weight: 600; font-family: var(--font-body);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 10px; transition: all 0.2s; margin-bottom: 10px;
+  }
+  .social-btn.google { background: #fff; color: #1f1f1f; border-color: #dadce0; }
+  .social-btn.github { background: #24292e; color: #fff; border-color: #24292e; }
+  .social-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+  .social-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0;
+    font-size: 0.75rem; color: var(--text-muted); }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+  .error-box { background: rgba(255,77,109,0.08); border: 1px solid rgba(255,77,109,0.25);
+    border-radius: var(--radius-md); padding: 11px 14px; font-size: 0.82rem;
+    color: var(--danger); margin-bottom: 14px; display: none; }
+  .error-box.visible { display: block; }
+</style>
 </head>
 <body>
 
@@ -34,84 +55,97 @@
     <h1 class="auth-title">Create account</h1>
     <p class="auth-subtitle">Join your campus lost &amp; found network</p>
 
-    <form id="registerForm" novalidate>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">First Name</label>
-          <input class="form-input" type="text" id="firstName" placeholder="Sniper" required/>
-          <span class="form-error" id="firstNameError"></span>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Last Name</label>
-          <input class="form-input" type="text" id="lastName" placeholder="Ravan" required/>
-        </div>
-      </div>
-      <div style="margin-bottom:18px"></div>
+    <div class="error-box" id="errorBox"></div>
 
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <div class="input-wrap">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
-          <input class="form-input" type="email" id="email" placeholder="you@college.edu" required/>
-        </div>
-        <span class="form-error" id="emailError"></span>
-      </div>
+<!-- Google -->
+<button class="social-btn google" id="googleBtn" onclick="signUpWith('google')">
+  <svg width="18" height="18" viewBox="0 0 48 48">
+    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+  </svg>
+  Sign up with Google
+</button>
 
-      <div class="form-group">
-        <label class="form-label">Campus</label>
-        <select class="form-select" id="campus" required>
-          <option value="">Select your campus…</option>
-          <option value="campus_a">Campus A — Main Campus</option>
-          <option value="campus_b">Campus B — North Wing</option>
-          <option value="campus_c">Campus C — Engineering Block</option>
-        </select>
-      </div>
+<!-- GitHub -->
+<button class="social-btn github" id="githubBtn" onclick="signUpWith('github')">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+  </svg>
+  Sign up with GitHub
+</button>
 
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <div class="input-wrap">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <input class="form-input" type="password" id="password" placeholder="Min. 8 characters" required/>
-          <button type="button" class="input-action" id="togglePwd">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-        <div class="strength-bars">
-          <div class="strength-bar" id="bar1"></div>
-          <div class="strength-bar" id="bar2"></div>
-          <div class="strength-bar" id="bar3"></div>
-          <div class="strength-bar" id="bar4"></div>
-        </div>
-        <div class="strength-text" id="strengthText">Minimum 8 characters</div>
-      </div>
+<div class="divider">or register with email</div>
 
-      <div class="form-group">
-        <label class="form-label">Confirm Password</label>
-        <div class="input-wrap">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <input class="form-input" type="password" id="confirmPassword" placeholder="Repeat password" required/>
-        </div>
-        <span class="form-error" id="confirmError"></span>
-      </div>
+<!-- Email registration form -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+  <div class="form-group" style="margin-bottom:0">
+    <label class="form-label">First Name</label>
+    <input class="form-input" type="text" id="firstName" placeholder="Akash"/>
+  </div>
+  <div class="form-group" style="margin-bottom:0">
+    <label class="form-label">Last Name</label>
+    <input class="form-input" type="text" id="lastName" placeholder="Das Dhibar"/>
+  </div>
+</div>
 
-      <label class="checkbox-wrap" style="margin-bottom:20px">
-        <input type="checkbox" id="terms"/>
-        <span>I agree to the <a href="#" style="color:var(--accent)">Terms of Service</a> and <a href="#" style="color:var(--accent)">Privacy Policy</a></span>
-      </label>
+<div class="form-group">
+  <label class="form-label">Email</label>
+  <div class="input-wrap">
+    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <polyline points="22,6 12,13 2,6"/>
+    </svg>
+    <input class="form-input" type="email" id="email" placeholder="you@college.edu"/>
+  </div>
+</div>
 
-      <button type="submit" class="btn btn-primary" id="submitBtn" style="width:100%;padding:13px">
-        Create My Account
-      </button>
-    </form>
+<div class="form-group">
+  <label class="form-label">Campus</label>
+  <select class="form-select" id="campus">
+    <option value="">Select your campus…</option>
+    <option value="campus_a">Campus A — Main Campus</option>
+    <option value="campus_b">Campus B — North Wing</option>
+    <option value="campus_c">Campus C — Engineering Block</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Password</label>
+  <div class="input-wrap">
+    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+    <input class="form-input" type="password" id="password" placeholder="Min. 8 characters" oninput="updateStrength(this.value)"/>
+    <button type="button" class="input-action" onclick="togglePwd()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+      </svg>
+    </button>
+  </div>
+  <div class="strength-bars">
+    <div class="strength-bar" id="bar1"></div>
+    <div class="strength-bar" id="bar2"></div>
+    <div class="strength-bar" id="bar3"></div>
+    <div class="strength-bar" id="bar4"></div>
+  </div>
+  <div class="strength-text" id="strengthText">Minimum 8 characters</div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Confirm Password</label>
+  <div class="input-wrap">
+    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+    <input class="form-input" type="password" id="confirmPassword" placeholder="Repeat password"/>
+  </div>
+</div>
+
+<button class="btn btn-primary" id="emailBtn" onclick="registerWithEmail()" style="width:100%;padding:12px;margin-top:4px">
+  Create My Account
+</button>
 
     <div class="auth-switch">
       Already have an account? <a href="login.html">Sign in</a>
@@ -123,9 +157,12 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getAuth, GoogleAuthProvider, GithubAuthProvider,
+    signInWithPopup, createUserWithEmailAndPassword, sendEmailVerification
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────
+  // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────
   const firebaseConfig = {
     apiKey:            "PASTE_YOUR_apiKey",
     authDomain:        "PASTE_YOUR_authDomain",
@@ -134,130 +171,118 @@
     messagingSenderId: "PASTE_YOUR_messagingSenderId",
     appId:             "PASTE_YOUR_appId"
   };
-  // ─────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────
 
   const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:5000'
-    : 'https://YOUR-RAILWAY-URL.up.railway.app'; // ← replace after deploy
+    : 'https://YOUR-RAILWAY-URL.up.railway.app';
+
+  const BLOCKED_DOMAINS = ['mailinator.com','guerrillamail.com','tempmail.com','10minutemail.com','yopmail.com'];
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // Password toggle
-  document.getElementById('togglePwd').addEventListener('click', () => {
-    const pwd = document.getElementById('password');
-    pwd.type = pwd.type === 'password' ? 'text' : 'password';
-  });
-
-  // Strength meter
-  document.getElementById('password').addEventListener('input', (e) => {
-    updateStrength(e.target.value);
-  });
-
-  function updateStrength(pwd) {
-    let score = 0;
-    if (pwd.length >= 8)  score++;
-    if (pwd.length >= 12) score++;
-    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
-    if (/\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
-
-    const labels  = ['', 'Weak', 'Fair', 'Good', 'Strong'];
-    const classes = ['', 'weak', 'medium', 'strong', 'strong'];
-    const colors  = ['', 'var(--danger)', 'var(--warning)', 'var(--accent)', 'var(--accent)'];
-
-    ['bar1','bar2','bar3','bar4'].forEach((id, i) => {
-      const bar = document.getElementById(id);
-      bar.className = 'strength-bar';
-      if (i < score) bar.classList.add(classes[score]);
-    });
-
-    const text = document.getElementById('strengthText');
-    text.textContent = pwd.length === 0 ? 'Minimum 8 characters' : labels[score];
-    text.style.color = colors[score];
+  async function saveToBackend(user, campusId) {
+    const token = await user.getIdToken();
+    sessionStorage.setItem('rx_token', token);
+    sessionStorage.setItem('rx_user', JSON.stringify({
+      uid: user.uid, email: user.email,
+      name: user.displayName, photo: user.photoURL
+    }));
+    try {
+      await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ firebaseUid: user.uid, name: user.displayName || user.email.split('@')[0], email: user.email, campusId: campusId || 'campus_a' })
+      });
+    } catch(e) {}
   }
 
-  // Blocked disposable email domains
-  const BLOCKED = ['mailinator.com','guerrillamail.com','tempmail.com','10minutemail.com','yopmail.com','throwam.com'];
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = msg; box.classList.add('visible');
+  }
 
-  document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+  // Social sign-up (Google or GitHub)
+  window.signUpWith = async function(provider) {
+    document.getElementById('errorBox').classList.remove('visible');
+    const p = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
+    const btn = document.getElementById(provider + 'Btn');
+    btn.disabled = true;
+    try {
+      const result = await signInWithPopup(auth, p);
+      await saveToBackend(result.user, 'campus_a');
+      window.location.href = 'dashboard.html';
+    } catch(err) {
+      btn.disabled = false;
+      if (err.code === 'auth/popup-closed-by-user') return;
+      if (err.code === 'auth/account-exists-with-different-credential') return showError('Account exists with different sign-in method. Try another.');
+      if (err.code === 'auth/popup-blocked') return showError('Popup blocked — allow popups for this site.');
+      showError('Sign-up failed. Please try again.');
+    }
+  };
 
+  // Email/password registration
+  window.registerWithEmail = async function() {
+    document.getElementById('errorBox').classList.remove('visible');
     const firstName = document.getElementById('firstName').value.trim();
     const lastName  = document.getElementById('lastName').value.trim();
     const email     = document.getElementById('email').value.trim();
     const campus    = document.getElementById('campus').value;
     const password  = document.getElementById('password').value;
     const confirm   = document.getElementById('confirmPassword').value;
-    const terms     = document.getElementById('terms').checked;
-    const btn       = document.getElementById('submitBtn');
 
-    // Clear errors
-    ['emailError','confirmError'].forEach(id => {
-      document.getElementById(id).classList.remove('visible');
-    });
+    if (!firstName || !lastName) return showError('Please enter your first and last name.');
+    if (!email) return showError('Please enter your email.');
+    if (BLOCKED_DOMAINS.includes(email.split('@')[1])) return showError('Disposable emails are not allowed.');
+    if (!campus) return showError('Please select your campus.');
+    if (password.length < 8) return showError('Password must be at least 8 characters.');
+    if (password !== confirm) return showError('Passwords do not match.');
 
-    let valid = true;
-
-    if (!firstName || !lastName) {
-      document.getElementById('firstNameError').textContent = 'First and last name required.';
-      document.getElementById('firstNameError').classList.add('visible');
-      valid = false;
-    }
-
-    const domain = email.split('@')[1] || '';
-    if (BLOCKED.includes(domain)) {
-      document.getElementById('emailError').textContent = 'Disposable emails are not allowed.';
-      document.getElementById('emailError').classList.add('visible');
-      valid = false;
-    }
-
-    if (password !== confirm) {
-      document.getElementById('confirmError').textContent = 'Passwords do not match.';
-      document.getElementById('confirmError').classList.add('visible');
-      valid = false;
-    }
-
-    if (password.length < 8) {
-      alert('Password must be at least 8 characters.'); valid = false;
-    }
-    if (!campus) { alert('Please select your campus.'); valid = false; }
-    if (!terms)  { alert('Please accept the Terms of Service.'); valid = false; }
-    if (!valid) return;
-
-    btn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
-    btn.disabled  = true;
+    const btn = document.getElementById('emailBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-spinner"></span> Creating account…';
 
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await sendEmailVerification(cred.user);
-
-      // Save user profile to MongoDB
-      try {
-        const token = await cred.user.getIdToken();
-        await fetch(`${API_BASE}/api/auth/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ firebaseUid: cred.user.uid, name: `${firstName} ${lastName}`, email, campusId: campus })
-        });
-      } catch (backendErr) {
-        console.warn('Backend not yet connected:', backendErr.message);
-      }
-
+      await saveToBackend(cred.user, campus);
       btn.textContent = '✓ Account Created!';
-      alert(`Account created! We sent a verification email to ${email}. Please verify before logging in.`);
+      alert(`Account created! A verification email was sent to ${email}. Please verify before logging in.`);
       window.location.href = 'login.html';
-    } catch (err) {
-      btn.textContent = 'Create My Account';
-      btn.disabled    = false;
+    } catch(err) {
+      btn.disabled = false; btn.textContent = 'Create My Account';
       const msgs = {
         'auth/email-already-in-use': 'An account with this email already exists.',
-        'auth/invalid-email':        'Please enter a valid email.',
-        'auth/weak-password':        'Password is too weak.',
+        'auth/invalid-email': 'Please enter a valid email address.',
+        'auth/weak-password': 'Password is too weak — use at least 8 characters.',
       };
-      document.getElementById('emailError').textContent = msgs[err.code] || err.message;
-      document.getElementById('emailError').classList.add('visible');
+      showError(msgs[err.code] || err.message);
     }
-  });
+  };
+
+  // Password strength meter
+  window.updateStrength = function(pwd) {
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (pwd.length >= 12) score++;
+    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+    if (/\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
+    const labels  = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+    const classes = ['', 'weak', 'medium', 'strong', 'strong'];
+    ['bar1','bar2','bar3','bar4'].forEach((id, i) => {
+      const bar = document.getElementById(id);
+      bar.className = 'strength-bar';
+      if (i < score) bar.classList.add(classes[score]);
+    });
+    const text = document.getElementById('strengthText');
+    text.textContent = pwd.length === 0 ? 'Minimum 8 characters' : labels[score];
+  };
+
+  window.togglePwd = function() {
+    const pwd = document.getElementById('password');
+    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+  };
 </script>
 
 </body>
