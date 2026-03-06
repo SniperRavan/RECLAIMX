@@ -156,73 +156,54 @@
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
-    getAuth, GoogleAuthProvider, GithubAuthProvider,
-    signInWithPopup, createUserWithEmailAndPassword, sendEmailVerification
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    auth, API_BASE,
+    GoogleAuthProvider, GithubAuthProvider, signInWithPopup,
+    createUserWithEmailAndPassword, sendEmailVerification
+  } from "../assets/js/firebase-config.js";
 
-  // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────
-  const firebaseConfig = {
-    apiKey:            "PASTE_YOUR_apiKey",
-    authDomain:        "PASTE_YOUR_authDomain",
-    projectId:         "PASTE_YOUR_projectId",
-    storageBucket:     "PASTE_YOUR_storageBucket",
-    messagingSenderId: "PASTE_YOUR_messagingSenderId",
-    appId:             "PASTE_YOUR_appId"
-  };
-  // ─────────────────────────────────────────────────────────
+  const BLOCKED = ['mailinator.com','guerrillamail.com','tempmail.com','10minutemail.com','yopmail.com'];
 
-  const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:5000'
-    : 'https://YOUR-RAILWAY-URL.up.railway.app';
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = msg;
+    box.classList.add('visible');
+  }
 
-  const BLOCKED_DOMAINS = ['mailinator.com','guerrillamail.com','tempmail.com','10minutemail.com','yopmail.com'];
-
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  async function saveToBackend(user, campusId) {
+  async function saveSession(user, campusId) {
     const token = await user.getIdToken();
+    await fetch(`${API_BASE}/api/auth/session`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ idToken: token, campusId })
+    });
     sessionStorage.setItem('rx_token', token);
     sessionStorage.setItem('rx_user', JSON.stringify({
       uid: user.uid, email: user.email,
       name: user.displayName, photo: user.photoURL
     }));
-    try {
-      await fetch(`${API_BASE}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ firebaseUid: user.uid, name: user.displayName || user.email.split('@')[0], email: user.email, campusId: campusId || 'campus_a' })
-      });
-    } catch(e) {}
   }
 
-  function showError(msg) {
-    const box = document.getElementById('errorBox');
-    box.textContent = msg; box.classList.add('visible');
-  }
-
-  // Social sign-up (Google or GitHub)
+  // Google or GitHub
   window.signUpWith = async function(provider) {
     document.getElementById('errorBox').classList.remove('visible');
-    const p = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
+    const p   = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
     const btn = document.getElementById(provider + 'Btn');
     btn.disabled = true;
     try {
       const result = await signInWithPopup(auth, p);
-      await saveToBackend(result.user, 'campus_a');
+      await saveSession(result.user, 'campus_a');
       window.location.href = 'dashboard.html';
     } catch(err) {
       btn.disabled = false;
       if (err.code === 'auth/popup-closed-by-user') return;
-      if (err.code === 'auth/account-exists-with-different-credential') return showError('Account exists with different sign-in method. Try another.');
+      if (err.code === 'auth/account-exists-with-different-credential') return showError('Account exists with a different sign-in method.');
       if (err.code === 'auth/popup-blocked') return showError('Popup blocked — allow popups for this site.');
       showError('Sign-up failed. Please try again.');
     }
   };
 
-  // Email/password registration
+  // Email + password
   window.registerWithEmail = async function() {
     document.getElementById('errorBox').classList.remove('visible');
     const firstName = document.getElementById('firstName').value.trim();
@@ -233,55 +214,54 @@
     const confirm   = document.getElementById('confirmPassword').value;
 
     if (!firstName || !lastName) return showError('Please enter your first and last name.');
-    if (!email) return showError('Please enter your email.');
-    if (BLOCKED_DOMAINS.includes(email.split('@')[1])) return showError('Disposable emails are not allowed.');
+    if (!email)  return showError('Please enter your email.');
+    if (BLOCKED.includes(email.split('@')[1])) return showError('Disposable emails are not allowed.');
     if (!campus) return showError('Please select your campus.');
     if (password.length < 8) return showError('Password must be at least 8 characters.');
     if (password !== confirm) return showError('Passwords do not match.');
 
     const btn = document.getElementById('emailBtn');
-    btn.disabled = true;
+    btn.disabled  = true;
     btn.innerHTML = '<span class="loading-spinner"></span> Creating account…';
 
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await sendEmailVerification(cred.user);
-      await saveToBackend(cred.user, campus);
-      btn.textContent = '✓ Account Created!';
-      alert(`Account created! A verification email was sent to ${email}. Please verify before logging in.`);
+      await saveSession(cred.user, campus);
+      btn.textContent = '✓ Done!';
+      alert(`Account created! Verify your email at ${email} before logging in.`);
       window.location.href = 'login.html';
     } catch(err) {
       btn.disabled = false; btn.textContent = 'Create My Account';
       const msgs = {
         'auth/email-already-in-use': 'An account with this email already exists.',
-        'auth/invalid-email': 'Please enter a valid email address.',
-        'auth/weak-password': 'Password is too weak — use at least 8 characters.',
+        'auth/invalid-email':        'Please enter a valid email address.',
+        'auth/weak-password':        'Password is too weak.',
       };
       showError(msgs[err.code] || err.message);
     }
   };
 
-  // Password strength meter
   window.updateStrength = function(pwd) {
     let score = 0;
     if (pwd.length >= 8) score++;
     if (pwd.length >= 12) score++;
     if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
     if (/\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
-    const labels  = ['', 'Weak', 'Fair', 'Good', 'Strong'];
-    const classes = ['', 'weak', 'medium', 'strong', 'strong'];
+    const labels  = ['','Weak','Fair','Good','Strong'];
+    const classes = ['','weak','medium','strong','strong'];
     ['bar1','bar2','bar3','bar4'].forEach((id, i) => {
       const bar = document.getElementById(id);
       bar.className = 'strength-bar';
       if (i < score) bar.classList.add(classes[score]);
     });
-    const text = document.getElementById('strengthText');
-    text.textContent = pwd.length === 0 ? 'Minimum 8 characters' : labels[score];
+    document.getElementById('strengthText').textContent =
+      pwd.length === 0 ? 'Minimum 8 characters' : labels[score];
   };
 
   window.togglePwd = function() {
-    const pwd = document.getElementById('password');
-    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    const p = document.getElementById('password');
+    p.type  = p.type === 'password' ? 'text' : 'password';
   };
 </script>
 

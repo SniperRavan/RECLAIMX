@@ -28,6 +28,7 @@ app.use(rateLimit({
 app.use('/api/auth',    require('./routes/authRoutes'));
 app.use('/api/items',   require('./routes/itemRoutes'));
 app.use('/api/matches', require('./routes/matchRoutes'));
+app.use('/api/config',  require('./routes/configRoutes')); // For sending Firebase config to frontend
 
 // Health check
 app.get('/api/health', (req, res) => {
