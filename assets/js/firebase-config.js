@@ -12,6 +12,7 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
+  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
@@ -37,6 +38,7 @@ const auth = getAuth(app);
 
 export {
   auth,
+  GoogleAuthProvider, 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
