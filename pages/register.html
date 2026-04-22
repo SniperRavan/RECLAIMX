@@ -53,7 +53,7 @@
   <div class="auth-right" style="overflow-y:auto;padding-top:32px;padding-bottom:32px">
     <div class="auth-logo">Reclaim<span>X</span></div>
     <button id="menuBtn" style="display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;margin-right:12px;padding:4px;" onclick="document.getElementById('appSidebar').classList.add('open')">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <!-- <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> -->
 </button>
     <h1 class="auth-title">Create account</h1>
     <p class="auth-subtitle">Join your campus lost &amp; found network</p>
@@ -298,6 +298,22 @@
     const p = document.getElementById('password');
     p.type  = p.type === 'password' ? 'text' : 'password';
   };
+
+  // --- Trigger registration on "Enter" key press ---
+  const handleEnterPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); 
+      window.registerWithEmail(); // <-- Fixed function name!
+    }
+  };
+
+  // Attach the listener to all form inputs so Enter works anywhere
+  document.getElementById('firstName').addEventListener('keydown', handleEnterPress);
+  document.getElementById('lastName').addEventListener('keydown', handleEnterPress);
+  document.getElementById('email').addEventListener('keydown', handleEnterPress);
+  document.getElementById('campus').addEventListener('keydown', handleEnterPress);
+  document.getElementById('password').addEventListener('keydown', handleEnterPress);
+  document.getElementById('confirmPassword').addEventListener('keydown', handleEnterPress); // <-- Crucial!
 </script>
 
 </body>
