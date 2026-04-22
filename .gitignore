@@ -82,3 +82,13 @@ tmp/
 # 🔹 Docker (if used later)
 ############################
 docker-compose.override.yml
+
+# Additional environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+*.tmp
+*.temp
