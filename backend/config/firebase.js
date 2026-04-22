@@ -1,31 +1,23 @@
-// backend/config/firebase.js
-// ──────────────────────────────────────────────────────────────
-// Firebase Admin SDK setup
-//
-// SETUP STEPS:
-//   1. Firebase Console → Project Settings → Service Accounts
-//   2. Click "Generate New Private Key" → download JSON
-//   3. Rename it to serviceAccountKey.json
-//   4. Put it in: backend/config/serviceAccountKey.json
-//   5. Add backend/config/serviceAccountKey.json to .gitignore ← IMPORTANT
-// ──────────────────────────────────────────────────────────────
-
 const admin = require('firebase-admin');
 
-let serviceAccount;
+// Check if we have the private key in Environment Variables first (better for production)
+const serviceAccount = process.env.FIREBASE_PRIVATE_KEY 
+  ? {
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    }
+  : require('./serviceAccountKey.json'); // Fallback to local file
 
-try {
-  serviceAccount = require('./serviceAccountKey.json');
-} catch (e) {
-  console.warn('[Firebase] serviceAccountKey.json not found. Auth middleware will not work until you add it.');
-  console.warn('[Firebase] See backend/config/firebase.js for instructions.');
-}
-
-if (!admin.apps.length && serviceAccount) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
-  console.log('[Firebase] Admin SDK initialized ✅');
+if (!admin.apps.length) {
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    console.log('[Firebase] Admin SDK initialized ✅');
+  } catch (error) {
+    console.error('[Firebase] Initialization failed:', error.message);
+  }
 }
 
 module.exports = admin;
