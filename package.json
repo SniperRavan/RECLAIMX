@@ -1,21 +1,22 @@
 {
   "name": "reclaimx-backend",
   "version": "1.0.0",
-  "description": "ReclaimX AI-powered campus lost & found — backend API",
+  "description": "ReclaimX smart campus lost & found — backend API",
   "main": "backend/server.js",
   "scripts": {
-    "start":   "node backend/server.js",
-    "dev":     "nodemon backend/server.js",
-    "serve":   "npx serve . -l 3000",
-    "dev:all": "start cmd /k npm run dev && npm run serve",
-    "test":    "echo \"No tests yet\" && exit 0"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "serve": "npx serve . -l 3000",
+    "dev:all": "concurrently \"npm run dev\" \"npm run serve\"",
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.2",
-    "cloudinary": "^1.41.3",
+    "cloudinary": "^2.6.0",
+    "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
@@ -23,9 +24,12 @@
     "firebase-admin": "^12.0.0",
     "helmet": "^7.1.0",
     "multer": "^1.4.5-lts.1",
-    "multer-storage-cloudinary": "^4.0.0"
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
-  }
+  },
+  "//": "--- DEVELOPER NOTES ---",
+  "note_dev_all": "Using concurrently for cross-platform support (Windows/Linux).",
+  "note_cloudinary": "Upgraded to v2.6.0. Removed multer-storage-cloudinary for memoryStorage streaming."
 }
