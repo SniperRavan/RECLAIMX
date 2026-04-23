@@ -2,10 +2,12 @@
 const express   = require('express');
 const router    = express.Router();
 const protect   = require('../middleware/authMiddleware');
-const { upload } = require('../config/cloudinary');
+
+// Updated imports to match our new advanced systems
+const { upload, uploadToCloudinary } = require('../config/cloudinary');
 const supabase  = require('../config/supabase');
-const { runMatching } = require('../ai/matchingEngine');
-const { hasSensitiveData } = require('../utils/sensitiveDataFilter');
+const { runMatchingForItem } = require('../ai/matchingEngine');
+const { sensitiveDataMiddleware } = require('../utils/sensitiveDataFilter');
 
 // GET /api/items/me — get current user's items
 router.get('/me', protect, async (req, res, next) => {
@@ -20,7 +22,7 @@ router.get('/me', protect, async (req, res, next) => {
 
     res.json({ lost: lostRes.data || [], found: foundRes.data || [] });
   } catch (err) {
-    next(err);
+    next(err); // Passes to errorHandler.js
   }
 });
 
@@ -44,20 +46,24 @@ router.get('/', async (req, res, next) => {
 });
 
 // POST /api/items/lost
-router.post('/lost', protect, upload.array('images', 2), async (req, res, next) => {
+// Notice sensitiveDataMiddleware is plugged right into the route!
+router.post('/lost', protect, sensitiveDataMiddleware, upload.array('images', 2), async (req, res, next) => {
   try {
     const { itemName, description, category, lastSeenLocation, campusId, hiddenAttributes } = req.body;
-
-    if (hasSensitiveData(description)) {
-      return res.status(400).json({ error: 'Sensitive data detected. Please remove it.' });
-    }
 
     const { data: user } = await supabase.from('users').select('*').eq('firebase_uid', req.user.uid).single();
     if (!user)            return res.status(404).json({ error: 'User not found.' });
     if (user.is_suspended) return res.status(403).json({ error: 'Account suspended.' });
 
     const hidden = JSON.parse(hiddenAttributes || '{}');
-    const imageUrls = (req.files || []).map(f => f.path);
+    
+    // NEW: Handle Cloudinary Stream Upload for multiple files
+    let imageUrls = [];
+    if (req.files && req.files.length > 0) {
+      const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer, 'reclaimx/lost'));
+      const uploadResults = await Promise.all(uploadPromises);
+      imageUrls = uploadResults.map(result => result.url);
+    }
 
     const { data: lostItem, error } = await supabase
       .from('lost_items')
@@ -77,7 +83,10 @@ router.post('/lost', protect, upload.array('images', 2), async (req, res, next) 
       .single();
 
     if (error) throw error;
-    runMatching(lostItem, null).catch(e => console.error('[Matching Error]', e));
+
+    // NEW: Call the updated matching engine
+    runMatchingForItem(lostItem, 'lost');
+
     res.status(201).json({ success: true, item: lostItem });
   } catch (err) {
     next(err);
@@ -85,17 +94,20 @@ router.post('/lost', protect, upload.array('images', 2), async (req, res, next) 
 });
 
 // POST /api/items/found
-router.post('/found', protect, upload.single('image'), async (req, res, next) => {
+router.post('/found', protect, sensitiveDataMiddleware, upload.single('image'), async (req, res, next) => {
   try {
     const { itemName, description, category, foundLocation, campusId } = req.body;
-
-    if (hasSensitiveData(description)) {
-      return res.status(400).json({ error: 'Sensitive data detected. Please remove it.' });
-    }
 
     const { data: user } = await supabase.from('users').select('*').eq('firebase_uid', req.user.uid).single();
     if (!user)            return res.status(404).json({ error: 'User not found.' });
     if (user.is_suspended) return res.status(403).json({ error: 'Account suspended.' });
+
+    // NEW: Handle Cloudinary Stream Upload for single file
+    let imageUrl = '';
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, 'reclaimx/found');
+      imageUrl = result.url;
+    }
 
     const { data: foundItem, error } = await supabase
       .from('found_items')
@@ -106,13 +118,16 @@ router.post('/found', protect, upload.single('image'), async (req, res, next) =>
         description,
         category,
         found_location: foundLocation,
-        image_url:      req.file ? req.file.path : '',
+        image_url:      imageUrl,
       })
       .select()
       .single();
 
     if (error) throw error;
-    runMatching(null, foundItem).catch(e => console.error('[Matching Error]', e));
+
+    // NEW: Call the updated matching engine
+    runMatchingForItem(foundItem, 'found');
+
     res.status(201).json({ success: true, item: foundItem });
   } catch (err) {
     next(err);
