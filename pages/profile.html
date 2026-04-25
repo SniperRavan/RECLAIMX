@@ -18,7 +18,7 @@
     .activity-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; }
     .activity-item { display:flex; gap:14px; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); }
     .activity-item:last-child { border-bottom:none; }
-    .activity-icon { width:38px; height:38px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; background:var(--bg-elevated); border:1px solid var(--border); }
+    .activity-icon { width:38px; height:38px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-secondary); }
     .activity-info { flex:1; }
     .activity-name { font-size:0.875rem; font-weight:600; }
     .activity-meta { font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px; }
@@ -32,26 +32,26 @@
   <main class="main-content">
     <header class="main-header">
       <button id="menuBtn" style="display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;margin-right:12px;padding:4px;" onclick="document.getElementById('appSidebar').classList.add('open')">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-</button>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div><h1>My Profile</h1><p>Your account overview and activity history.</p></div>
       <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
     </header>
 
     <div class="page-content">
 
-      <!-- Profile Header -->
       <div class="profile-header">
         <div class="profile-avatar-lg" id="profileAvatar" style="cursor:pointer;position:relative" title="Click to change photo">
-          <div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;font-size:1.2rem">📷</div>
+          <div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
         </div>
-        <!-- file input lives outside profileAvatar so .textContent = initials never destroys it -->
         <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" style="display:none"/>
         <div style="flex:1">
           <div class="profile-name" id="profileName">Loading…</div>
           <div class="profile-email" id="profileEmail">—</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <span class="badge badge-accent" id="profileLevel">🥉 Bronze</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span class="badge" style="background:var(--bg-elevated);border-color:var(--border);" id="profileLevel">Loading rank...</span>
             <span class="badge badge-violet" id="profileCampus">Campus A</span>
           </div>
           <div class="trust-bar-wrap" style="margin-top:12px">
@@ -65,7 +65,6 @@
         </div>
       </div>
 
-      <!-- Stats -->
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Items Returned</div>
@@ -84,7 +83,6 @@
         </div>
       </div>
 
-      <!-- Account Actions -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
         <div class="activity-card">
           <div class="section-title" style="margin-bottom:16px">Account Settings</div>
@@ -94,21 +92,31 @@
           </div>
           <button class="btn btn-primary" style="width:100%" id="saveBtn">Save Changes</button>
         </div>
+        
         <div class="activity-card">
           <div class="section-title" style="margin-bottom:16px">How Trust Score Works</div>
           <div style="display:flex;flex-direction:column;gap:10px;font-size:0.82rem;color:var(--text-secondary)">
             <div style="display:flex;gap:10px"><span style="color:var(--accent)">+10</span> Successful item return</div>
             <div style="display:flex;gap:10px"><span style="color:var(--accent)">+5</span> Report verified by AI</div>
             <div style="display:flex;gap:10px"><span style="color:var(--danger)">-5</span> Failed claim attempt</div>
-            <div class="divider" style="margin:8px 0"></div>
-            <div>🥉 Bronze: 0–49 pts</div>
-            <div>🥈 Silver: 50–99 pts</div>
-            <div>🥇 Gold: 100+ pts</div>
+            <div class="divider" style="margin:8px 0;height:1px;background:var(--border);"></div>
+            
+            <div style="display:flex;align-items:center;gap:10px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(217,119,6,0.1)" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              <span>Bronze: 0–49 pts</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              <span>Silver: 50–99 pts</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(251,191,36,0.1)" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              <span>Gold: 100+ pts</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Activity -->
       <div class="activity-card">
         <div class="section-header">
           <div class="section-title">Recent Activity</div>
@@ -129,28 +137,50 @@
   fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
   fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
 
-  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
-  if (!user) { window.location.href = 'login.html'; throw new Error('redirect'); }
+  const CATEGORY_ICONS = {
+    Accessories: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/></svg>',
+    Bags: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+    Documents: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="14" x="3" y="5" rx="2" ry="2"/><path d="M7 15h4"/><path d="M7 11h.01"/><path d="M11 11h6"/><path d="M15 15h2"/></svg>',
+    Electronics: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>',
+    Clothing: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a8.16 8.16 0 0 0-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>',
+    Keys: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg>',
+    Books: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>',
+    Other: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+  };
+
+  function getTrustBadge(score) {
+    if (score >= 100) return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(251,191,36,0.1)" stroke="#FBBF24" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Gold Hero`;
+    if (score >= 50)  return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Silver Helper`;
+    return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(217,119,6,0.1)" stroke="#D97706" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Bronze Helper`;
+  }
+
+  (async function initProfile() {
+    const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+    if (!user) { window.location.href = 'login.html'; return; }
 
     const name   = user.name || user.email || 'User';
     const score  = user.trust_score || 0;
-    const level  = score >= 100 ? '🥇 Gold Hero' : score >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
     const pct    = Math.min((score / 100) * 100, 100);
     const nextAt = score < 50 ? 50 : score < 100 ? 100 : null;
 
-    // Set initials without overwriting child nodes (overlay must stay in DOM)
     const initialsText = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
     const avatarEl2 = document.getElementById('profileAvatar');
-    let initialsSpan = avatarEl2.querySelector('.avatar-initials');
-    if (!initialsSpan) {
-      initialsSpan = document.createElement('span');
-      initialsSpan.className = 'avatar-initials';
-      avatarEl2.insertBefore(initialsSpan, avatarEl2.firstChild);
+    
+    if (user.photo) {
+      avatarEl2.innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;z-index:0;" referrerpolicy="no-referrer"/><div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+    } else {
+      let initialsSpan = avatarEl2.querySelector('.avatar-initials');
+      if (!initialsSpan) {
+        initialsSpan = document.createElement('span');
+        initialsSpan.className = 'avatar-initials';
+        avatarEl2.insertBefore(initialsSpan, avatarEl2.firstChild);
+      }
+      initialsSpan.textContent = initialsText;
     }
-    initialsSpan.textContent = initialsText;
+
     document.getElementById('profileName').textContent   = name;
     document.getElementById('profileEmail').textContent  = user.email || '—';
-    document.getElementById('profileLevel').textContent  = level;
+    document.getElementById('profileLevel').innerHTML    = getTrustBadge(score);
     document.getElementById('trustScore').textContent    = score;
     document.getElementById('editName').value            = name;
 
@@ -160,149 +190,176 @@
       document.getElementById('trustNextMsg').textContent = `${nextAt - score} pts to next level`;
     }
 
-  // Save name
-document.getElementById('saveBtn').addEventListener('click', async () => {
-  const newName = document.getElementById('editName').value.trim();
-  if (!newName) { window.ReclaimX?.toast('Name cannot be empty.', 'error'); return; }
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const newName = document.getElementById('editName').value.trim();
+      if (!newName) { window.ReclaimX?.toast('Name cannot be empty.', 'error'); return; }
 
-  const btn = document.getElementById('saveBtn');
-  btn.textContent = 'Saving…';
-  btn.disabled = true;
+      const btn = document.getElementById('saveBtn');
+      btn.textContent = 'Saving…';
+      btn.disabled = true;
 
-  try {
-    const token = sessionStorage.getItem('rx_token');
-    const res = await fetch(`${window.API_BASE}/api/auth/profile`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ name: newName })
+      try {
+        const token = await window.getToken();
+        const res = await fetch(`${window.API_BASE}/api/auth/profile`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ name: newName })
+        });
+        
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch');
+
+        const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
+        u.name = newName;
+        sessionStorage.setItem('rx_user', JSON.stringify(u));
+
+        document.getElementById('profileName').textContent   = newName;
+        
+        // ── NEW: Update Sidebar immediately ──
+        const sidebarName = document.getElementById('sidebarName');
+        if (sidebarName) sidebarName.textContent = newName;
+
+        if(!u.photo) {
+          const initials = newName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+          const span = document.getElementById('profileAvatar').querySelector('.avatar-initials');
+          if(span) span.textContent = initials;
+          
+          // ── NEW: Update Sidebar Avatar ──
+          const sidebarAvatar = document.getElementById('sidebarAvatar');
+          if (sidebarAvatar && sidebarAvatar.querySelector('img') === null) {
+            sidebarAvatar.textContent = initials;
+          }
+        }
+
+        window.ReclaimX?.toast('Profile updated! ✓', 'success');
+      } catch(err) {
+        const errMsg = err.message === 'Failed to fetch' 
+          ? 'Server offline. Run npm run dev:all' 
+          : err.message || 'Failed to save. Try again.';
+        window.ReclaimX?.toast(errMsg, 'error');
+      } finally {
+        btn.textContent = 'Save Changes';
+        btn.disabled    = false;
+      }
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
 
-    // Update sessionStorage
-    const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
-    u.name = newName;
-    sessionStorage.setItem('rx_user', JSON.stringify(u));
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    });
 
-    // Update UI immediately
-    document.getElementById('profileName').textContent   = newName;
-    document.getElementById('profileAvatar').textContent = newName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    try {
+      const tkn = await window.getToken();
+      if (tkn) {
+        fetch(`${window.API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${tkn}` } })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if(!data) return;
+            document.getElementById('statReturned').textContent = data.trust_score ? Math.floor(data.trust_score/10) : 0;
+            document.getElementById('statFailed').textContent   = data.failed_claims || 0;
+            document.getElementById('profileLevel').innerHTML   = getTrustBadge(data.trust_score || 0);
+          }).catch(e => console.error(e));
 
-    window.ReclaimX?.toast('Profile updated! ✓', 'success');
-  } catch(err) {
-    window.ReclaimX?.toast('Failed to save. Try again.', 'error');
-  } finally {
-    btn.textContent = 'Save Changes';
-    btn.disabled    = false;
-  }
-});
+        fetch(`${window.API_BASE}/api/items/me`, { headers: { 'Authorization': `Bearer ${tkn}` } })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if(!data) return;
+            const myItems = [...(data.lost||[]), ...(data.found||[])].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+            document.getElementById('statActive').textContent = myItems.length;
+            
+            if (!myItems.length) {
+              document.getElementById('activityList').innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;padding:20px;text-align:center;">No recent activity found.</div>';
+              return;
+            }
+            
+            document.getElementById('activityList').innerHTML = myItems.map(item => {
+              const isLost = item.status === 'Lost' || item.status === 'Pending';
+              const icon = item.status === 'Resolved' 
+                ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' 
+                : (CATEGORY_ICONS[item.category] || CATEGORY_ICONS['Other']);
+              
+              const timeAgo = window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
+              return `<div class="activity-item">
+                <div class="activity-icon">${icon}</div>
+                <div class="activity-info">
+                  <div class="activity-name">${item.item_name} — ${isLost ? 'Lost Report' : 'Found Report'}</div>
+                  <div class="activity-meta">Reported ${timeAgo} · ${item.status}</div>
+                </div>
+                <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status}</span>
+              </div>`;
+            }).join('');
+          }).catch(e => console.error(e));
+      }
+    } catch(e) {
+      console.error("Could not fetch live user stats", e);
+    }
+  })();
 
-  // Logout
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.clear();
-    window.location.href = 'login.html';
+  document.getElementById('editName').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('saveBtn').click();
   });
 
-  // Fetch live stats and activity
-  const tkn = sessionStorage.getItem('rx_token');
-  if (tkn) {
-    fetch(`${window.API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${tkn}` } })
-      .then(r => r.json())
-      .then(data => {
-        document.getElementById('statReturned').textContent = data.trust_score ? Math.floor(data.trust_score/10) : 0;
-        document.getElementById('statFailed').textContent   = data.failed_claims || 0;
-      }).catch(e => console.error(e));
+  const avatarEl    = document.getElementById('profileAvatar');
+  const avatarInput = document.getElementById('avatarInput');
 
-    fetch(`${window.API_BASE}/api/items/me`, { headers: { 'Authorization': `Bearer ${tkn}` } })
-      .then(r => r.json())
-      .then(data => {
-        const myItems = [...(data.lost||[]), ...(data.found||[])].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-        document.getElementById('statActive').textContent = myItems.length;
-        
-        const EMOJIS = { Accessories:'👜', Bags:'🎒', Documents:'🪪', Electronics:'📱', Clothing:'👕', Keys:'🔑', Books:'📚', Other:'📦' };
-        if (!myItems.length) {
-          document.getElementById('activityList').innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;padding:20px;text-align:center;">No recent activity found.</div>';
-          return;
-        }
-        
-        document.getElementById('activityList').innerHTML = myItems.map(item => {
-          const isLost = item.status === 'Lost' || item.status === 'Pending';
-          const emoji = item.status === 'Resolved' ? '✅' : (EMOJIS[item.category] || '📦');
-          const timeAgo = window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
-          return `<div class="activity-item">
-            <div class="activity-icon">${emoji}</div>
-            <div class="activity-info">
-              <div class="activity-name">${item.item_name} — ${isLost ? 'Lost Report' : 'Found Report'}</div>
-              <div class="activity-meta">Reported ${timeAgo} · ${item.status}</div>
-            </div>
-            <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status}</span>
-          </div>`;
-        }).join('');
-      }).catch(e => console.error(e));
-  }
+  avatarEl.addEventListener('mouseenter', () => {
+    const over = document.getElementById('avatarOverlay');
+    if(over) over.style.display = 'flex';
+  });
+  avatarEl.addEventListener('mouseleave', () => {
+    const over = document.getElementById('avatarOverlay');
+    if(over) over.style.display = 'none';
+  });
+  avatarEl.addEventListener('click', () => avatarInput.click());
 
-// Allow pressing Enter to save name
-  document.getElementById('editName').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') document.getElementById('saveBtn').click();
-});
+  avatarInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { window.ReclaimX?.toast('Image too large. Max 5MB.', 'error'); return; }
 
-// ── Profile photo upload ────────────────────────────────────
-const avatarEl    = document.getElementById('profileAvatar');
-const avatarInput = document.getElementById('avatarInput');
-const overlay     = document.getElementById('avatarOverlay');
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      let existingImg = avatarEl.querySelector('img');
+      if (existingImg) {
+        existingImg.src = ev.target.result;
+      } else {
+        avatarEl.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;z-index:0;"/><div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+      }
+    };
+    reader.readAsDataURL(file);
 
-avatarEl.addEventListener('mouseenter', () => overlay.style.display = 'flex');
-avatarEl.addEventListener('mouseleave', () => overlay.style.display = 'none');
-avatarEl.addEventListener('click', () => avatarInput.click());
+    window.ReclaimX?.toast('Uploading photo…', 'info');
+    const formData = new FormData();
+    formData.append('image', file);
 
-avatarInput.addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { window.ReclaimX?.toast('Image too large. Max 5MB.', 'error'); return; }
+    try {
+      const token = await window.getToken();
+      const res   = await fetch(`${window.API_BASE}/api/auth/avatar`, {
+        method:  'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body:    formData
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch');
 
-  // Preview immediately via FileReader
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    const existingImg = avatarEl.querySelector('img');
-    if (existingImg) {
-      existingImg.src = ev.target.result;
-    } else {
-      const img = document.createElement('img');
-      img.src = ev.target.result;
-      img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;z-index:0;';
-      avatarEl.appendChild(img);
-      const textNode = Array.from(avatarEl.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
-      if(textNode) textNode.remove();
+      const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
+      u.photo = data.photoUrl;
+      sessionStorage.setItem('rx_user', JSON.stringify(u));
+
+      // ── NEW: Update Sidebar immediately ──
+      const sidebarAvatar = document.getElementById('sidebarAvatar');
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = `<img src="${data.photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" referrerpolicy="no-referrer"/>`;
+      }
+
+      window.ReclaimX?.toast('Photo updated! ✓', 'success');
+    } catch(err) {
+      const errMsg = err.message === 'Failed to fetch' 
+          ? 'Server offline. Run npm run dev:all' 
+          : err.message || 'Photo upload failed. Try again.';
+      window.ReclaimX?.toast(errMsg, 'error');
     }
-    overlay.style.zIndex = '1';
-  };
-  reader.readAsDataURL(file);
-
-  // Upload to Cloudinary via backend (single request)
-  window.ReclaimX?.toast('Uploading photo…', 'info');
-  const formData = new FormData();
-  formData.append('image', file);
-
-  try {
-    const token = sessionStorage.getItem('rx_token');
-    const res   = await fetch(`${window.API_BASE}/api/auth/avatar`, {
-      method:  'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body:    formData
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-
-    // Save photo URL to sessionStorage
-    const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
-    u.photo = data.photoUrl;
-    sessionStorage.setItem('rx_user', JSON.stringify(u));
-
-    window.ReclaimX?.toast('Photo updated! ✓', 'success');
-  } catch(err) {
-    window.ReclaimX?.toast('Photo upload failed. Try again.', 'error');
-  }
-});
+  });
 </script>
 </body>
 </html>
