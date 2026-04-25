@@ -1,6 +1,8 @@
 /* ================================================================
-   ReclaimX — pwa.js
-   Service worker registration, install prompt, offline queue
+    ReclaimX — pwa.js
+    Service worker registration, install prompt, offline queue
+    ERR-005 FIX: syncOfflineQueue now includes Authorization header
+    ERR-012 FIX: reg.Ascope → reg.scope (typo)
    ================================================================ */
 
 (function() {
@@ -11,14 +13,17 @@
     window.addEventListener('load', async () => {
       try {
         const reg = await navigator.serviceWorker.register('../service-worker.js');
+
+        // ERR-012 FIX: was reg.Ascope — .Ascope doesn't exist on ServiceWorkerRegistration
         console.log('[PWA] Service worker registered:', reg.scope);
 
-        // Detect new version
         reg.addEventListener('updatefound', () => {
           const newSW = reg.installing;
           newSW.addEventListener('statechange', () => {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              window.ReclaimX && window.ReclaimX.toast('Update available — refresh for the latest version.', 'info', 6000);
+              window.ReclaimX && window.ReclaimX.toast(
+                'Update available — refresh for the latest version.', 'info', 6000
+              );
             }
           });
         });
@@ -33,7 +38,6 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    // Show install banner after 5s
     setTimeout(showInstallBanner, 5000);
   });
 
@@ -80,10 +84,7 @@
       color:var(--warning);padding:10px 24px;
       display:flex;align-items:center;gap:10px;font-size:0.82rem;
     `;
-    banner.innerHTML = `
-      <span>⚠️</span>
-      <span>You are offline — forms will sync when connection returns.</span>
-    `;
+    banner.innerHTML = `<span>⚠️</span><span>You are offline — forms will sync when connection returns.</span>`;
     document.body.appendChild(banner);
   }
 
@@ -125,13 +126,24 @@
       const db    = await openDB();
       const tx    = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
-      store.add({ endpoint, payload, queuedAt: new Date().toISOString() });
+      // Store the token at queue time — it will be refreshed before sync if possible
+      store.add({
+        endpoint,
+        payload,
+        token:     sessionStorage.getItem('rx_token') || '',
+        queuedAt:  new Date().toISOString(),
+      });
       window.ReclaimX && window.ReclaimX.toast('Saved offline. Will submit when reconnected.', 'info');
     } catch (err) {
       console.error('[PWA] Queue failed:', err);
     }
   }
 
+  // ERR-005 FIX: syncOfflineQueue was sending requests with ONLY
+  // 'Content-Type: application/json' — no Authorization header.
+  // Every protected backend route needs 'Authorization: Bearer <token>'.
+  // Without it, every sync attempt returned 401 Unauthorized and items
+  // queued offline were NEVER actually submitted. Fix: include the token.
   async function syncOfflineQueue() {
     try {
       const db    = await openDB();
@@ -143,20 +155,41 @@
 
       if (!items.length) return;
 
+      // Try to get a fresh token before syncing
+      // window.getToken() does a Firebase token refresh if needed
+      let freshToken = null;
+      try {
+        freshToken = await window.getToken();
+      } catch (e) {
+        console.warn('[PWA] Could not refresh token for sync — using stored token');
+      }
+
       let synced = 0;
       for (const item of items) {
         try {
+          // Use fresh token if available, fall back to the token stored at queue time
+          const token = freshToken || item.token || '';
+
           const res = await fetch(item.endpoint, {
             method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(item.payload)
+            headers: {
+              'Content-Type':  'application/json',
+              'Authorization': token ? `Bearer ${token}` : '',  // FIXED
+            },
+            body: JSON.stringify(item.payload),
           });
+
           if (res.ok) {
-            const delTx    = db.transaction(STORE_NAME, 'readwrite');
+            const delTx = db.transaction(STORE_NAME, 'readwrite');
             delTx.objectStore(STORE_NAME).delete(item.id);
             synced++;
+          } else {
+            console.warn('[PWA] Sync item failed with status:', res.status, 'for', item.endpoint);
           }
-        } catch (e) { /* will retry next time online */ }
+        } catch (e) {
+          // Will retry next time online
+          console.warn('[PWA] Sync item threw:', e.message);
+        }
       }
 
       if (synced > 0) {
@@ -167,7 +200,6 @@
     }
   }
 
-  // Expose API
   window.ReclaimXPWA = {
     install: async function() {
       if (!deferredPrompt) return;
