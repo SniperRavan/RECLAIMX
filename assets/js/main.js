@@ -1,15 +1,15 @@
 /* ================================================================
-   ReclaimX — main.js
-   Global utilities: API base, toast, scroll effects, validation
-   
-   ERR-017 FIX: window.API_BASE is the single source of truth.
-   firebase-config.js now reads window.API_BASE instead of defining its own copy.
-   When you get your Railway URL, change it HERE and ONLY here.
-   
-   ERR-018 FIX: initSidebar() now calls await window.getToken() instead of
-   reading sessionStorage directly — ensures token is fresh (not expired).
-   
-   ERR-019 FIX: initSidebar() now fetches match count and shows the badge.
+    ReclaimX — main.js
+    Global utilities: API base, toast, scroll effects, validation
+    
+    ERR-017 FIX: window.API_BASE is the single source of truth.
+    firebase-config.js now reads window.API_BASE instead of defining its own copy.
+    When you get your Railway URL, change it HERE and ONLY here.
+    
+    ERR-018 FIX: initSidebar() now calls await window.getToken() instead of
+    reading sessionStorage directly — ensures token is fresh (not expired).
+    
+    ERR-019 FIX: initSidebar() now fetches match count and shows the badge.
    ================================================================ */
 
 // ── Single source of truth for API URL ────────────────────────
@@ -163,13 +163,19 @@ async function initSidebar() {
     link.classList.toggle('active', link.dataset.page === current);
   });
 
+  // Helper to generate SVG Trust Badges dynamically
+  function getTrustBadge(score) {
+    if (score >= 100) return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(251,191,36,0.1)" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Gold Hero`;
+    if (score >= 50)  return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Silver Helper`;
+    return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(217,119,6,0.1)" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Bronze Helper`;
+  }
+
   // User info from sessionStorage (instant display)
   const stored = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
   if (stored) {
     const name     = stored.name || stored.email || 'User';
     const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     const trust    = stored.trust_score || 0;
-    const level    = trust >= 100 ? '🥇 Gold Hero' : trust >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
 
     const avatarEl = document.getElementById('sidebarAvatar');
     if (stored.photo && avatarEl) {
@@ -181,17 +187,13 @@ async function initSidebar() {
     const nameEl = document.getElementById('sidebarName');
     const lvlEl  = document.getElementById('sidebarLevel');
     if (nameEl) nameEl.textContent = name;
-    if (lvlEl)  lvlEl.textContent  = level;
+    
+    // FIX: Using innerHTML so the SVG renders as an image, not raw text code
+    if (lvlEl)  lvlEl.innerHTML  = getTrustBadge(trust);
 
-    // ERR-018 FIX: Use getToken() to ensure a fresh token, not raw sessionStorage.
-    // Previously: const token = sessionStorage.getItem('rx_token')
-    // That token can be expired after 60 minutes. getToken() does a Firebase refresh.
     let token;
-    try {
-      token = await window.getToken();
-    } catch(e) {
-      token = sessionStorage.getItem('rx_token');
-    }
+    try { token = await window.getToken(); } 
+    catch(e) { token = sessionStorage.getItem('rx_token'); }
 
     if (token) {
       // Update user info from live backend data
@@ -203,12 +205,12 @@ async function initSidebar() {
           if (!data) return;
           if (data.name  && nameEl) nameEl.textContent = data.name;
           const liveScore = data.trust_score || 0;
-          if (lvlEl) lvlEl.textContent = liveScore >= 100 ? '🥇 Gold Hero' : liveScore >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
+          // FIX: Using innerHTML here too!
+          if (lvlEl) lvlEl.innerHTML = getTrustBadge(liveScore);
         })
-        .catch(() => {}); // silent fail — sidebar still shows sessionStorage data
+        .catch(() => {}); 
 
-      // ERR-019 FIX: Was display:none forever — nothing ever showed the badge.
-      // Now fetch matches count and show the badge if there are pending matches.
+      // Fetch matches count
       fetch(`${window.API_BASE}/api/matches`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
