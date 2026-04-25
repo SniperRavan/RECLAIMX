@@ -1,12 +1,24 @@
 /* ================================================================
    ReclaimX — main.js
-   Global utilities: toast, scroll effects, animations, validation
+   Global utilities: API base, toast, scroll effects, validation
+   
+   ERR-017 FIX: window.API_BASE is the single source of truth.
+   firebase-config.js now reads window.API_BASE instead of defining its own copy.
+   When you get your Railway URL, change it HERE and ONLY here.
+   
+   ERR-018 FIX: initSidebar() now calls await window.getToken() instead of
+   reading sessionStorage directly — ensures token is fresh (not expired).
+   
+   ERR-019 FIX: initSidebar() now fetches match count and shows the badge.
    ================================================================ */
 
-// ── API base URL (must be defined FIRST before getToken uses it) ───
+// ── Single source of truth for API URL ────────────────────────
+// ERR-017 FIX: This is the ONLY place where API_BASE is defined.
+// firebase-config.js imports it from window.API_BASE (not its own copy).
+// Change this one line when you deploy to Railway.
 window.API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? 'http://localhost:5000'
-  : 'https://YOUR-RAILWAY-URL.up.railway.app'; // ← replace after deploy
+  : 'https://YOUR-RAILWAY-URL.up.railway.app'; // ← replace with your actual Railway URL after deployment
 
 // ── Auto-refresh Firebase token before API calls ───────────────
 window.getToken = async function() {
@@ -14,15 +26,13 @@ window.getToken = async function() {
     const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
     const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
 
-    const API_BASE = window.API_BASE;
-
-    // Only fetch config if Firebase not yet initialized
     let app;
     if (getApps().length) {
       app = getApps()[0];
     } else {
       try {
-        const r = await fetch(`${API_BASE}/api/config/firebase`);
+        const r = await fetch(`${window.API_BASE}/api/config/firebase`);
+        if (!r.ok) throw new Error('Config fetch failed');
         const config = await r.json();
         app = initializeApp(config);
       } catch(e) {
@@ -49,23 +59,23 @@ window.ReclaimX.toast = function(message, type, duration) {
   type     = type     || 'success';
   duration = duration || 4000;
 
+  // Look for the container — it may be injected via toast.html or hardcoded
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
   const ICONS = { success: '✓', error: '✕', warning: '!', info: 'i' };
+  const COLORS = { success: 'var(--accent)', error: 'var(--danger)', warning: 'var(--warning)', info: 'var(--violet)' };
 
   const toast = document.createElement('div');
   toast.className = 'toast ' + type;
   toast.setAttribute('role', 'alert');
   toast.innerHTML = `
-    <span style="width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;margin-top:1px;
-      background:${type === 'success' ? 'var(--accent-dim)' : type === 'error' ? 'rgba(255,77,109,0.15)' : type === 'warning' ? 'rgba(251,191,36,0.15)' : 'var(--violet-dim)'};
-      color:${type === 'success' ? 'var(--accent)' : type === 'error' ? 'var(--danger)' : type === 'warning' ? 'var(--warning)' : 'var(--violet)'}"
-    >${ICONS[type] || '✓'}</span>
+    <span style="width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:0.7rem;font-weight:700;flex-shrink:0;margin-top:1px;
+      background:${COLORS[type]}22;color:${COLORS[type]}">${ICONS[type] || '✓'}</span>
     <span>${message}</span>
     <button class="toast-close" aria-label="Dismiss">×</button>
   `;
-
   container.appendChild(toast);
 
   toast.querySelector('.toast-close').addEventListener('click', () => dismiss(toast));
@@ -75,7 +85,6 @@ window.ReclaimX.toast = function(message, type, duration) {
   toast.addEventListener('mouseleave', () => { timer = setTimeout(() => dismiss(toast), 1500); });
 
   function dismiss(el) {
-    el.style.animation = 'none';
     el.style.opacity   = '0';
     el.style.transform = 'translateX(60px)';
     el.style.transition = 'all 0.3s ease';
@@ -88,56 +97,49 @@ const navbar = document.querySelector('.navbar');
 if (navbar) {
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
-  });
+  }, { passive: true });
 }
 
-// ── Auto active nav link (sidebar) ───────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const current = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
-    if (link.dataset.page === current) link.classList.add('active');
-  });
-});
-
-// ── Scroll-triggered animations ───────────────────────────────
-const observer = new IntersectionObserver((entries) => {
+// ── Scroll-triggered card animations ─────────────────────────
+const animObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.style.opacity    = '1';
-      entry.target.style.transform  = 'translateY(0)';
-      observer.unobserve(entry.target);
+      entry.target.style.opacity   = '1';
+      entry.target.style.transform = 'translateY(0)';
+      animObserver.unobserve(entry.target);
     }
   });
 }, { threshold: 0.08 });
 
 document.querySelectorAll('.item-card, .card, .stat-card').forEach(el => {
-  el.style.opacity   = '0';
-  el.style.transform = 'translateY(16px)';
+  el.style.opacity    = '0';
+  el.style.transform  = 'translateY(16px)';
   el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-  observer.observe(el);
+  animObserver.observe(el);
 });
 
 // ── Relative time formatter ───────────────────────────────────
 window.ReclaimX.timeAgo = function(dateStr) {
   const diff = (Date.now() - new Date(dateStr)) / 1000;
-  if (diff < 60)   return 'Just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 60)    return 'Just now';
+  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}hr ago`;
   return `${Math.floor(diff / 86400)}d ago`;
 };
 
 // ── Sensitive data detector ───────────────────────────────────
 const SENSITIVE_PATTERNS = [
-  /\b\d{12}\b/,               // Aadhaar
-  /\b\d{16}\b/,               // ATM / card
-  /\b[A-Z]{5}\d{4}[A-Z]\b/,  // PAN
-  /\b[A-Z]{3}\d{7}\b/,       // Voter ID
-  /\b\d{10}\b/                // Phone
+  /\b\d{12}\b/,              // Aadhaar
+  /\b\d{16}\b/,              // ATM / card
+  /\b[A-Z]{5}\d{4}[A-Z]\b/, // PAN
+  /\b[A-Z]{3}\d{7}\b/,      // Voter ID
+  /\b\d{10}\b/               // Phone
 ];
 
 window.ReclaimX.hasSensitiveData = function(text) {
   if (!text) return false;
-  return SENSITIVE_PATTERNS.some(p => p.test(text));
+  const normalised = text.replace(/[\s\-]/g, ''); // catch spaced-out numbers too
+  return SENSITIVE_PATTERNS.some(p => p.test(text) || p.test(normalised));
 };
 
 // ── Disposable email checker ──────────────────────────────────
@@ -147,27 +149,27 @@ window.ReclaimX.isDisposableEmail = function(email) {
   return BLOCKED_DOMAINS.includes(domain.toLowerCase());
 };
 
-// API base URL already defined at top
-
 console.log('[ReclaimX] main.js loaded · API:', window.API_BASE);
 
 // ── Sidebar Initialization ─────────────────────────────────────
-function initSidebar() {
+async function initSidebar() {
   const sidebar = document.getElementById('appSidebar');
   if (!sidebar || sidebar.dataset.initialized) return;
   sidebar.dataset.initialized = 'true';
 
+  // Active link
   const current = window.location.pathname.split('/').pop() || 'dashboard.html';
   document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
     link.classList.toggle('active', link.dataset.page === current);
   });
 
+  // User info from sessionStorage (instant display)
   const stored = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
   if (stored) {
-    const name = stored.name || stored.email || 'User';
-    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
-    const trust = stored.trust_score || 0;
-    const level = trust >= 100 ? '🥇 Gold Hero' : trust >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
+    const name     = stored.name || stored.email || 'User';
+    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const trust    = stored.trust_score || 0;
+    const level    = trust >= 100 ? '🥇 Gold Hero' : trust >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
 
     const avatarEl = document.getElementById('sidebarAvatar');
     if (stored.photo && avatarEl) {
@@ -175,23 +177,57 @@ function initSidebar() {
     } else if (avatarEl) {
       avatarEl.textContent = initials;
     }
-    const nameEl = document.getElementById('sidebarName');
-    if (nameEl) nameEl.textContent = name;
-    const lvlEl = document.getElementById('sidebarLevel');
-    if (lvlEl) lvlEl.textContent = level;
 
-    const token = sessionStorage.getItem('rx_token');
+    const nameEl = document.getElementById('sidebarName');
+    const lvlEl  = document.getElementById('sidebarLevel');
+    if (nameEl) nameEl.textContent = name;
+    if (lvlEl)  lvlEl.textContent  = level;
+
+    // ERR-018 FIX: Use getToken() to ensure a fresh token, not raw sessionStorage.
+    // Previously: const token = sessionStorage.getItem('rx_token')
+    // That token can be expired after 60 minutes. getToken() does a Firebase refresh.
+    let token;
+    try {
+      token = await window.getToken();
+    } catch(e) {
+      token = sessionStorage.getItem('rx_token');
+    }
+
     if (token) {
-      fetch(`${window.API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } })
-        .then(r => r.json())
+      // Update user info from live backend data
+      fetch(`${window.API_BASE}/api/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(r => r.ok ? r.json() : null)
         .then(data => {
-          if (data.name && nameEl) nameEl.textContent = data.name;
+          if (!data) return;
+          if (data.name  && nameEl) nameEl.textContent = data.name;
           const liveScore = data.trust_score || 0;
           if (lvlEl) lvlEl.textContent = liveScore >= 100 ? '🥇 Gold Hero' : liveScore >= 50 ? '🥈 Silver Helper' : '🥉 Bronze Helper';
-        }).catch(() => {});
+        })
+        .catch(() => {}); // silent fail — sidebar still shows sessionStorage data
+
+      // ERR-019 FIX: Was display:none forever — nothing ever showed the badge.
+      // Now fetch matches count and show the badge if there are pending matches.
+      fetch(`${window.API_BASE}/api/matches`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(r => r.ok ? r.json() : [])
+        .then(claims => {
+          const pending = Array.isArray(claims)
+            ? claims.filter(c => c.status === 'Pending').length
+            : 0;
+          const badge = document.getElementById('sidebarMatchBadge');
+          if (badge && pending > 0) {
+            badge.textContent    = pending > 9 ? '9+' : pending;
+            badge.style.display  = '';
+          }
+        })
+        .catch(() => {});
     }
   }
 
+  // Logout button
   const logoutBtn = document.getElementById('sidebarLogout');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', (e) => {
@@ -201,27 +237,32 @@ function initSidebar() {
     });
   }
 
+  // Mobile close button
   const closeBtn = document.getElementById('sidebarClose');
   if (closeBtn) {
-    if (window.innerWidth <= 900) closeBtn.style.display = 'block';
-    window.addEventListener('resize', () => { closeBtn.style.display = window.innerWidth <= 900 ? 'block' : 'none'; });
+    const updateClose = () => { closeBtn.style.display = window.innerWidth <= 900 ? 'block' : 'none'; };
+    updateClose();
+    window.addEventListener('resize', updateClose);
     closeBtn.addEventListener('click', () => {
       sidebar.classList.remove('open');
       sidebar.style.display = '';
     });
   }
 
+  // Close sidebar when clicking outside on mobile
   document.addEventListener('click', (e) => {
     if (window.innerWidth > 900) return;
     const menuBtn = document.getElementById('menuBtn');
-    if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && menuBtn && !menuBtn.contains(e.target)) {
+    if (sidebar.classList.contains('open') &&
+        !sidebar.contains(e.target) &&
+        menuBtn && !menuBtn.contains(e.target)) {
       sidebar.classList.remove('open');
       sidebar.style.display = '';
     }
   });
 }
 
-// Observe DOM for sidebar injection
+// Watch for sidebar injection (it's fetched async in each page)
 const sidebarObserver = new MutationObserver(() => {
   if (document.getElementById('appSidebar')) initSidebar();
 });
