@@ -21,7 +21,6 @@
 <body>
 
 <div class="auth-page">
-  <!-- Left branding panel -->
   <div class="auth-left">
     <div style="max-width:400px;text-align:center">
       <div style="font-size:5rem;margin-bottom:20px">🎓</div>
@@ -41,16 +40,8 @@
     </div>
   </div>
 
-  <!-- Right registration form -->
   <div class="auth-right" style="overflow-y:auto;padding-top:32px;padding-bottom:32px">
     <div class="auth-logo">Reclaim<span>X</span></div>
-    <!--
-      ERR-009 FIX: The original had a #menuBtn here (display:none, commented out)
-      pointing to #appSidebar which doesn't exist on this page.
-      Global CSS media query forces #menuBtn display:flex !important on mobile,
-      overriding the inline style — making the button visible and broken.
-      FIXED: Completely removed. Auth pages don't have a sidebar.
-    -->
     <h1 class="auth-title">Create account</h1>
     <p class="auth-subtitle">Join your campus lost &amp; found network</p>
 
@@ -132,6 +123,9 @@
 </div>
 
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/pwa.js"></script>
 
 <script type="module">
   import {

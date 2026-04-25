@@ -22,7 +22,6 @@
 <body>
 
 <div class="auth-page">
-  <!-- Left branding panel -->
   <div class="auth-left">
     <div style="max-width:420px">
       <div style="font-family:var(--font-display);font-size:2.2rem;font-weight:800;margin-bottom:16px">
@@ -36,10 +35,6 @@
         with privacy-first verification — all on one platform.
       </p>
       <div style="display:flex;flex-direction:column;gap:14px">
-        <!--
-          ERR-016 FIX: Removed "AI matching with 87%+ accuracy" — that number was fabricated.
-          Zero real users, zero real data. Replaced with honest feature descriptions.
-        -->
         <div style="display:flex;gap:12px;align-items:center;font-size:0.85rem;color:var(--text-secondary)">
           <span style="color:var(--accent);font-size:1.2rem">✓</span> Smart scoring: text + location + time signals
         </div>
@@ -56,16 +51,8 @@
     </div>
   </div>
 
-  <!-- Right login form -->
   <div class="auth-right">
     <div class="auth-logo">Reclaim<span>X</span></div>
-    <!--
-      ERR-009 FIX: The original had a #menuBtn here pointing to #appSidebar
-      which doesn't exist on the login page. On mobile, the CSS media query
-      would force it visible via !important, and clicking it threw:
-      TypeError: Cannot read properties of null (reading 'classList')
-      FIXED: Completely removed. Login/Register pages have no sidebar.
-    -->
     <h1 class="auth-title">Welcome back</h1>
     <p class="auth-subtitle">Sign in to your ReclaimX account</p>
 
@@ -115,6 +102,9 @@
 </div>
 
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/pwa.js"></script>
 
 <script type="module">
   import {
