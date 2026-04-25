@@ -8,23 +8,12 @@
   <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
   <style>
     .form-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
-    .form-card-title { font-size:1rem; font-weight:700; margin-bottom:4px; }
+    .form-card-title { font-size:1rem; font-weight:700; margin-bottom:4px; display:flex; align-items:center; }
     .form-card-sub { font-size:0.78rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:20px; }
     .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
     .found-hero { background:var(--accent-dim); border:1px solid rgba(0,212,170,0.2); border-radius:var(--radius-lg); padding:20px 24px; margin-bottom:20px; display:flex; gap:16px; align-items:center; }
     .image-preview { width:100%; max-width:200px; aspect-ratio:1; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--border); margin-top:12px; }
-    .file-upload-area {
-  min-height: 120px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.file-upload-area .upload-icon { font-size: 2rem; }
-.file-upload-area .upload-text { font-size: 0.9rem; color: var(--text-secondary); }
-.file-upload-area .upload-hint { font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); }
+    .file-upload-area { min-height: 120px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
     @media(max-width:700px){ .two-col{ grid-template-columns:1fr; } }
   </style>
 </head>
@@ -39,7 +28,7 @@
 </button>
       <div>
         <h1>Report Found Item</h1>
-        <p>You're helping someone recover their lost item — thank you! 🙏</p>
+        <p>You're helping someone recover their lost item — thank you!</p>
       </div>
       <a href="browse.html" class="btn btn-ghost btn-sm">← Browse</a>
     </header>
@@ -47,11 +36,11 @@
     <div class="page-content" style="max-width:760px">
 
       <div class="found-hero">
-        <div style="font-size:2.4rem">🎉</div>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="flex-shrink:0"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         <div>
-          <div style="font-weight:700;margin-bottom:4px">You found something!</div>
+          <div style="font-weight:700;margin-bottom:4px;color:var(--accent)">You found something!</div>
           <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5">
-            Submit this report and our AI will instantly try to match it with active lost reports on your campus. +10 trust points when successfully returned.
+            Submit this report and our scoring engine will instantly try to match it with active lost reports on your campus. +10 trust points when successfully returned.
           </div>
         </div>
       </div>
@@ -98,23 +87,29 @@
           <div class="form-group" style="margin-bottom:0">
             <label class="form-label">Description <span style="color:var(--text-muted)">(helps AI match better)</span></label>
             <textarea class="form-textarea" id="description" rows="3" placeholder="Color, brand, condition, any visible markings…"></textarea>
-            <span class="form-hint" id="sensitiveWarning" style="color:var(--danger);display:none">⚠️ Sensitive data detected — please remove ID/card numbers.</span>
+            <span class="form-hint" id="sensitiveWarning" style="color:var(--danger);display:none;align-items:center;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Sensitive data detected — please remove ID/card numbers.
+            </span>
           </div>
         </div>
 
         <div class="form-card">
-  <div class="form-card-title">📸 Photos</div>
-  <div class="form-card-sub">`PRIVATE` — Photos help AI matching but are never shown publicly</div>
+          <div class="form-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;color:var(--text-secondary)"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            Photos
+          </div>
+          <div class="form-card-sub">PRIVATE — Photos help AI matching but are never shown publicly</div>
 
-  <label class="file-upload-area" id="uploadArea" for="imageInput" style="min-height:120px;padding:24px">
-    <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" />
-    <div>📷</div>
-    <div style="font-size:0.9rem;margin-top:8px">Click to upload or drag &amp; drop</div>
-    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">JPEG · PNG · WebP · Max 5MB · 1 photo</div>
-  </label>
+          <label class="file-upload-area" id="uploadArea" for="imageInput" style="min-height:120px;padding:24px;cursor:pointer;">
+            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" style="display:none;" />
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <div style="font-size:0.9rem;">Click to upload or drag &amp; drop</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">JPEG · PNG · WebP · Max 5MB · 1 photo</div>
+          </label>
 
-  <div id="previewGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px"></div>
-</div>
+          <div id="previewGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px"></div>
+        </div>
 
         <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:4px">
           <a href="dashboard.html" class="btn btn-ghost">Cancel</a>
@@ -138,55 +133,43 @@
   const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
   if (!user) { window.location.href = 'login.html'; }
 
-  // ── Save form draft to localStorage ────────────────────────
-const DRAFT_KEY = 'rx_found_draft';
+  const DRAFT_KEY = 'rx_found_draft';
 
-// Restore draft
-const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
-if (draft) {
-  if (draft.itemName)      document.getElementById('itemName').value      = draft.itemName;
-  if (draft.category)      document.getElementById('category').value      = draft.category;
-  if (draft.campus)        document.getElementById('campus').value        = draft.campus;
-  if (draft.foundLocation) document.getElementById('foundLocation').value = draft.foundLocation;
-  if (draft.description)   document.getElementById('description').value   = draft.description;
+  const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+  if (draft) {
+    if (draft.itemName)      document.getElementById('itemName').value      = draft.itemName;
+    if (draft.category)      document.getElementById('category').value      = draft.category;
+    if (draft.campus)        document.getElementById('campus').value        = draft.campus;
+    if (draft.foundLocation) document.getElementById('foundLocation').value = draft.foundLocation;
+    if (draft.description)   document.getElementById('description').value   = draft.description;
+    window.ReclaimX?.toast('Draft restored from last session.', 'info');
+  }
 
-  window.ReclaimX?.toast('Draft restored from last session.', 'info');
-}
+  function saveDraft() {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      itemName:      document.getElementById('itemName').value,
+      category:      document.getElementById('category').value,
+      campus:        document.getElementById('campus').value,
+      foundLocation: document.getElementById('foundLocation').value,
+      description:   document.getElementById('description').value,
+    }));
+  }
 
-// Auto-save draft
-function saveDraft() {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify({
-    itemName:      document.getElementById('itemName').value,
-    category:      document.getElementById('category').value,
-    campus:        document.getElementById('campus').value,
-    foundLocation: document.getElementById('foundLocation').value,
-    description:   document.getElementById('description').value,
-  }));
-}
-
-['itemName','category','campus','foundLocation','description']
-  .forEach(id => document.getElementById(id).addEventListener('input', saveDraft));
+  ['itemName','category','campus','foundLocation','description']
+    .forEach(id => document.getElementById(id).addEventListener('input', saveDraft));
 
 
-// ── Image upload with validation + cancel button ────────────
-  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_SIZE = 5 * 1024 * 1024;
   const ALLOWED  = ['image/jpeg', 'image/png', 'image/webp'];
   let selectedFile = null;
 
   document.getElementById('imageInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!ALLOWED.includes(file.type)) {
-      window.ReclaimX?.toast('Only JPEG, PNG and WebP are allowed.', 'error');
-      return;
-    }
-    if (file.size > MAX_SIZE) {
-      window.ReclaimX?.toast('File exceeds 5MB limit.', 'error');
-      return;
-    }
+    if (!ALLOWED.includes(file.type)) { window.ReclaimX?.toast('Only JPEG, PNG and WebP are allowed.', 'error'); return; }
+    if (file.size > MAX_SIZE) { window.ReclaimX?.toast('File exceeds 5MB limit.', 'error'); return; }
     selectedFile = file;
 
-    // Show preview
     let wrap = document.getElementById('previewWrap');
     if (!wrap) {
       wrap = document.createElement('div');
@@ -201,24 +184,16 @@ function saveDraft() {
     img.style.cssText = 'width:200px;aspect-ratio:1;object-fit:cover;display:block;';
 
     const del = document.createElement('button');
-    del.type        = 'button';
-    del.innerHTML   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+    del.type = 'button';
+    del.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
     del.style.cssText = 'position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s';
-    del.onmouseover = () => del.style.background = 'rgba(255,0,0,0.8)';
-    del.onmouseout = () => del.style.background = 'rgba(0,0,0,0.6)';
-    del.onclick = () => {
-      selectedFile = null;
-      wrap.remove();
-      document.getElementById('imageInput').value = '';
-    };
+    del.onclick = () => { selectedFile = null; wrap.remove(); document.getElementById('imageInput').value = ''; };
 
     wrap.append(img, del);
   });
 
-  // Sensitive data
   document.getElementById('description').addEventListener('input', (e) => {
-    document.getElementById('sensitiveWarning').style.display =
-      window.ReclaimX?.hasSensitiveData(e.target.value) ? 'block' : 'none';
+    document.getElementById('sensitiveWarning').style.display = window.ReclaimX?.hasSensitiveData(e.target.value) ? 'flex' : 'none';
   });
 
   document.getElementById('foundForm').addEventListener('submit', async (e) => {
@@ -250,13 +225,11 @@ function saveDraft() {
     try {
       const token = await window.getToken();
       const res   = await fetch(`${window.API_BASE}/api/items/found`, {
-        method:  'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body:    formData,
+        method:  'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData,
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Submission failed');
       window.ReclaimX?.toast('Found item reported! AI matching is running…', 'success');
-      localStorage.removeItem(DRAFT_KEY); // clear draft on success
+      localStorage.removeItem(DRAFT_KEY);
       setTimeout(() => window.location.href = 'dashboard.html', 1500);
     } catch (err) {
       window.ReclaimX?.toast(err.message || 'Failed to submit. Try again.', 'error');
@@ -265,13 +238,12 @@ function saveDraft() {
     }
   });
 
-  // ── Enter key submits form ──────────────────────────────────
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey && e.target.tagName !== 'TEXTAREA') {
-    e.preventDefault();
-    document.getElementById('submitBtn').click();
-  }
-});
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      document.getElementById('submitBtn').click();
+    }
+  });
 </script>
 </body>
 </html>
