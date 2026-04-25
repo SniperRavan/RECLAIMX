@@ -12,15 +12,14 @@
     .stat-strip-item:last-child { border-right:none; }
     .stat-strip-num { font-family:var(--font-display); font-size:1.5rem; font-weight:800; letter-spacing:-0.5px; }
     .stat-strip-label { font-size:0.68rem; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
-    .match-tabs { display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+    .match-tabs { display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:24px; padding:0 36px; }
     .match-tab { padding:10px 18px; font-size:0.82rem; font-weight:500; color:var(--text-secondary); border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; font-family:var(--font-body); }
     .match-tab:hover { color:var(--text-primary); }
     .match-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
     .tab-count { display:inline-flex; align-items:center; justify-content:center; background:var(--accent-dim); color:var(--accent); border-radius:100px; font-size:0.62rem; font-family:var(--font-mono); min-width:18px; height:18px; padding:0 5px; margin-left:6px; }
     .match-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; transition:all 0.25s; margin-bottom:16px; }
     .match-card:hover { border-color:var(--border-hover); }
-    .match-card.high-confidence   { border-top:2px solid var(--accent); }
-    .match-card.medium-confidence { border-top:2px solid var(--violet); }
+    .match-card.high-confidence { border-top:2px solid var(--accent); }
     .match-card-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px; }
     .match-icon { width:44px; height:44px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; background:var(--bg-elevated); border:1px solid var(--border); }
     .match-header-info { flex:1; }
@@ -31,38 +30,20 @@
     .score-ring::before { content:''; position:absolute; inset:6px; border-radius:50%; background:var(--bg-card); }
     .score-num { position:relative; z-index:2; font-family:var(--font-display); font-size:0.8rem; font-weight:800; }
     .score-label { font-size:0.6rem; font-family:var(--font-mono); color:var(--text-muted); margin-top:4px; text-transform:uppercase; }
-    .match-card-body { padding:18px 20px; }
-    .item-comparison { display:grid; grid-template-columns:1fr 40px 1fr; align-items:center; margin-bottom:18px; gap:0; }
-    .comp-item { background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px; }
-    .comp-label { font-size:0.62rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
-    .comp-label.lost { color:var(--danger); } .comp-label.found { color:var(--accent); }
-    .comp-item-name { font-size:0.9rem; font-weight:600; margin-bottom:4px; }
-    .comp-details { font-size:0.75rem; color:var(--text-secondary); line-height:1.5; }
-    .comp-arrow { display:flex; align-items:center; justify-content:center; color:var(--text-muted); }
-    .score-breakdown-title { font-size:0.7rem; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
-    .score-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
-    .score-row-label { font-size:0.72rem; color:var(--text-secondary); width:80px; flex-shrink:0; }
-    .score-row-bar { flex:1; height:4px; background:var(--bg-elevated); border-radius:2px; overflow:hidden; }
-    .score-row-fill { height:100%; border-radius:2px; transition:width 1s ease; }
-    .fill-text { background:linear-gradient(90deg,var(--accent),#00ffcc); }
-    .fill-image { background:linear-gradient(90deg,var(--violet),#a78bfa); }
-    .fill-location { background:linear-gradient(90deg,#fbbf24,#f59e0b); }
-    .fill-time { background:var(--accent); }
-    .score-row-pct { font-size:0.68rem; font-family:var(--font-mono); color:var(--text-muted); width:32px; text-align:right; }
+    .match-card-body { padding:14px 20px; font-size:0.82rem; color:var(--text-secondary); line-height:1.6; }
     .match-card-footer { padding:14px 20px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; background:rgba(0,0,0,0.15); }
-    .match-status-info { font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:6px; }
     .match-actions { display:flex; gap:8px; }
     .resolved-banner { background:rgba(0,212,170,0.08); border-top:1px solid rgba(0,212,170,0.15); padding:10px 20px; font-size:0.78rem; color:var(--accent); display:flex; align-items:center; gap:8px; }
-    .pending-banner  { background:rgba(251,191,36,0.06); border-top:1px solid rgba(251,191,36,0.15); padding:10px 20px; font-size:0.78rem; color:var(--warning); display:flex; align-items:center; gap:8px; }
+    .pending-banner { background:rgba(251,191,36,0.06); border-top:1px solid rgba(251,191,36,0.15); padding:10px 20px; font-size:0.78rem; color:var(--warning); display:flex; align-items:center; gap:8px; }
     .question-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:14px; }
-    .question-num  { font-size:0.65rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; }
+    .question-num { font-size:0.65rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; }
     .question-text { font-size:0.875rem; color:var(--text-primary); margin-bottom:10px; font-weight:500; }
     .attempt-counter { text-align:center; font-size:0.75rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:16px; padding:8px; background:var(--bg-elevated); border-radius:var(--radius-sm); border:1px solid var(--border); }
     .modal-warning { background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2); border-radius:var(--radius-md); padding:12px 14px; font-size:0.78rem; color:var(--warning); margin-bottom:20px; line-height:1.5; }
+    .matches-content { padding:0 36px 36px; }
     @media(max-width:900px) {
       .sidebar { display:none; } .main-content { margin-left:0; }
-      .item-comparison { grid-template-columns:1fr; }
-      .comp-arrow svg { transform:rotate(90deg); }
+      .match-tabs, .matches-content { padding-left:16px; padding-right:16px; }
       .stats-strip { flex-wrap:wrap; }
       .stat-strip-item { flex:1 1 50%; }
     }
@@ -74,35 +55,41 @@
 
   <main class="main-content">
     <header class="main-header">
+      <!-- ERR-009 FIX: menuBtn now toggles #appSidebar which is injected via sidebar.html.
+           The click handler is safe — sidebar.html is fetched first and initSidebar() sets
+           up the close button. The menuBtn itself is shown via CSS media query on mobile. -->
+      <button id="menuBtn" style="display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;margin-right:12px;padding:4px;"
+        onclick="const s=document.getElementById('appSidebar');if(s)s.classList.add('open');">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <div>
-        <button id="menuBtn" style="display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;margin-right:12px;padding:4px;" onclick="document.getElementById('appSidebar').classList.add('open')">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-</button>
-        <h1>My Matches <span class="ai-badge"><span class="ai-dot"></span>AI Engine</span></h1>
-        <p>Items the AI matched to your reports — review and verify your claims below.</p>
+        <h1>My Matches <span class="ai-badge"><span class="ai-dot"></span>Scoring Engine</span></h1>
+        <p>Items matched to your reports — review and verify your claims below.</p>
       </div>
       <a href="browse.html" class="btn btn-ghost btn-sm">Browse All Items</a>
     </header>
 
     <div class="stats-strip">
-      <div class="stat-strip-item"><div class="stat-strip-num text-accent" id="sNew">2</div><div class="stat-strip-label">New Matches</div></div>
-      <div class="stat-strip-item"><div class="stat-strip-num" style="color:var(--warning)" id="sPending">1</div><div class="stat-strip-label">Pending Handover</div></div>
-      <div class="stat-strip-item"><div class="stat-strip-num" style="color:var(--text-secondary)" id="sResolved">3</div><div class="stat-strip-label">Resolved</div></div>
-      <div class="stat-strip-item"><div class="stat-strip-num text-muted" id="sDismissed">1</div><div class="stat-strip-label">Dismissed</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-num text-accent" id="sNew">—</div><div class="stat-strip-label">New Matches</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-num" style="color:var(--warning)" id="sPending">—</div><div class="stat-strip-label">Pending Handover</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-num" style="color:var(--text-secondary)" id="sResolved">—</div><div class="stat-strip-label">Resolved</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-num text-muted" id="sDismissed">—</div><div class="stat-strip-label">Dismissed</div></div>
     </div>
 
-    <div style="padding:28px 36px">
-      <div class="match-tabs">
-        <button class="match-tab active" onclick="setTab(this,'new')">New<span class="tab-count">2</span></button>
-        <button class="match-tab" onclick="setTab(this,'pending')">Pending<span class="tab-count">1</span></button>
-        <button class="match-tab" onclick="setTab(this,'resolved')">Resolved<span class="tab-count">3</span></button>
-        <button class="match-tab" onclick="setTab(this,'dismissed')">Dismissed</button>
-      </div>
+    <div class="match-tabs">
+      <button class="match-tab active" onclick="setTab(this,'new')">New<span class="tab-count" id="tabNew">0</span></button>
+      <button class="match-tab" onclick="setTab(this,'pending')">Pending<span class="tab-count" id="tabPending">0</span></button>
+      <button class="match-tab" onclick="setTab(this,'resolved')">Resolved<span class="tab-count" id="tabResolved">0</span></button>
+      <button class="match-tab" onclick="setTab(this,'dismissed')">Dismissed</button>
+    </div>
 
+    <div class="matches-content">
       <div id="matchesContainer">
-        <div style="text-align:center;padding:40px;color:var(--text-muted);font-size:0.9rem;">
-          <span class="loading-spinner" style="border-color:var(--border);border-top-color:var(--accent)"></span>
-          Loading matches...
+        <div style="text-align:center;padding:40px;color:var(--text-muted)">
+          <span class="loading-spinner"></span>
+          <div style="margin-top:12px;font-size:0.85rem">Loading matches…</div>
         </div>
       </div>
     </div>
@@ -113,14 +100,21 @@
 <div class="modal-overlay" id="verifyModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeVerify()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
     </button>
-    <div style="margin-bottom:24px">
+    <div style="margin-bottom:20px">
       <h2 style="font-size:1.2rem;margin-bottom:4px">🔐 Verify Your Claim</h2>
-      <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5">Answer the questions below to prove ownership. Generated from the private details of the original report.</p>
+      <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5">
+        Answer the questions below to prove ownership. Generated from the private details of the original report.
+      </p>
     </div>
-    <div class="modal-warning">⚠️ <strong>3 chances only.</strong> Failed attempts reduce your trust score and may suspend your account.</div>
+    <div class="modal-warning">
+      ⚠️ <strong>3 chances only.</strong> Failed attempts reduce your trust score and may suspend your account.
+    </div>
     <div class="attempt-counter">Attempts remaining: <span id="attemptsLeft">3</span> / 3</div>
+
     <div class="question-card">
       <div class="question-num">Question 1 of 3</div>
       <div class="question-text">What is the interior color or lining of the item?</div>
@@ -136,12 +130,14 @@
       <div class="question-text">What does the item contain? (no sensitive numbers)</div>
       <input class="form-input" type="text" id="q3" placeholder="e.g. 3 cards, college ID, some cash…"/>
     </div>
+
     <div id="verifyError" style="display:none;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);border-radius:var(--radius-md);padding:10px 14px;font-size:0.78rem;color:var(--danger);margin-bottom:14px">
       ❌ Answers don't match our records. Attempt logged.
     </div>
     <div id="verifySuccess" style="display:none;background:var(--accent-dim);border:1px solid rgba(0,212,170,0.3);border-radius:var(--radius-md);padding:12px 14px;font-size:0.82rem;color:var(--accent);margin-bottom:14px">
-      ✅ Verification passed! Item status is now "Pending Handover".
+      ✅ Verification passed! Arrange handover with the finder.
     </div>
+
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeVerify()">Cancel</button>
       <button class="btn btn-primary" id="submitVerifyBtn" onclick="submitVerify()">Submit Answers</button>
@@ -154,12 +150,16 @@
 <script src="../assets/js/main.js"></script>
 <script src="../assets/js/pwa.js"></script>
 <script>
-  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+  fetch('../components/sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-placeholder').innerHTML = html;
+  });
 
   const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
   if (!user) window.location.href = 'login.html';
 
-  // Tabs
+  const EMOJIS = { Accessories:'👜', Bags:'🎒', Documents:'🪪', Electronics:'📱', Clothing:'👕', Keys:'🔑', Books:'📚', Other:'📦' };
+
+  // ── Tab switching ──────────────────────────────────────────
   function setTab(btn, tab) {
     document.querySelectorAll('.match-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
@@ -168,29 +168,77 @@
     });
   }
 
-  // Dismiss
-  function dismissMatch(btn) {
-    const card = btn.closest('.match-card');
-    card.style.transition = 'opacity 0.3s, transform 0.3s';
-    card.style.opacity = '0'; card.style.transform = 'translateX(20px)';
-    setTimeout(() => card.remove(), 300);
-    window.ReclaimX?.toast('Match dismissed.', 'info');
+  // ── Dismiss match ──────────────────────────────────────────
+  async function dismissMatch(btn, claimId) {
+    if (!confirm('Dismiss this match? This cannot be undone.')) return;
+    try {
+      const token = await window.getToken();
+      const res = await fetch(`${window.API_BASE}/api/matches/dismiss/${claimId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Could not dismiss match');
+      const card = btn.closest('.match-card');
+      card.style.transition = 'opacity 0.3s, transform 0.3s';
+      card.style.opacity = '0';
+      card.style.transform = 'translateX(20px)';
+      setTimeout(() => card.remove(), 300);
+      window.ReclaimX?.toast('Match dismissed.', 'info');
+    } catch (err) {
+      window.ReclaimX?.toast(err.message, 'error');
+    }
   }
 
-  // Confirm handover
-  async function confirmHandover(btn) {
-    btn.textContent = 'Confirming…'; btn.disabled = true;
-    await new Promise(r => setTimeout(r, 800));
-    btn.closest('.match-card').querySelector('.pending-banner').outerHTML =
-      '<div class="resolved-banner">✅ Handover confirmed! +10 trust points earned.</div>';
-    btn.closest('.match-actions').innerHTML = '<span class="badge badge-accent">Resolved</span>';
-    window.ReclaimX?.toast('Handover confirmed! Trust points added.', 'success');
+  // ── Confirm handover ───────────────────────────────────────
+  // ERR-006 FIX: Was a fake setTimeout mock — never called the backend.
+  // Now makes a real POST to /api/matches/confirm-handover/:claimId.
+  async function confirmHandover(btn, claimId) {
+    btn.textContent = 'Confirming…';
+    btn.disabled = true;
+
+    try {
+      const token = await window.getToken();
+      const res = await fetch(`${window.API_BASE}/api/matches/confirm-handover/${claimId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Handover confirmation failed');
+      }
+
+      const data = await res.json();
+
+      if (data.bothConfirmed) {
+        // Both parties confirmed — item is fully resolved
+        const card = btn.closest('.match-card');
+        const footer = card.querySelector('.match-card-footer');
+        if (footer) {
+          footer.innerHTML = `
+            <div class="resolved-banner" style="width:100%;border-top:none;">
+              ✅ Handover complete! +10 trust points earned by both parties.
+            </div>`;
+        }
+        window.ReclaimX?.toast('Item successfully returned! Trust points added. 🎉', 'success');
+      } else {
+        // Waiting for the other party
+        btn.textContent = '✓ You confirmed';
+        btn.disabled = true;
+        window.ReclaimX?.toast('Your confirmation recorded. Waiting for the other party.', 'info');
+      }
+    } catch (err) {
+      btn.textContent = 'Confirm Handover ✓';
+      btn.disabled = false;
+      window.ReclaimX?.toast(err.message || 'Could not confirm handover. Try again.', 'error');
+    }
   }
 
-  // Verification modal
+  // ── Verification modal ─────────────────────────────────────
   let attempts = 3;
-  function openVerify(id) {
-    window._currentClaimId = id; // set current claim ID for verification
+
+  function openVerify(claimId) {
+    window._currentClaimId = claimId;
     attempts = 3;
     document.getElementById('attemptsLeft').textContent = 3;
     ['q1','q2','q3'].forEach(id => document.getElementById(id).value = '');
@@ -200,121 +248,185 @@
     document.getElementById('submitVerifyBtn').textContent = 'Submit Answers';
     document.getElementById('verifyModal').classList.add('open');
   }
-  function closeVerify() { document.getElementById('verifyModal').classList.remove('open'); }
-  document.getElementById('verifyModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeVerify(); });
 
+  function closeVerify() {
+    document.getElementById('verifyModal').classList.remove('open');
+  }
+
+  document.getElementById('verifyModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeVerify();
+  });
+
+  // ERR-007 FIX: Was missing try/catch — if the fetch threw or returned
+  // non-JSON, the button would hang at "Verifying…" disabled forever.
+  // Now wrapped in try/catch with proper button state restore on error.
   async function submitVerify() {
     const a1 = document.getElementById('q1').value.trim();
     const a2 = document.getElementById('q2').value.trim();
     const a3 = document.getElementById('q3').value.trim();
-    if (!a1 || !a2 || !a3) { window.ReclaimX?.toast('Please answer all 3 questions.', 'warning'); return; }
+
+    if (!a1 || !a2 || !a3) {
+      window.ReclaimX?.toast('Please answer all 3 questions.', 'warning');
+      return;
+    }
 
     const btn = document.getElementById('submitVerifyBtn');
-    btn.textContent = 'Verifying…'; btn.disabled = true;
+    btn.textContent = 'Verifying…';
+    btn.disabled = true;
 
-    // Mock API call to verify answers
-    const token = sessionStorage.getItem('rx_token');
-    const verifyRes = await fetch(`${window.API_BASE}/api/matches/verify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ claimId: window._currentClaimId, answers: { q1: a1, q2: a2, q3: a3 } })
-    });
-const result = await verifyRes.json();
-const passed = result.passed;
+    try {
+      const token = await window.getToken();
+      const res = await fetch(`${window.API_BASE}/api/matches/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          claimId: window._currentClaimId,
+          answers: { q1: a1, q2: a2, q3: a3 },
+        }),
+      });
 
-    if (passed) {
-      document.getElementById('verifySuccess').style.display = 'block';
-      btn.textContent = '✓ Verified';
-      window.ReclaimX?.toast('Claim verified! Arrange handover with the finder.', 'success');
-    } else {
-      attempts--;
-      document.getElementById('attemptsLeft').textContent = attempts;
-      document.getElementById('verifyError').style.display = 'block';
-      if (attempts <= 0) {
-        btn.textContent = 'No Attempts Left'; btn.disabled = true;
-        window.ReclaimX?.toast('3 failed attempts. Account flagged.', 'error');
-      } else {
-        btn.textContent = 'Submit Answers'; btn.disabled = false;
+      // Handle non-OK responses before trying to parse JSON
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error ${res.status}`);
       }
+
+      const result = await res.json();
+
+      if (result.passed) {
+        document.getElementById('verifySuccess').style.display = 'block';
+        document.getElementById('verifyError').style.display   = 'none';
+        btn.textContent = '✓ Verified';
+        window.ReclaimX?.toast('Claim verified! Arrange handover with the finder.', 'success');
+        // Reload matches after a moment so status updates
+        setTimeout(loadMatches, 2000);
+      } else {
+        attempts--;
+        document.getElementById('attemptsLeft').textContent = attempts;
+        document.getElementById('verifyError').style.display   = 'block';
+        document.getElementById('verifySuccess').style.display = 'none';
+
+        if (result.suspended) {
+          btn.textContent = 'Account Suspended';
+          window.ReclaimX?.toast('3 failed attempts. Account suspended.', 'error');
+        } else if (attempts <= 0) {
+          btn.textContent = 'No Attempts Left';
+          window.ReclaimX?.toast('No attempts remaining for this claim.', 'error');
+        } else {
+          btn.textContent = 'Submit Answers';
+          btn.disabled = false;
+          window.ReclaimX?.toast(`Incorrect. ${attempts} attempt${attempts !== 1 ? 's' : ''} remaining.`, 'warning');
+        }
+      }
+    } catch (err) {
+      // Restore button so user can retry
+      btn.textContent = 'Submit Answers';
+      btn.disabled = false;
+      window.ReclaimX?.toast(err.message || 'Verification failed. Please try again.', 'error');
     }
   }
 
-  // Fetch matches dynamically
+  // ── Load matches from API ──────────────────────────────────
   async function loadMatches() {
     try {
+      const token = await window.getToken();
       const res = await fetch(`${window.API_BASE}/api/matches`, {
-        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('rx_token')}` }
+        headers: { 'Authorization': `Bearer ${token}` },
       });
+
+      if (!res.ok) throw new Error(`Failed to load matches: ${res.status}`);
       const claims = await res.json();
-      
-      let counts = { new:0, pending:0, resolved:0, rejected:0 };
-      const EMOJIS = { Accessories:'👜', Bags:'🎒', Documents:'🪪', Electronics:'📱', Clothing:'👕', Keys:'🔑', Books:'📚', Other:'📦' };
-      
-      const htmlMatches = claims.map(c => {
+
+      const counts = { new: 0, pending: 0, resolved: 0, dismissed: 0 };
+
+      const html = claims.map(c => {
         let tab = 'new';
-        if (c.status === 'Verified') tab = 'pending';
-        if (c.status === 'Resolved') tab = 'resolved';
-        if (c.status === 'Rejected') tab = 'dismissed';
-        
+        if (c.status === 'Verified')  tab = 'pending';
+        if (c.status === 'Resolved')  tab = 'resolved';
+        if (c.status === 'Rejected')  tab = 'dismissed';
         counts[tab]++;
-        
-        const lost = c.lost_items || {};
+
+        const lost  = c.lost_items  || {};
         const found = c.found_items || {};
-        const isHigh = c.match_score > 80;
         const emoji = EMOJIS[lost.category] || '📦';
-        
-        let headerActions = '';
+        const isHigh = c.match_score > 80;
+        const ago   = window.ReclaimX?.timeAgo(c.created_at) || 'Recently';
+
+        let footer = '';
         if (tab === 'new') {
-          headerActions = `<div class="match-actions">
-            <button class="btn btn-ghost btn-sm" onclick="dismissMatch(this)">Dismiss</button>
-            <button class="btn btn-primary btn-sm" onclick="openVerify('${c.id}')">Verify Claim 🔐</button>
-          </div>`;
+          footer = `
+            <div class="match-actions">
+              <button class="btn btn-ghost btn-sm" onclick="dismissMatch(this, '${c.id}')">Dismiss</button>
+              <button class="btn btn-primary btn-sm" onclick="openVerify('${c.id}')">Verify Claim 🔐</button>
+            </div>`;
         } else if (tab === 'pending') {
-          headerActions = `<div class="match-actions">
-            <button class="btn btn-primary btn-sm" onclick="confirmHandover(this, '${c.id}')">Confirm Handover ✓</button>
-          </div>`;
+          footer = `
+            <div class="match-actions">
+              <button class="btn btn-primary btn-sm" onclick="confirmHandover(this, '${c.id}')">Confirm Handover ✓</button>
+            </div>`;
         } else if (tab === 'resolved') {
-          headerActions = `<span class="badge badge-accent">Resolved</span>`;
+          footer = `<span class="badge badge-accent">✓ Resolved</span>`;
+        } else {
+          footer = `<span class="badge badge-danger">Dismissed</span>`;
         }
-        
-        return `<div class="match-card ${isHigh?'high-confidence':''}" data-tab="${tab}" style="display:${tab==='new'?'':'none'}">
-          <div class="match-card-header">
-            <div class="match-icon">${emoji}</div>
-            <div class="match-header-info">
-              <div class="match-item-name">${lost.item_name} — ${c.status} Match</div>
-              <div class="match-meta"><span>📍 ${found.found_location}</span><span>⏱ Found ${window.ReclaimX?.timeAgo(found.created_at)}</span></div>
+
+        return `
+          <div class="match-card ${isHigh ? 'high-confidence' : ''}"
+               data-tab="${tab}"
+               style="display:${tab === 'new' ? '' : 'none'}">
+            <div class="match-card-header">
+              <div class="match-icon">${emoji}</div>
+              <div class="match-header-info">
+                <div class="match-item-name">${lost.item_name || 'Unknown Item'}</div>
+                <div class="match-meta">
+                  <span>📍 Found: ${found.found_location || '—'}</span>
+                  <span>⏱ ${ago}</span>
+                  <span>Status: ${c.status}</span>
+                </div>
+              </div>
+              <div class="score-dial">
+                <div class="score-ring" style="--pct:${c.match_score}">
+                  <span class="score-num text-accent">${Math.round(c.match_score)}%</span>
+                </div>
+                <div class="score-label">Confidence</div>
+              </div>
             </div>
-            <div class="score-dial">
-              <div class="score-ring" style="--pct:${c.match_score}"><span class="score-num text-accent">${c.match_score}%</span></div>
-              <div class="score-label">Confidence</div>
+            <div class="match-card-body">
+              Lost at: ${lost.last_seen_location || '—'} &nbsp;·&nbsp; Found at: ${found.found_location || '—'}
             </div>
-          </div>
-          <div class="match-card-body" style="padding:14px 20px;">
-            <div style="font-size:0.8rem;color:var(--text-secondary)">Lost: ${lost.last_seen_location} <br> Found: ${found.found_location}</div>
-          </div>
-          <div class="match-card-footer">
-            <div class="match-status-info">${c.status==='Pending'?'Expires in 48hrs if unclaimed':c.status}</div>
-            ${headerActions}
-          </div>
-        </div>`;
+            <div class="match-card-footer">
+              <div style="font-size:0.75rem;color:var(--text-muted)">
+                ${tab === 'pending' ? 'Waiting for handover confirmation from both parties' : ''}
+                ${tab === 'new' ? 'Verify ownership to proceed with recovery' : ''}
+              </div>
+              ${footer}
+            </div>
+          </div>`;
       }).join('');
-      
-      document.getElementById('matchesContainer').innerHTML = htmlMatches || `<div style="text-align:center;padding:40px;color:var(--text-muted);">No matches found yet.</div>`;
-      
-      document.getElementById('sNew').textContent = counts.new;
-      document.getElementById('sPending').textContent = counts.pending;
+
+      document.getElementById('matchesContainer').innerHTML =
+        html || `<div style="text-align:center;padding:60px;color:var(--text-muted)">
+          <div style="font-size:2.5rem;margin-bottom:12px">🔍</div>
+          <div>No matches yet. Report lost items and the engine will scan for matches automatically.</div>
+        </div>`;
+
+      // Update counts
+      document.getElementById('sNew').textContent      = counts.new;
+      document.getElementById('sPending').textContent  = counts.pending;
       document.getElementById('sResolved').textContent = counts.resolved;
-      document.getElementById('sDismissed').textContent = counts.rejected;
-      
-      // Update tab badge counts
-      const tabs = document.querySelectorAll('.tab-count');
-      if(tabs[0]) tabs[0].textContent = counts.new;
-      if(tabs[1]) tabs[1].textContent = counts.pending;
-      if(tabs[2]) tabs[2].textContent = counts.resolved;
-      
-    } catch(e) {
-      console.error(e);
-      document.getElementById('matchesContainer').innerHTML = `<div style="text-align:center;padding:40px;color:var(--danger);">Error loading matches.</div>`;
+      document.getElementById('sDismissed').textContent = counts.dismissed;
+      document.getElementById('tabNew').textContent     = counts.new;
+      document.getElementById('tabPending').textContent = counts.pending;
+      document.getElementById('tabResolved').textContent = counts.resolved;
+
+    } catch (err) {
+      document.getElementById('matchesContainer').innerHTML = `
+        <div style="text-align:center;padding:40px;color:var(--danger);font-size:0.875rem">
+          ⚠️ ${err.message || 'Could not load matches. Check your connection.'}
+        </div>`;
     }
   }
 
