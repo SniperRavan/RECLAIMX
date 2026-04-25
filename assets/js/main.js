@@ -158,9 +158,12 @@ async function initSidebar() {
   sidebar.dataset.initialized = 'true';
 
   // Active link
-  const current = window.location.pathname.split('/').pop() || 'dashboard.html';
+  let current = window.location.pathname.split('/').pop() || 'dashboard';
+  current = current.replace('.html', ''); // Strip extension from the URL if it exists
+
   document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
-    link.classList.toggle('active', link.dataset.page === current);
+    const targetPage = link.dataset.page.replace('.html', ''); // Strip extension from the HTML data attribute
+    link.classList.toggle('active', targetPage === current);
   });
 
   // Helper to generate SVG Trust Badges dynamically
