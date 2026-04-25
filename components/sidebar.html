@@ -1,7 +1,27 @@
-<!-- components/sidebar.html — shared sidebar fragment -->
-<!-- Loaded via fetch() into every app page -->
+<style>
+  /* 1. The tactile "click" animation */
+  .sidebar-link:active {
+    transform: scale(0.97) translateY(1px);
+    transition: transform 0.1s ease;
+  }
+
+  /* 2. The "Inset/Pressed" look for the currently active page */
+  .sidebar-link.active {
+    background: rgba(0, 0, 0, 0.25) !important; /* Darker inset background */
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 2px rgba(0, 0, 0, 0.6) !important; /* Deep inner shadow */
+    border-top: 1px solid rgba(0, 0, 0, 0.5); /* Sharp inner edge */
+    color: var(--accent) !important;
+  }
+  
+  /* Give the active icon a slight glow to pop out of the inset hole */
+  .sidebar-link.active svg {
+    filter: drop-shadow(0 0 4px rgba(0, 212, 170, 0.4));
+  }
+</style>
+
 <aside class="sidebar" id="appSidebar">
- <button id="sidebarClose" style="display:none;position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;">✕</button>
+  <button id="sidebarClose" style="display:none;position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;">✕</button>
   <a href="../pages/dashboard.html" class="sidebar-logo">Reclaim<span>X</span></a>
 
   <nav class="sidebar-nav">
