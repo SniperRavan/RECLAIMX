@@ -133,6 +133,29 @@ p { color: var(--text-secondary); line-height: 1.7; }
 .sidebar-user-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar-user-level { font-size: 0.68rem; font-family: var(--font-mono); color: #b47832; }
 
+
+/* Sidebar & Card Icon Styling */
+.item-card-thumb i, .activity-icon i, .match-icon i {
+  font-size: 1.6rem; /* Slightly larger for FA icons */
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure active sidebar icon glows */
+.sidebar-link.active i {
+  color: var(--accent);
+  filter: drop-shadow(0 0 5px var(--accent-glow));
+}
+
+/* Initials Avatar Styling */
+.avatar-initials {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
 /* ── App Shell ────────────────────────────────────────────────── */
 .app-shell { display: flex; min-height: 100vh; }
 .main-content { margin-left: 240px; flex: 1; min-height: 100vh; }
