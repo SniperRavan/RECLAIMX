@@ -4,11 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Profile — ReclaimX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/global.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
   <style>
     .profile-header { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; display:flex; align-items:center; gap:24px; margin-bottom:20px; }
-    .profile-avatar-lg { width:80px; height:80px; border-radius:50%; background:var(--accent-dim); border:2px solid rgba(0,212,170,0.4); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700; color:var(--accent); flex-shrink:0; font-family:var(--font-display); }
+    .profile-avatar-lg { width:80px; height:80px; border-radius:50%; background:var(--accent-dim); border:2px solid rgba(0,212,170,0.4); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700; color:var(--accent); flex-shrink:0; font-family:var(--font-display); overflow:hidden; }
     .profile-name { font-size:1.4rem; font-weight:700; margin-bottom:4px; }
     .profile-email { font-size:0.82rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:10px; }
     .trust-bar-wrap { display:flex; align-items:center; gap:12px; margin-top:8px; }
@@ -22,6 +23,11 @@
     .activity-info { flex:1; }
     .activity-name { font-size:0.875rem; font-weight:600; }
     .activity-meta { font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px; }
+    
+    /* Upgraded Remove Photo Button with Flexbox for SVG */
+    .remove-photo-btn { background:none; border:none; color:var(--danger); font-size:0.75rem; font-family:var(--font-mono); cursor:pointer; margin-top:14px; transition:opacity 0.2s; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .remove-photo-btn:hover { opacity:0.7; }
+    
     @media(max-width:700px){ .stats-row{grid-template-columns:1fr 1fr;} .profile-header{flex-direction:column;text-align:center;} }
   </style>
 </head>
@@ -41,12 +47,21 @@
     <div class="page-content">
 
       <div class="profile-header">
-        <div class="profile-avatar-lg" id="profileAvatar" style="cursor:pointer;position:relative" title="Click to change photo">
-          <div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div class="profile-avatar-lg" id="profileAvatar" style="cursor:pointer;position:relative" title="Click to change photo">
+            <div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;z-index:2;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
           </div>
+          
+          <button id="removePhotoBtn" class="remove-photo-btn" style="display:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            Remove
+          </button>
         </div>
+        
         <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" style="display:none"/>
+        
         <div style="flex:1">
           <div class="profile-name" id="profileName">Loading…</div>
           <div class="profile-email" id="profileEmail">—</div>
@@ -154,6 +169,20 @@
     return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(217,119,6,0.1)" stroke="#D97706" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Bronze Helper`;
   }
 
+  function getInitials(fullName) {
+    const parts = fullName.trim().split(/[\s_\.\-]+/);
+    let init = '';
+    if (parts.length >= 2) {
+      init = (parts[0][0] || '') + (parts[1][0] || '');
+    } else if (parts.length === 1) {
+      init = parts[0].slice(0, 2);
+    }
+    return init.toUpperCase() || 'U';
+  }
+
+  const removePhotoBtn = document.getElementById('removePhotoBtn');
+  const avatarEl       = document.getElementById('profileAvatar');
+
   (async function initProfile() {
     const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
     if (!user) { window.location.href = 'login.html'; return; }
@@ -163,19 +192,15 @@
     const pct    = Math.min((score / 100) * 100, 100);
     const nextAt = score < 50 ? 50 : score < 100 ? 100 : null;
 
-    const initialsText = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-    const avatarEl2 = document.getElementById('profileAvatar');
+    const initialsText = getInitials(name);
     
-    if (user.photo) {
-      avatarEl2.innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;z-index:0;" referrerpolicy="no-referrer"/><div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+    // Set photo or initials
+    if (user.photo && user.photo.trim() !== '') {
+      avatarEl.innerHTML = `<img src="${user.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;z-index:0;" referrerpolicy="no-referrer"/><div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+      removePhotoBtn.style.display = 'flex'; // Show remove button
     } else {
-      let initialsSpan = avatarEl2.querySelector('.avatar-initials');
-      if (!initialsSpan) {
-        initialsSpan = document.createElement('span');
-        initialsSpan.className = 'avatar-initials';
-        avatarEl2.insertBefore(initialsSpan, avatarEl2.firstChild);
-      }
-      initialsSpan.textContent = initialsText;
+      avatarEl.innerHTML = `<div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><span class="avatar-initials">${initialsText}</span>`;
+      removePhotoBtn.style.display = 'none'; // Hide remove button
     }
 
     document.getElementById('profileName').textContent   = name;
@@ -213,18 +238,16 @@
         u.name = newName;
         sessionStorage.setItem('rx_user', JSON.stringify(u));
 
-        document.getElementById('profileName').textContent   = newName;
+        document.getElementById('profileName').textContent = newName;
         
-        // ── NEW: Update Sidebar immediately ──
         const sidebarName = document.getElementById('sidebarName');
         if (sidebarName) sidebarName.textContent = newName;
 
-        if(!u.photo) {
-          const initials = newName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-          const span = document.getElementById('profileAvatar').querySelector('.avatar-initials');
+        if(!u.photo || u.photo.trim() === '') {
+          const initials = getInitials(newName);
+          const span = avatarEl.querySelector('.avatar-initials');
           if(span) span.textContent = initials;
           
-          // ── NEW: Update Sidebar Avatar ──
           const sidebarAvatar = document.getElementById('sidebarAvatar');
           if (sidebarAvatar && sidebarAvatar.querySelector('img') === null) {
             sidebarAvatar.textContent = initials;
@@ -233,9 +256,7 @@
 
         window.ReclaimX?.toast('Profile updated! ✓', 'success');
       } catch(err) {
-        const errMsg = err.message === 'Failed to fetch' 
-          ? 'Server offline. Run npm run dev:all' 
-          : err.message || 'Failed to save. Try again.';
+        const errMsg = err.message === 'Failed to fetch' ? 'Server offline. Run npm run dev:all' : err.message || 'Failed to save. Try again.';
         window.ReclaimX?.toast(errMsg, 'error');
       } finally {
         btn.textContent = 'Save Changes';
@@ -299,9 +320,9 @@
     if (e.key === 'Enter') document.getElementById('saveBtn').click();
   });
 
-  const avatarEl    = document.getElementById('profileAvatar');
   const avatarInput = document.getElementById('avatarInput');
 
+  // Overlay interactions
   avatarEl.addEventListener('mouseenter', () => {
     const over = document.getElementById('avatarOverlay');
     if(over) over.style.display = 'flex';
@@ -312,6 +333,7 @@
   });
   avatarEl.addEventListener('click', () => avatarInput.click());
 
+  // ── Upload Photo ──
   avatarInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -319,12 +341,7 @@
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-      let existingImg = avatarEl.querySelector('img');
-      if (existingImg) {
-        existingImg.src = ev.target.result;
-      } else {
-        avatarEl.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;z-index:0;"/><div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
-      }
+      avatarEl.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;z-index:0;"/><div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
     };
     reader.readAsDataURL(file);
 
@@ -346,7 +363,8 @@
       u.photo = data.photoUrl;
       sessionStorage.setItem('rx_user', JSON.stringify(u));
 
-      // ── NEW: Update Sidebar immediately ──
+      removePhotoBtn.style.display = 'flex'; // Show remove button
+
       const sidebarAvatar = document.getElementById('sidebarAvatar');
       if (sidebarAvatar) {
         sidebarAvatar.innerHTML = `<img src="${data.photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" referrerpolicy="no-referrer"/>`;
@@ -360,6 +378,58 @@
       window.ReclaimX?.toast(errMsg, 'error');
     }
   });
+
+  // ── Remove Photo (FIXED) ──
+  removePhotoBtn.addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to remove your profile photo?')) return;
+    
+    // Visually disable the button while loading
+    removePhotoBtn.style.opacity = '0.5';
+    removePhotoBtn.style.pointerEvents = 'none';
+
+    try {
+      const token = await window.getToken();
+      
+      // CRITICAL FIX: We MUST send the `name` back to the server alongside `photo: ''`.
+      // The backend crashes if `name` is undefined during a profile update!
+      const currentName = document.getElementById('editName').value.trim() || 'User';
+
+      const res = await fetch(`${window.API_BASE}/api/auth/profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ name: currentName, photo: '' }) 
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to remove photo');
+
+      // 1. Update Local Session
+      const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
+      u.photo = '';
+      sessionStorage.setItem('rx_user', JSON.stringify(u));
+
+      // 2. Update Profile UI to show Initials
+      const initials = getInitials(u.name || u.email || 'User');
+      avatarEl.innerHTML = `<div id="avatarOverlay" style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;color:#fff;z-index:1;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><span class="avatar-initials">${initials}</span>`;
+      removePhotoBtn.style.display = 'none';
+
+      // 3. Update Sidebar UI
+      const sidebarAvatar = document.getElementById('sidebarAvatar');
+      if (sidebarAvatar) {
+        sidebarAvatar.innerHTML = '';
+        sidebarAvatar.textContent = initials;
+      }
+
+      window.ReclaimX?.toast('Photo removed successfully.', 'info');
+    } catch(err) {
+      window.ReclaimX?.toast('Could not remove photo. Try again.', 'error');
+    } finally {
+      // Re-enable the button
+      removePhotoBtn.style.opacity = '1';
+      removePhotoBtn.style.pointerEvents = 'auto';
+    }
+  });
+
 </script>
 </body>
 </html>
