@@ -352,7 +352,7 @@ Open **http://localhost:3000**
 | `npm start` | `node backend/server.js` | Production backend |
 | `npm run dev` | `nodemon backend/server.js` | Dev backend with auto-restart |
 | `npm run serve` | `npx serve . -l 3000` | Serve frontend on port 3000 |
-| `npm run dev:all` | Both in separate windows | Start everything at once (Windows) |
+| `npm run dev:all` | concurrently | Start both servers cross-platform |
 
 ---
 
