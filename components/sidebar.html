@@ -1,3 +1,4 @@
+<!--
 <style>
   /* 1. The tactile "click" animation */
   .sidebar-link:active {
@@ -19,6 +20,17 @@
     filter: drop-shadow(0 0 4px rgba(0, 212, 170, 0.4));
   }
 </style>
+-->
+
+<!--
+  components/sidebar.html
+  NEW-H FIX: Removed the <style> block that was at the top of this file.
+  Those styles (.sidebar-link.active inset shadow, .sidebar-link:active scale)
+  are now permanently in assets/css/global.css where they belong.
+  Injecting a <style> block into <body> via fetch() caused a Flash Of Unstyled
+  Content (FOUC) — the sidebar would flicker on every page load as the injected
+  styles applied after the initial render.
+-->
 
 <aside class="sidebar" id="appSidebar">
   <button id="sidebarClose" style="display:none;position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;">✕</button>
