@@ -151,7 +151,7 @@
       const isLost   = item.status === 'Lost';
       const location = item.last_seen_location || item.found_location || '—';
       const icon     = CATEGORY_ICONS[item.category] || CATEGORY_ICONS['Other'];
-      const ago      = window.ReclaimX?.timeAgo(item.createdAt) || 'Recently';
+      const ago      = window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
       return `
         <div class="item-card" style="animation:fadeUp 0.4s ${i*0.05}s ease both">
           <div class="item-card-thumb" style="color:var(--text-secondary)">${icon}</div>
