@@ -16,10 +16,7 @@
 // ERR-017 FIX: This is the ONLY place where API_BASE is defined.
 // firebase-config.js imports it from window.API_BASE (not its own copy).
 // Change this one line when you deploy to Ra:ilway.
-window.API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-  ? 'http://localhost:5000'
-  : 'https://reclaimx.onrender.com'; // ← replace with your actual Render URL after deployment
-
+window.API_BASE = 'https://reclaimx.onrender.com';
 // ── Auto-refresh Firebase token before API calls ───────────────
 window.getToken = async function() {
   try {
@@ -35,7 +32,7 @@ window.getToken = async function() {
         if (!r.ok) throw new Error('Config fetch failed');
         const config = await r.json();
         app = initializeApp(config);
-      } catch(e) {
+      } catch (e) {
         return sessionStorage.getItem('rx_token');
       }
     }
@@ -46,7 +43,7 @@ window.getToken = async function() {
       sessionStorage.setItem('rx_token', freshToken);
       return freshToken;
     }
-  } catch(e) {
+  } catch (e) {
     console.warn('[getToken] failed:', e.message);
   }
   return sessionStorage.getItem('rx_token');
@@ -56,7 +53,7 @@ window.ReclaimX = window.ReclaimX || {};
 
 // ── Toast System ───────────────────────────────────────────────
 window.ReclaimX.toast = function(message, type, duration) {
-  type     = type     || 'success';
+  type = type || 'success';
   duration = duration || 4000;
 
   // Look for the container — it may be injected via toast.html or hardcoded
@@ -85,7 +82,7 @@ window.ReclaimX.toast = function(message, type, duration) {
   toast.addEventListener('mouseleave', () => { timer = setTimeout(() => dismiss(toast), 1500); });
 
   function dismiss(el) {
-    el.style.opacity   = '0';
+    el.style.opacity = '0';
     el.style.transform = 'translateX(60px)';
     el.style.transition = 'all 0.3s ease';
     setTimeout(() => el.remove(), 300);
@@ -104,7 +101,7 @@ if (navbar) {
 const animObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.style.opacity   = '1';
+      entry.target.style.opacity = '1';
       entry.target.style.transform = 'translateY(0)';
       animObserver.unobserve(entry.target);
     }
@@ -112,8 +109,8 @@ const animObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.08 });
 
 document.querySelectorAll('.item-card, .card, .stat-card').forEach(el => {
-  el.style.opacity    = '0';
-  el.style.transform  = 'translateY(16px)';
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
   el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
   animObserver.observe(el);
 });
@@ -121,8 +118,8 @@ document.querySelectorAll('.item-card, .card, .stat-card').forEach(el => {
 // ── Relative time formatter ───────────────────────────────────
 window.ReclaimX.timeAgo = function(dateStr) {
   const diff = (Date.now() - new Date(dateStr)) / 1000;
-  if (diff < 60)    return 'Just now';
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 60) return 'Just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}hr ago`;
   return `${Math.floor(diff / 86400)}d ago`;
 };
@@ -143,7 +140,7 @@ window.ReclaimX.hasSensitiveData = function(text) {
 };
 
 // ── Disposable email checker ──────────────────────────────────
-const BLOCKED_DOMAINS = ['mailinator.com','guerrillamail.com','tempmail.com','10minutemail.com','yopmail.com'];
+const BLOCKED_DOMAINS = ['mailinator.com', 'guerrillamail.com', 'tempmail.com', '10minutemail.com', 'yopmail.com'];
 window.ReclaimX.isDisposableEmail = function(email) {
   const domain = (email || '').split('@')[1] || '';
   return BLOCKED_DOMAINS.includes(domain.toLowerCase());
@@ -169,16 +166,16 @@ async function initSidebar() {
   // Helper to generate SVG Trust Badges dynamically
   function getTrustBadge(score) {
     if (score >= 100) return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(251,191,36,0.1)" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Gold Hero`;
-    if (score >= 50)  return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Silver Helper`;
+    if (score >= 50) return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Silver Helper`;
     return `<svg style="width:14px;height:14px;vertical-align:middle;margin-right:4px;transform:translateY(-1px)" viewBox="0 0 24 24" fill="rgba(217,119,6,0.1)" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Bronze Helper`;
   }
 
   // User info from sessionStorage (instant display)
   const stored = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
   if (stored) {
-    const name     = stored.name || stored.email || 'User';
+    const name = stored.name || stored.email || 'User';
     const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    const trust    = stored.trust_score || 0;
+    const trust = stored.trust_score || 0;
 
     const avatarEl = document.getElementById('sidebarAvatar');
     if (stored.photo && avatarEl) {
@@ -188,15 +185,15 @@ async function initSidebar() {
     }
 
     const nameEl = document.getElementById('sidebarName');
-    const lvlEl  = document.getElementById('sidebarLevel');
+    const lvlEl = document.getElementById('sidebarLevel');
     if (nameEl) nameEl.textContent = name;
-    
+
     // FIX: Using innerHTML so the SVG renders as an image, not raw text code
-    if (lvlEl)  lvlEl.innerHTML  = getTrustBadge(trust);
+    if (lvlEl) lvlEl.innerHTML = getTrustBadge(trust);
 
     let token;
-    try { token = await window.getToken(); } 
-    catch(e) { token = sessionStorage.getItem('rx_token'); }
+    try { token = await window.getToken(); }
+    catch (e) { token = sessionStorage.getItem('rx_token'); }
 
     if (token) {
       // Update user info from live backend data
@@ -206,12 +203,12 @@ async function initSidebar() {
         .then(r => r.ok ? r.json() : null)
         .then(data => {
           if (!data) return;
-          if (data.name  && nameEl) nameEl.textContent = data.name;
+          if (data.name && nameEl) nameEl.textContent = data.name;
           const liveScore = data.trust_score || 0;
           // FIX: Using innerHTML here too!
           if (lvlEl) lvlEl.innerHTML = getTrustBadge(liveScore);
         })
-        .catch(() => {}); 
+        .catch(() => { });
 
       // Fetch matches count
       fetch(`${window.API_BASE}/api/matches`, {
@@ -224,11 +221,11 @@ async function initSidebar() {
             : 0;
           const badge = document.getElementById('sidebarMatchBadge');
           if (badge && pending > 0) {
-            badge.textContent    = pending > 9 ? '9+' : pending;
-            badge.style.display  = '';
+            badge.textContent = pending > 9 ? '9+' : pending;
+            badge.style.display = '';
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }
 
@@ -259,8 +256,8 @@ async function initSidebar() {
     if (window.innerWidth > 900) return;
     const menuBtn = document.getElementById('menuBtn');
     if (sidebar.classList.contains('open') &&
-        !sidebar.contains(e.target) &&
-        menuBtn && !menuBtn.contains(e.target)) {
+      !sidebar.contains(e.target) &&
+      menuBtn && !menuBtn.contains(e.target)) {
       sidebar.classList.remove('open');
       sidebar.style.display = '';
     }
