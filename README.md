@@ -394,8 +394,7 @@ Open **http://localhost:3000**
 
 ## License
 
-This project is submitted as an academic project for my college. All rights reserved by the authors. Not licensed for commercial use without permission.
-
+This project is submitted as an academic project for my college. MIT License — see [LICENSE](LICENSE) for full text.
 ---
 
 <p align="center">
