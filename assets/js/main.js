@@ -4,7 +4,7 @@
     
     ERR-017 FIX: window.API_BASE is the single source of truth.
     firebase-config.js now reads window.API_BASE instead of defining its own copy.
-    When you get your Railway URL, change it HERE and ONLY here.
+    When you get your Render URL, change it HERE and ONLY here.
     
     ERR-018 FIX: initSidebar() now calls await window.getToken() instead of
     reading sessionStorage directly — ensures token is fresh (not expired).
@@ -15,10 +15,10 @@
 // ── Single source of truth for API URL ────────────────────────
 // ERR-017 FIX: This is the ONLY place where API_BASE is defined.
 // firebase-config.js imports it from window.API_BASE (not its own copy).
-// Change this one line when you deploy to Railway.
+// Change this one line when you deploy to Ra:ilway.
 window.API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? 'http://localhost:5000'
-  : 'https://YOUR-RAILWAY-URL.up.railway.app'; // ← replace with your actual Railway URL after deployment
+  : 'https://reclaimx.onrender.com'; // ← replace with your actual Render URL after deployment
 
 // ── Auto-refresh Firebase token before API calls ───────────────
 window.getToken = async function() {
