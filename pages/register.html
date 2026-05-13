@@ -227,7 +227,7 @@
       await sendEmailVerification(cred.user);
       await saveSession(cred.user, campus, fullName);
       btn.textContent = '✓ Done!';
-      alert(`Account created! Please verify your email at ${email} before logging in.`);
+      alert(`Account created! Verification email sent to ${email}.\n\nIf you don't see it, check your SPAM folder and mark it as "Not Spam".`);
       window.location.href = 'login.html';
     } catch(err) {
       btn.disabled = false; btn.textContent = 'Create My Account';
