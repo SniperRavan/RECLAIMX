@@ -4,7 +4,7 @@ const router   = express.Router();
 const protect  = require('../middleware/authMiddleware');
 const { upload, uploadToCloudinary } = require('../config/cloudinary');
 const supabase = require('../config/supabase');
-const { runMatchingForItem }    = require('../ai/matchingEngine');
+const { runMatchingForItem }      = require('../ai/matchingEngine');
 const { sensitiveDataMiddleware } = require('../utils/sensitiveDataFilter');
 
 // GET /api/items/me — current user's own reports
@@ -27,7 +27,7 @@ router.get('/me', protect, async (req, res, next) => {
   }
 });
 
-// GET /api/items — public browse (no auth required)
+// GET /api/items — public browse
 router.get('/', async (req, res, next) => {
   try {
     const { campus, category, search } = req.query;
@@ -57,21 +57,11 @@ router.get('/', async (req, res, next) => {
 });
 
 // POST /api/items/lost — report a lost item
-//
-// ERR-002 FIX:
-// Original middleware order: protect → sensitiveDataMiddleware → upload.array(...)
-// Problem: For multipart/form-data requests (which all image uploads use), Express
-// does NOT parse req.body until multer runs. So sensitiveDataMiddleware was checking
-// req.body.description, req.body.hidden_contains etc. — all of which were UNDEFINED
-// at that point. The entire sensitive data check was silently skipped for every
-// lost report that included an image.
-// Fix: Run upload FIRST so multer parses the body, THEN check for sensitive data.
-//
-// Correct order: protect → upload.array() → sensitiveDataMiddleware → handler
+// ERR-002 FIX: multer runs BEFORE sensitiveDataMiddleware
 router.post('/lost',
   protect,
-  upload.array('images', 2),        // ← multer FIRST: parses multipart body
-  sensitiveDataMiddleware,           // ← THEN check: req.body is now populated
+  upload.array('images', 2),
+  sensitiveDataMiddleware,
   async (req, res, next) => {
     try {
       const { itemName, description, category, lastSeenLocation, campusId, hiddenAttributes } = req.body;
@@ -87,7 +77,6 @@ router.post('/lost',
 
       const hidden = JSON.parse(hiddenAttributes || '{}');
 
-      // Upload images to Cloudinary (if any)
       let imageUrls = [];
       if (req.files && req.files.length > 0) {
         const results = await Promise.all(
@@ -112,7 +101,6 @@ router.post('/lost',
 
       if (error) throw error;
 
-      // Run matching asynchronously — don't hold up the response
       runMatchingForItem(lostItem, 'lost').catch(e =>
         console.error('[ItemRoute] Async match failed:', e.message)
       );
@@ -125,11 +113,10 @@ router.post('/lost',
 );
 
 // POST /api/items/found — report a found item
-// Same middleware order fix as /lost above
 router.post('/found',
   protect,
-  upload.single('image'),            // ← multer FIRST
-  sensitiveDataMiddleware,           // ← THEN sensitive check
+  upload.single('image'),
+  sensitiveDataMiddleware,
   async (req, res, next) => {
     try {
       const { itemName, description, category, foundLocation, campusId } = req.body;
@@ -172,5 +159,58 @@ router.post('/found',
     }
   }
 );
+
+// DELETE /api/items/lost/:id — delete own lost report
+// Only the owner can delete. Cascades to linked claims.
+router.delete('/lost/:id', protect, async (req, res, next) => {
+  try {
+    const { data: user } = await supabase
+      .from('users').select('id').eq('firebase_uid', req.user.uid).single();
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    // Ownership check — fetch item first
+    const { data: item } = await supabase
+      .from('lost_items').select('id, user_id').eq('id', req.params.id).single();
+
+    if (!item)                    return res.status(404).json({ error: 'Item not found.' });
+    if (item.user_id !== user.id) return res.status(403).json({ error: 'You can only delete your own reports.' });
+
+    // Delete linked claims first (FK constraint)
+    await supabase.from('claims').delete().eq('lost_item_id', req.params.id);
+
+    // Delete the item
+    const { error } = await supabase.from('lost_items').delete().eq('id', req.params.id);
+    if (error) throw error;
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/items/found/:id — delete own found report
+router.delete('/found/:id', protect, async (req, res, next) => {
+  try {
+    const { data: user } = await supabase
+      .from('users').select('id').eq('firebase_uid', req.user.uid).single();
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    const { data: item } = await supabase
+      .from('found_items').select('id, user_id').eq('id', req.params.id).single();
+
+    if (!item)                    return res.status(404).json({ error: 'Item not found.' });
+    if (item.user_id !== user.id) return res.status(403).json({ error: 'You can only delete your own reports.' });
+
+    // Delete linked claims first
+    await supabase.from('claims').delete().eq('found_item_id', req.params.id);
+
+    const { error } = await supabase.from('found_items').delete().eq('id', req.params.id);
+    if (error) throw error;
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;

@@ -7,6 +7,149 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/global.css"/>
   <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <style>
+    /* ── My Reports card ─────────────────────────────────────── */
+    .report-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .report-card:hover { border-color: var(--border-hover); }
+    .report-card-icon { color: var(--text-secondary); font-size: 1.5rem; display: flex; flex-shrink: 0; }
+    .report-card-info { flex: 1; min-width: 0; }
+    .report-card-name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .report-card-meta { font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+    .report-card-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* ── 3-dot menu ──────────────────────────────────────────── */
+    .dot-menu-wrap { position: relative; }
+    .dot-menu-btn {
+      background: none; border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: var(--radius-sm); width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+    }
+    .dot-menu-btn:hover { background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-hover); }
+    .dot-menu-dropdown {
+      position: absolute; right: 0; top: calc(100% + 6px); z-index: 100;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 6px; min-width: 150px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      display: none; flex-direction: column; gap: 2px;
+      animation: fadeUp 0.15s ease;
+    }
+    .dot-menu-dropdown.open { display: flex; }
+    .dot-menu-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      font-size: 0.82rem; color: var(--text-secondary);
+      cursor: pointer; border: none; background: none;
+      width: 100%; text-align: left; transition: all 0.15s;
+      font-family: var(--font-body);
+    }
+    .dot-menu-item:hover { background: var(--bg-card); color: var(--text-primary); }
+    .dot-menu-item.danger { color: var(--danger); }
+    .dot-menu-item.danger:hover { background: rgba(255,77,109,0.1); }
+    .dot-menu-item i { width: 14px; text-align: center; font-size: 0.75rem; }
+
+    /* ── Details modal ───────────────────────────────────────── */
+    .details-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(4,6,9,0.82);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .details-overlay.open { opacity: 1; pointer-events: all; }
+
+    .details-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      width: 100%; max-width: 460px;
+      max-height: 88vh; overflow-y: auto;
+      position: relative;
+      box-shadow: 0 0 60px rgba(0,212,170,0.08), 0 24px 64px rgba(0,0,0,0.6);
+      animation: fadeUp 0.25s ease;
+    }
+
+    /* Accent top bar matches status */
+    .details-modal-topbar {
+      height: 4px; border-radius: 24px 24px 0 0;
+      background: var(--accent);
+    }
+    .details-modal-topbar.lost { background: var(--danger); }
+
+    .details-modal-header {
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .details-modal-icon {
+      width: 48px; height: 48px; border-radius: var(--radius-md);
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; color: var(--text-secondary); flex-shrink: 0;
+    }
+    .details-modal-title { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 6px; }
+    .details-close {
+      position: absolute; top: 18px; right: 18px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      color: var(--text-muted); border-radius: 50%;
+      width: 32px; height: 32px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; font-size: 0.9rem;
+    }
+    .details-close:hover { color: var(--text-primary); background: var(--bg-surface); }
+
+    .details-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+    .detail-row { display: flex; flex-direction: column; gap: 4px; }
+    .detail-label {
+      font-size: 0.62rem; font-family: var(--font-mono);
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px;
+    }
+    .detail-value { font-size: 0.88rem; color: var(--text-primary); font-weight: 500; }
+    .detail-value.muted { color: var(--text-secondary); font-weight: 400; }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .detail-description-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .detail-image {
+      width: 100%; border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      object-fit: cover; max-height: 200px;
+    }
+
+    .details-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+
+    /* Responsive */
+    @media(max-width:600px) {
+      .detail-grid { grid-template-columns: 1fr; }
+      .report-card-actions { gap: 6px; }
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
@@ -14,20 +157,26 @@
 
   <main class="main-content">
     <header class="main-header">
-      <button id="menuBtn" style="display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;margin-right:12px;padding:4px;" onclick="document.getElementById('appSidebar').classList.add('open')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <button id="menuBtn"
+        style="display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;margin-right:12px;padding:4px;"
+        onclick="const s=document.getElementById('appSidebar');if(s)s.classList.add('open');">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
       </button>
       <div>
         <h1>Dashboard</h1>
         <p id="greetMsg">Loading your campus feed…</p>
       </div>
       <div style="display:flex;gap:10px">
-        <a href="report-lost.html" class="btn btn-ghost btn-sm">+ Report Lost</a>
+        <a href="report-lost.html"  class="btn btn-ghost btn-sm">+ Report Lost</a>
         <a href="report-found.html" class="btn btn-primary btn-sm">+ Report Found</a>
       </div>
     </header>
 
     <div class="page-content">
+
+      <!-- Stats -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">Active Lost Reports</div>
@@ -40,19 +189,18 @@
           <div class="stat-change">Waiting to be claimed</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">AI Matches Today</div>
+          <div class="stat-label">Scoring Engine</div>
           <div class="stat-value text-accent" id="statMatches">—</div>
-          <div class="stat-change">Across campus</div>
+          <div class="stat-change">Matches across campus</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Your Trust Score</div>
           <div class="stat-value" id="statTrust">0</div>
-          <div class="stat-change" id="trustLevel" style="display:flex;align-items:center;">
-              Loading rank...
-          </div>
+          <div class="stat-change" id="trustLevel" style="display:flex;align-items:center;">Loading rank...</div>
         </div>
       </div>
 
+      <!-- Recent Activity -->
       <div class="section-header">
         <div class="section-title">Recent Campus Activity</div>
         <a href="browse.html" style="font-size:0.78rem;color:var(--accent);font-family:var(--font-mono)">View all →</a>
@@ -69,6 +217,7 @@
         </div>
       </div>
 
+      <!-- My Reports -->
       <div class="section-header" style="margin-top:32px">
         <div class="section-title">My Active Reports</div>
         <a href="report-lost.html" style="font-size:0.78rem;color:var(--accent);font-family:var(--font-mono)">+ New report</a>
@@ -81,11 +230,79 @@
   </main>
 </div>
 
+<!-- ── Details Modal ──────────────────────────────────────────── -->
+<div class="details-overlay" id="detailsOverlay" onclick="if(event.target===this)closeDetails()">
+  <div class="details-modal" id="detailsModal">
+    <div class="details-modal-topbar" id="detailsTopBar"></div>
+    <button class="details-close" onclick="closeDetails()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="details-modal-header">
+      <div class="details-modal-icon" id="detailsIcon"></div>
+      <div>
+        <div class="details-modal-title" id="detailsTitle">—</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" id="detailsBadges"></div>
+      </div>
+    </div>
+
+    <div class="details-body">
+      <!-- Image (shown only if exists) -->
+      <div id="detailsImageWrap" style="display:none">
+        <div class="detail-label">Photo</div>
+        <img class="detail-image" id="detailsImage" src="" alt="Item photo"/>
+      </div>
+
+      <!-- Grid: location + status -->
+      <div class="detail-grid">
+        <div class="detail-row">
+          <div class="detail-label">Location</div>
+          <div class="detail-value" id="detailsLocation">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Category</div>
+          <div class="detail-value" id="detailsCategory">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Status</div>
+          <div id="detailsStatus"></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Reported</div>
+          <div class="detail-value muted" id="detailsTime">—</div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="detail-row" id="detailsDescWrap">
+        <div class="detail-label">Additional Description</div>
+        <div class="detail-description-box" id="detailsDesc">—</div>
+      </div>
+
+      <!-- Campus -->
+      <div class="detail-row">
+        <div class="detail-label">Campus</div>
+        <div class="detail-value muted" id="detailsCampus">—</div>
+      </div>
+    </div>
+
+    <div class="details-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeDetails()">Close</button>
+      <a href="matches.html" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-check-double" style="font-size:11px"></i> View Matches
+      </a>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
 <script src="../assets/js/main.js"></script>
 <script src="../assets/js/pwa.js"></script>
 <script>
-  fetch('../components/sidebar.html').then(r => r.text()).then(html => { document.getElementById('sidebar-placeholder').innerHTML = html; });
-  fetch('../components/toast.html').then(r => r.text()).then(html => { document.body.insertAdjacentHTML('beforeend', html); });
+  fetch('../components/sidebar.html').then(r => r.text()).then(html => {
+    document.getElementById('sidebar-placeholder').innerHTML = html;
+  });
 
   const CATEGORY_ICONS = {
     Accessories: '<i class="fa-solid fa-gem"></i>',
@@ -98,85 +315,268 @@
     Other:       '<i class="fa-solid fa-box-open"></i>'
   };
 
-  const ICON_MAP = '<i class="fa-solid fa-location-dot" style="font-size:10px; opacity:0.7; margin-right:4px;"></i>';
-  const ICON_TAG = '<i class="fa-solid fa-tag" style="font-size:10px; opacity:0.7; margin-right:4px;"></i>';
+  const CAMPUS_LABELS = {
+    campus_a: 'Campus A — Main Campus',
+    campus_b: 'Campus B — North Wing',
+    campus_c: 'Campus C — Engineering Block',
+  };
+
+  const ICON_MAP = '<i class="fa-solid fa-location-dot" style="font-size:10px;opacity:0.7;margin-right:4px;"></i>';
+  const ICON_TAG = '<i class="fa-solid fa-tag" style="font-size:10px;opacity:0.7;margin-right:4px;"></i>';
 
   function getTrustBadge(score) {
-    const medalStyle = 'font-size:14px; margin-right:6px;';
-    if (score >= 100) return `<i class="fa-solid fa-award" style="${medalStyle} color:#FBBF24;"></i> Gold Hero`;
-    if (score >= 50)  return `<i class="fa-solid fa-award" style="${medalStyle} color:#94A3B8;"></i> Silver Helper`;
-    return `<i class="fa-solid fa-award" style="${medalStyle} color:#D97706;"></i> Bronze Helper`;
+    const s = 'font-size:14px;margin-right:6px;';
+    if (score >= 100) return `<i class="fa-solid fa-award" style="${s}color:#FBBF24;"></i> Gold Hero`;
+    if (score >= 50)  return `<i class="fa-solid fa-award" style="${s}color:#94A3B8;"></i> Silver Helper`;
+    return `<i class="fa-solid fa-award" style="${s}color:#D97706;"></i> Bronze Helper`;
   }
 
+  // Auth guard + greeting
   const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
-  if (!user) { window.location.href = 'login.html'; }
-  else {
+  if (!user) {
+    window.location.href = 'login.html';
+  } else {
     const name  = user.name || user.email;
     const hour  = new Date().getHours();
     const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
     document.getElementById('greetMsg').textContent = `${greet}, ${name.split(' ')[0]} 👋`;
     document.getElementById('statTrust').textContent = user.trust_score || 0;
-    document.getElementById('trustLevel').innerHTML = getTrustBadge(user.trust_score || 0);
+    document.getElementById('trustLevel').innerHTML  = getTrustBadge(user.trust_score || 0);
   }
 
-  const token = sessionStorage.getItem('rx_token');
-  if (token) {
-    fetch(`${window.API_BASE}/api/items/me`, { headers: { 'Authorization': `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(data => {
-        const myItems = [...(data.lost||[]), ...(data.found||[])].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-        if (!myItems.length) {
-          document.getElementById('myReports').innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;padding:20px;text-align:center;">No active reports found.</div>';
-          return;
-        }
-        document.getElementById('myReports').innerHTML = myItems.map(item => {
-          const isLost = item.status === 'Lost' || item.status === 'Pending';
-          const icon = CATEGORY_ICONS[item.category] || CATEGORY_ICONS['Other'];
-          const timeAgo = window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
-          const loc = item.last_seen_location || item.found_location || 'Campus';
-          return `<div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 20px">
-            <div style="color:var(--text-secondary); display:flex; font-size:1.5rem;">${icon}</div>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:0.9rem">${item.item_name}</div>
-              <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:2px">Reported ${timeAgo} · ${loc}</div>
+  // ── Close any open dot-menu when clicking elsewhere ──────────
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.dot-menu-wrap')) {
+      document.querySelectorAll('.dot-menu-dropdown.open')
+        .forEach(d => d.classList.remove('open'));
+    }
+  });
+
+  function toggleDotMenu(btn) {
+    const dropdown = btn.nextElementSibling;
+    const wasOpen  = dropdown.classList.contains('open');
+    // Close all first
+    document.querySelectorAll('.dot-menu-dropdown.open')
+      .forEach(d => d.classList.remove('open'));
+    if (!wasOpen) dropdown.classList.add('open');
+  }
+
+  // ── Details Modal ─────────────────────────────────────────────
+  function openDetails(item, type) {
+    const isLost   = type === 'lost';
+    const icon     = CATEGORY_ICONS[item.category] || CATEGORY_ICONS['Other'];
+    const location = item.last_seen_location || item.found_location || '—';
+    const images   = isLost
+      ? (item.image_urls || [])
+      : (item.image_url ? [item.image_url] : []);
+
+    // Top bar colour
+    document.getElementById('detailsTopBar').className =
+      'details-modal-topbar' + (isLost ? ' lost' : '');
+
+    document.getElementById('detailsIcon').innerHTML  = icon;
+    document.getElementById('detailsTitle').textContent = item.item_name || '—';
+
+    // Badges
+    document.getElementById('detailsBadges').innerHTML = `
+      <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status || (isLost ? 'Lost' : 'Found')}</span>
+      <span class="badge badge-violet" style="font-size:0.62rem">${item.category || '—'}</span>`;
+
+    document.getElementById('detailsLocation').textContent = location;
+    document.getElementById('detailsCategory').textContent = item.category || '—';
+    document.getElementById('detailsTime').textContent =
+      window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
+    document.getElementById('detailsCampus').textContent =
+      CAMPUS_LABELS[item.campus_id] || item.campus_id || '—';
+
+    // Status pill
+    document.getElementById('detailsStatus').innerHTML =
+      `<span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status || (isLost ? 'Lost' : 'Found')}</span>`;
+
+    // Description
+    const descWrap = document.getElementById('detailsDescWrap');
+    if (item.description && item.description.trim()) {
+      document.getElementById('detailsDesc').textContent = item.description;
+      descWrap.style.display = '';
+    } else {
+      descWrap.style.display = 'none';
+    }
+
+    // Image
+    const imgWrap = document.getElementById('detailsImageWrap');
+    if (images.length > 0) {
+      document.getElementById('detailsImage').src = images[0];
+      imgWrap.style.display = '';
+    } else {
+      imgWrap.style.display = 'none';
+    }
+
+    document.getElementById('detailsOverlay').classList.add('open');
+  }
+
+  function closeDetails() {
+    document.getElementById('detailsOverlay').classList.remove('open');
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDetails();
+  });
+
+  // ── Delete a report ───────────────────────────────────────────
+  async function deleteReport(itemId, type, cardEl) {
+    if (!confirm(`Delete this ${type} report? This cannot be undone.`)) return;
+
+    try {
+      const token = await window.getToken();
+      const res   = await fetch(`${window.API_BASE}/api/items/${type}/${itemId}`, {
+        method:  'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || 'Delete failed');
+      }
+
+      // Animate card out
+      cardEl.style.transition = 'opacity 0.3s, transform 0.3s, max-height 0.3s';
+      cardEl.style.opacity    = '0';
+      cardEl.style.transform  = 'translateX(20px)';
+      cardEl.style.maxHeight  = cardEl.offsetHeight + 'px';
+      setTimeout(() => {
+        cardEl.style.maxHeight = '0';
+        cardEl.style.padding   = '0';
+        cardEl.style.margin    = '0';
+        setTimeout(() => cardEl.remove(), 300);
+      }, 300);
+
+      window.ReclaimX?.toast('Report deleted.', 'info');
+    } catch (err) {
+      window.ReclaimX?.toast(err.message || 'Could not delete. Try again.', 'error');
+    }
+  }
+
+  // ── Load my reports ───────────────────────────────────────────
+  async function loadMyReports() {
+    const token = sessionStorage.getItem('rx_token');
+    if (!token) return;
+
+    try {
+      const res  = await fetch(`${window.API_BASE}/api/items/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      const myItems = [
+        ...(data.lost  || []).map(i => ({ ...i, _type: 'lost' })),
+        ...(data.found || []).map(i => ({ ...i, _type: 'found' })),
+      ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      if (!myItems.length) {
+        document.getElementById('myReports').innerHTML =
+          '<div style="color:var(--text-muted);font-size:0.8rem;padding:20px;text-align:center;">No active reports yet.</div>';
+        return;
+      }
+
+      document.getElementById('myReports').innerHTML = myItems.map((item, idx) => {
+        const isLost  = item._type === 'lost';
+        const icon    = CATEGORY_ICONS[item.category] || CATEGORY_ICONS['Other'];
+        const timeAgo = window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
+        const loc     = item.last_seen_location || item.found_location || 'Campus';
+        const safeIdx = `item_${idx}`;
+
+        return `
+          <div class="report-card" id="${safeIdx}">
+            <div class="report-card-icon">${icon}</div>
+            <div class="report-card-info">
+              <div class="report-card-name">${item.item_name}</div>
+              <div class="report-card-meta">Reported ${timeAgo} · ${loc}</div>
             </div>
-            <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status}</span>
-            <a href="matches.html" class="btn btn-ghost btn-sm">View Matches</a>
+            <div class="report-card-actions">
+              <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status}</span>
+
+              <!-- Details button -->
+              <button class="btn btn-ghost btn-sm"
+                onclick='openDetails(${JSON.stringify(item).replace(/'/g, "&#39;")}, "${item._type}")'>
+                <i class="fa-solid fa-circle-info" style="font-size:11px"></i> Details
+              </button>
+
+              <!-- View Matches -->
+              <a href="matches.html" class="btn btn-ghost btn-sm">
+                <i class="fa-solid fa-check-double" style="font-size:11px"></i> Matches
+              </a>
+
+              <!-- 3-dot menu -->
+              <div class="dot-menu-wrap">
+                <button class="dot-menu-btn" onclick="toggleDotMenu(this)" aria-label="More options">
+                  <i class="fa-solid fa-ellipsis-vertical" style="font-size:13px"></i>
+                </button>
+                <div class="dot-menu-dropdown">
+                  <button class="dot-menu-item"
+                    onclick="window.location.href='report-${item._type}.html'">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit Report
+                  </button>
+                  <button class="dot-menu-item danger"
+                    onclick="deleteReport('${item.id}','${item._type}',document.getElementById('${safeIdx}'))">
+                    <i class="fa-solid fa-trash"></i> Delete Report
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>`;
-        }).join('');
-      }).catch(e => console.error(e));
+      }).join('');
+    } catch (err) {
+      document.getElementById('myReports').innerHTML =
+        '<div style="color:var(--text-muted);font-size:0.8rem;padding:20px;text-align:center;">Could not load reports.</div>';
+    }
   }
 
+  loadMyReports();
+
+  // ── Load recent campus activity ───────────────────────────────
   fetch(`${window.API_BASE}/api/items`)
     .then(r => r.json())
     .then(data => {
       document.getElementById('statLost').textContent    = data.lost?.length  || 0;
       document.getElementById('statFound').textContent   = data.found?.length || 0;
       document.getElementById('statMatches').textContent = '—';
-      const all = [...(data.lost||[]), ...(data.found||[])].slice(0, 4);
-      if (all.length) {
-        document.getElementById('recentItems').innerHTML = all.map((item, i) => {
-          const isLost = item.status === 'Lost';
-          const loc    = item.last_seen_location || item.found_location || '—';
-          const icon   = CATEGORY_ICONS[item.category] || CATEGORY_ICONS['Other'];
-          const ago    = window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
-          return `
-            <div class="item-card" style="animation:fadeUp 0.4s ${i*0.1}s ease both">
-              <div class="item-card-thumb" style="color:var(--text-secondary)">${icon}</div>
-              <div class="item-card-body">
-                <div class="item-card-name">${item.item_name}</div>
-                <div class="item-card-meta"><span>${ICON_MAP} ${loc}</span><span>${ICON_TAG} ${item.category}</span></div>
-              </div>
-              <div class="item-card-footer">
-                <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status}</span>
-                <span style="font-family:var(--font-mono)">${ago}</span>
-              </div>
-            </div>`;
-        }).join('');
+
+      const all = [...(data.lost || []), ...(data.found || [])].slice(0, 4);
+      if (!all.length) {
+        document.getElementById('recentItems').innerHTML =
+          '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px">No recent activity.</div>';
+        return;
       }
+
+      document.getElementById('recentItems').innerHTML = all.map((item, i) => {
+        const isLost = item.status === 'Lost';
+        const loc    = item.last_seen_location || item.found_location || '—';
+        const icon   = CATEGORY_ICONS[item.category] || CATEGORY_ICONS['Other'];
+        const ago    = window.ReclaimX?.timeAgo(item.created_at) || 'Recently';
+        return `
+          <div class="item-card" style="animation:fadeUp 0.4s ${i * 0.1}s ease both">
+            <div class="item-card-thumb" style="color:var(--text-secondary)">${icon}</div>
+            <div class="item-card-body">
+              <div class="item-card-name">${item.item_name}</div>
+              <div class="item-card-meta">
+                <span>${ICON_MAP}${loc}</span>
+                <span>${ICON_TAG}${item.category}</span>
+              </div>
+            </div>
+            <div class="item-card-footer">
+              <span class="badge ${isLost ? 'badge-danger' : 'badge-accent'}">${item.status}</span>
+              <span style="font-family:var(--font-mono)">${ago}</span>
+            </div>
+          </div>`;
+      }).join('');
     })
     .catch(() => {
-      document.getElementById('recentItems').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Could not connect to server.</div>';
+      document.getElementById('statLost').textContent    = '—';
+      document.getElementById('statFound').textContent   = '—';
+      document.getElementById('statMatches').textContent = '—';
+      document.getElementById('recentItems').innerHTML =
+        '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px">Could not connect to server.</div>';
     });
 </script>
 </body>
