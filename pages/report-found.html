@@ -138,8 +138,30 @@
 <script src="../assets/js/main.js"></script>
 <script src="../assets/js/pwa.js"></script>
 <script type="module">
-  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
-  fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
+  fetch('/components/sidebar.html')
+  .then(r => {
+    if (!r.ok) throw new Error('Sidebar load failed');
+    return r.text();
+  })
+  .then(html => {
+    document.getElementById('sidebar-placeholder').innerHTML = html;
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  
+  fetch('/components/toast.html')
+  .then(r => {
+    if (!r.ok) throw new Error('Toast load failed');
+    return r.text();
+  })
+  .then(html => {
+    document.body.insertAdjacentHTML('beforeend', html);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+
 
   const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
 
