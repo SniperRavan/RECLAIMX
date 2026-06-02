@@ -258,7 +258,15 @@ if (
       const wrap = document.createElement('div');
       wrap.style.cssText = 'position:relative;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);';
       const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
+
+      // added the URL.revokeObjectURL for memory leakeage issue
+      const objectUrl = URL.createObjectURL(file);
+img.src = objectUrl;
+
+img.onload = () => {
+  URL.revokeObjectURL(objectUrl);
+};
+
       img.style.cssText = 'width:100%;aspect-ratio:1;object-fit:cover;display:block;';
       const del = document.createElement('button');
       del.type = 'button';

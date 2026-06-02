@@ -171,7 +171,7 @@ if (
   typeof user.email !== 'string'
 ) {
   sessionStorage.removeItem('rx_user');
-  window.location.replace('/login.html');
+  window.location.replace('/login');
   throw new Error('Authentication required');
 }
 
@@ -222,7 +222,15 @@ if (
     wrap.innerHTML = '';
 
     const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
+    
+      // added the URL.revokeObjectURL for memory leakeage issue
+      const objectUrl = URL.createObjectURL(file);
+img.src = objectUrl;
+
+img.onload = () => {
+  URL.revokeObjectURL(objectUrl);
+};
+
     img.style.cssText = 'width:200px;aspect-ratio:1;object-fit:cover;display:block;';
 
     const del = document.createElement('button');
@@ -272,7 +280,7 @@ if (
       if (!res.ok) throw new Error((await res.json()).error || 'Submission failed');
       window.ReclaimX?.toast('Found item reported! AI matching is running…', 'success');
       localStorage.removeItem(DRAFT_KEY);
-      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      setTimeout(() => window.location.href = '/dashboard', 1500);
     } catch (err) {
       window.ReclaimX?.toast(err.message || 'Failed to submit. Try again.', 'error');
       btn.textContent = 'Submit Found Report';
