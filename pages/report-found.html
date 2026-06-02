@@ -280,12 +280,17 @@ if (
     }
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey && e.target.tagName !== 'TEXTAREA') {
-      e.preventDefault();
-      document.getElementById('submitBtn').click();
-    }
-  });
+  document.getElementById('foundForm').addEventListener('keydown', (e) => {
+    if (
+  e.key === 'Enter' &&
+  !e.shiftKey &&
+  e.target.tagName !== 'TEXTAREA' &&
+  e.target.type !== 'file'
+) {
+e.preventDefault();
+document.getElementById('submitBtn').click();
+}
+});
 </script>
 </body>
 </html>
