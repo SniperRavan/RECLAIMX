@@ -242,6 +242,33 @@ img.onload = () => {
     wrap.append(img, del);
   });
 
+  // Drag & Drop 
+  const area = document.getElementById('uploadArea');
+
+area.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  area.classList.add('drag-over');
+});
+
+area.addEventListener('dragleave', () => {
+  area.classList.remove('drag-over');
+});
+
+area.addEventListener('drop', (e) => {
+  e.preventDefault();
+  area.classList.remove('drag-over');
+
+  const file = e.dataTransfer.files[0];
+
+  if (!file) return;
+
+  document.getElementById('imageInput').files = e.dataTransfer.files;
+
+  document
+    .getElementById('imageInput')
+    .dispatchEvent(new Event('change'));
+});
+
   document.getElementById('description').addEventListener('input', (e) => {
     document.getElementById('sensitiveWarning').style.display = window.ReclaimX?.hasSensitiveData(e.target.value) ? 'flex' : 'none';
   });
