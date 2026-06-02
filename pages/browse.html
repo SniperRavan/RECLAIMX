@@ -37,8 +37,8 @@
         <p>All lost and found reports on your campus — only item names are visible publicly.</p>
       </div>
       <div style="display:flex;gap:10px">
-        <a href="report-lost.html"  class="btn btn-ghost btn-sm">+ Lost</a>
-        <a href="report-found.html" class="btn btn-primary btn-sm">+ Found</a>
+        <a href="/report-lost"  class="btn btn-ghost btn-sm">+ Lost</a>
+        <a href="/report-found" class="btn btn-primary btn-sm">+ Found</a>
       </div>
     </header>
 
@@ -95,7 +95,7 @@
 <script src="/assets/js/main.js"></script>
 <script src="/assets/js/pwa.js"></script>
 <script>
-  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+  fetch('/components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
 
   const CATEGORY_ICONS = {
     Accessories: '<i class="fa-solid fa-gem"></i>',
