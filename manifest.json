@@ -3,7 +3,7 @@
   "short_name": "ReclaimX",
   "description": "Smart lost & found platform for college campuses",
 
-  "start_url": "/index.html",
+  "start_url": "/",
 
   "display": "standalone",
   "background_color": "#060810",
@@ -42,13 +42,13 @@
     {
       "name": "Report Lost Item",
       "short_name": "Lost",
-      "url": "/pages/report-lost.html",
+      "url": "/report-lost",
       "description": "Quickly report a lost item"
     },
     {
       "name": "Report Found Item",
       "short_name": "Found",
-      "url": "/pages/report-found.html",
+      "url": "/report-found",
       "description": "Report something you found"
     }
   ]
