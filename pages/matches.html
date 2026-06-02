@@ -61,7 +61,7 @@
         <h1>My Matches <span class="ai-badge"><span class="ai-dot"></span>Scoring Engine</span></h1>
         <p>Items matched to your reports — review and verify your claims below.</p>
       </div>
-      <a href="browse.html" class="btn btn-ghost btn-sm">Browse All Items</a>
+      <a href="/browse" class="btn btn-ghost btn-sm">Browse All Items</a>
     </header>
 
     <div class="stats-strip">
@@ -93,7 +93,7 @@
 <script src="/assets/js/main.js"></script>
 <script src="/assets/js/pwa.js"></script>
 <script>
-  fetch('../components/sidebar.html').then(r => r.text()).then(html => { document.getElementById('sidebar-placeholder').innerHTML = html; });
+  fetch('/components/sidebar.html').then(r => r.text()).then(html => { document.getElementById('sidebar-placeholder').innerHTML = html; });
 
   const CATEGORY_ICONS = {
     Accessories: '<i class="fa-solid fa-gem"></i>',
