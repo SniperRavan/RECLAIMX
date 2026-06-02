@@ -335,19 +335,23 @@
     return `<i class="fa-solid fa-award" style="${s}color:#D97706;"></i> Bronze Helper`;
   }
 
-  // Auth guard + greeting
+  // Restore the greeting Logic without that inline auth-guard
   const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
-  if (!user) {
-    window.location.href = 'login.html';
-  } else {
-    const name  = user.name || user.email;
-    const hour  = new Date().getHours();
-    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('greetMsg').textContent = `${greet}, ${name.split(' ')[0]} 👋`;
-    document.getElementById('statTrust').textContent = user.trust_score || 0;
-    document.getElementById('trustLevel').innerHTML  = getTrustBadge(user.trust_score || 0);
-  }
 
+if (user) {
+  const name  = user.name || user.email;
+  const hour  = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  document.getElementById('greetMsg').textContent =
+    `${greet}, ${name.split(' ')[0]} 👋`;
+
+  document.getElementById('statTrust').textContent =
+    user.trust_score || 0;
+
+  document.getElementById('trustLevel').innerHTML =
+    getTrustBadge(user.trust_score || 0);
+}
   // ── Close any open dot-menu when clicking elsewhere ──────────
   document.addEventListener('click', e => {
     if (!e.target.closest('.dot-menu-wrap')) {
