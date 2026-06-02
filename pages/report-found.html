@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <title>Report Found Item — ReclaimX</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/global.css"/>
@@ -139,7 +142,16 @@
   fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
 
   const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
-  if (!user) { window.location.href = 'login.html'; }
+
+if (
+  !user ||
+  !user.uid ||
+  typeof user.email !== 'string'
+) {
+  sessionStorage.removeItem('rx_user');
+  window.location.replace('/login.html');
+  throw new Error('Authentication required');
+}
 
   const DRAFT_KEY = 'rx_found_draft';
 

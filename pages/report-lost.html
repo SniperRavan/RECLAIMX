@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <title>Report Lost Item — ReclaimX</title>
-  <link rel="stylesheet" href="../assets/css/global.css"/>
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <link rel="stylesheet" href="/assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
   <style>
     .form-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
     .form-card-title { font-size:1rem; font-weight:700; margin-bottom:4px; display:flex; align-items:center; }
@@ -161,11 +164,20 @@
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
-  fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
+  fetch('/components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+  fetch('/components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
 
   const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
-  if (!user) { window.location.href = 'login.html'; }
+
+if (
+  !user ||
+  !user.uid ||
+  typeof user.email !== 'string'
+) {
+  sessionStorage.removeItem('rx_user');
+  window.location.replace('/login');
+  throw new Error('Authentication required');
+}
 
   const DRAFT_KEY = 'rx_lost_draft';
 
@@ -293,7 +305,7 @@
       if (!res.ok) throw new Error((await res.json()).error || 'Submission failed');
       window.ReclaimX?.toast('Lost item reported! AI matching is running…', 'success');
       localStorage.removeItem(DRAFT_KEY);
-      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      setTimeout(() => window.location.href = '/dashboard', 1500);
     } catch (err) {
       window.ReclaimX?.toast(err.message || 'Failed to submit. Please try again.', 'error');
       btn.textContent = 'Submit Lost Report';
