@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ReclaimX — Smart Campus Lost & Found</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/global.css" />
-  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
   <link rel="manifest" href="manifest.json" />
   <style>
     .hero {
@@ -275,11 +275,11 @@
     <div class="nav-links">
       <a href="#features" class="nav-link">Features</a>
       <a href="#how" class="nav-link">How it works</a>
-      <a href="/pages/browse" class="nav-link">Browse Items</a>
+      <a href="/browse" class="nav-link">Browse Items</a>
     </div>
     <div class="nav-cta">
-      <a href="/pages/login" class="btn btn-ghost btn-sm">Sign In</a>
-      <a href="/pages/register" class="btn btn-primary btn-sm">Get Started</a>
+      <a href="login" class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
       <!-- ERR-010 FIX: The old file had a massive commented-out block here with
            premature </div></nav> closing tags and duplicate mobileMenuBtn.
            That entire block is now DELETED. The hamburger below is the only one. -->
@@ -298,9 +298,9 @@
   <div class="mobile-nav" id="mobileNav" aria-hidden="true">
     <a href="#features">Features</a>
     <a href="#how">How it works</a>
-    <a href="/pages/browse">Browse Items</a>
-    <a href="/pages/login">Sign In</a>
-    <a href="/pages/register" style="background:var(--accent-dim);color:var(--accent);font-weight:600">Get Started
+    <a href="/browse">Browse Items</a>
+    <a href="/login">Sign In</a>
+    <a href="/register" style="background:var(--accent-dim);color:var(--accent);font-weight:600">Get Started
       →</a>
   </div>
 
@@ -320,8 +320,8 @@
         with privacy-first design and ownership verification to prevent fraud.
       </p>
       <div class="hero-cta">
-        <a href="/pages/register" class="btn btn-primary btn-lg">Start Reporting Free</a>
-        <a href="/pages/browse" class="btn btn-ghost btn-lg">Browse Lost Items</a>
+        <a href="/register" class="btn btn-primary btn-lg">Start Reporting Free</a>
+        <a href="/browse" class="btn btn-ghost btn-lg">Browse Lost Items</a>
       </div>
     </div>
   </section>
@@ -510,8 +510,8 @@
     <div style="font-family:var(--font-mono);font-size:0.7rem">v1.0.0</div>
   </footer>
 
-  <script src="assets/js/main.js"></script>
-  <script src="assets/js/pwa.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/pwa.js"></script>
   <script>
     // Mobile menu — properly wired, points to #mobileNav which actually exists
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
