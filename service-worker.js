@@ -4,29 +4,33 @@
    auth guard to break when pages loaded offline.
    ================================================================ */
 
-const CACHE_SHELL = 'reclaimx-v3';  // bumped from v2 — forces cache refresh on update
-const CACHE_API   = 'reclaimx-api-v3';
+const CACHE_SHELL = 'reclaimx-v4';  // bumped from v2 — forces cache refresh on update
+const CACHE_API   = 'reclaimx-api-v4';
 
 const APP_SHELL = [
-  '/index.html',
-  '/pages/dashboard.html',
-  '/pages/browse.html',
-  '/pages/matches.html',
-  '/pages/login.html',
-  '/pages/register.html',
-  '/pages/report-lost.html',
-  '/pages/report-found.html',
-  '/pages/profile.html',
-  '/pages/404.html',
+  '/',
+
+  '/login',
+  '/register',
+  '/dashboard',
+  '/browse',
+  '/matches',
+  '/report-lost',
+  '/report-found',
+  '/profile',
+
   '/assets/css/global.css',
   '/assets/js/main.js',
   '/assets/js/pwa.js',
-  '/assets/js/auth.js',          // ERR-013 FIX: was missing — auth guard breaks offline without it
+  '/assets/js/auth.js',
+  '/assets/js/auth-guard.js',
   '/assets/js/firebase-config.js',
+
   '/assets/icons/favicon.svg',
   '/manifest.json',
+
   '/components/sidebar.html',
-  '/components/toast.html',
+  '/components/toast.html'
 ];
 
 // ── Install: pre-cache app shell ───────────────────────────────
@@ -86,9 +90,13 @@ self.addEventListener('fetch', (e) => {
       return networkFetch.catch(() => {
         // For page navigations, send to login rather than dashboard
         // (dashboard requires auth, login works without network for cached assets)
-        if (request.headers.get('Accept')?.includes('text/html')) {
-          return caches.match('/pages/login.html') || caches.match('/index.html');
-        }
+       if (request.headers.get('Accept')?.includes('text/html')) {
+  return (
+    await caches.match('/login') ||
+    await caches.match('/pages/login.html') ||
+    await caches.match('/index.html')
+  );
+}
         // For other assets, just fail
         return new Response('Offline', { status: 503 });
       });
