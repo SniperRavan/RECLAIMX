@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <title>My Matches — ReclaimX</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="../assets/css/global.css"/>
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <link rel="stylesheet" href="/assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
   <style>
     .stats-strip { display:flex; border-bottom:1px solid var(--border); background:var(--bg-surface); }
     .stat-strip-item { flex:1; padding:16px 24px; text-align:center; border-right:1px solid var(--border); }
@@ -86,8 +89,9 @@
   </main>
 </div>
 
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/pwa.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/pwa.js"></script>
 <script>
   fetch('../components/sidebar.html').then(r => r.text()).then(html => { document.getElementById('sidebar-placeholder').innerHTML = html; });
 
