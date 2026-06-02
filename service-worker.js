@@ -1,6 +1,5 @@
 /* ================================================================
    ReclaimX — service-worker.js
-   ERR-013 FIX: Added auth.js to APP_SHELL — was missing, causing
    auth guard to break when pages loaded offline.
    ================================================================ */
 
