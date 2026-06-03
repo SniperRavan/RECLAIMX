@@ -8,8 +8,8 @@
 <meta http-equiv="Expires" content="0">
   <title>Report Found Item — ReclaimX</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="../assets/css/global.css"/>
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <link rel="stylesheet" href="/assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
   <style>
     .form-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
     .form-card-title { font-size:1rem; font-weight:700; margin-bottom:4px; display:flex; align-items:center; }
@@ -34,7 +34,7 @@
         <h1>Report Found Item</h1>
         <p>You're helping someone recover their lost item — thank you!</p>
       </div>
-      <a href="browse.html" class="btn btn-ghost btn-sm">← Browse</a>
+      <a href="/browse" class="btn btn-ghost btn-sm">← Browse</a>
     </header>
 
     <div class="page-content" style="max-width:760px">
@@ -123,7 +123,7 @@
         </div>
 
         <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:4px">
-          <a href="dashboard.html" class="btn btn-ghost">Cancel</a>
+          <a href="/dashboard" class="btn btn-ghost">Cancel</a>
           <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
             Submit Found Report
           </button>
@@ -135,8 +135,9 @@
 
 <div id="toastContainer" class="toast-container"></div>
 
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/pwa.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/pwa.js"></script>
 <script type="module">
   fetch('/components/sidebar.html')
   .then(r => {
