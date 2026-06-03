@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found · ReclaimX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <style>
+    /* Simple centred 404 page — no nav needed, just get the user back on track */
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      background-image: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(124,92,252,0.07) 0%, transparent 60%);
+    }
+     /* Fix for the missing fadeUp animation */
+    @keyframes fadeUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(16px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    /* Ensure your container uses it */
+    .container {
+      animation: fadeUp 0.5s ease forwards;
+    }
+    
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 32px;
+      display: block;
+    }
+    .logo span { color: var(--accent); }
+
+    /* SVG Illustration Styling */
+    .illustration {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 16px;
+      animation: float 6s ease-in-out infinite;
+    }
+    .spark {
+      transform-origin: center;
+      animation: pop 2s infinite;
+    }
+    .spark-1 { animation-delay: 0s; }
+    .spark-2 { animation-delay: 0.3s; }
+    .spark-3 { animation-delay: 0.6s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes pop {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .error-code {
+      font-family: var(--font-mono);
+      font-size: 5rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--bg-elevated);
+      letter-spacing: -4px;
+      margin-bottom: 8px;
+      /* Layered text trick — makes "404" look engraved */
+      text-shadow:
+        0 1px 0 var(--border),
+        0 2px 0 rgba(255,255,255,0.03);
+    }
+    .error-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+    .error-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+    .error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="logo">Reclaim<span>X</span></a>
+
+    <div class="illustration">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="rotate(45 50 50)">
+          
+          <rect x="46" y="95" width="8" height="10" rx="2" fill="var(--bg-elevated)" stroke="var(--border)" stroke-width="2"/>
+
+          <rect x="30" y="65" width="40" height="35" rx="8" fill="var(--bg-elevated)" stroke="var(--border)" stroke-width="2"/>
+
+          <rect x="35" y="46" width="6" height="22" rx="3" fill="var(--accent)"/>
+          <rect x="59" y="46" width="6" height="22" rx="3" fill="var(--accent)"/>
+
+          <rect x="25" y="10" width="50" height="30" rx="8" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>
+          
+          <circle cx="38" cy="30" r="4" fill="var(--bg-base)"/>
+          <circle cx="62" cy="30" r="4" fill="var(--bg-base)"/>
+
+          <path d="M15 50 L5 50" stroke="var(--violet)" stroke-width="3" stroke-linecap="round" class="spark spark-1"/>
+          <path d="M85 50 L95 50" stroke="var(--violet)" stroke-width="3" stroke-linecap="round" class="spark spark-2"/>
+          <path d="M25 58 L15 63" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" class="spark spark-3"/>
+          <path d="M75 58 L85 63" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" class="spark spark-1"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="error-code">404</div>
+    <h1 class="error-title">This connection got lost.</h1>
+    <p class="error-desc">
+      The page you're looking for doesn't exist or was moved.<br/>
+      Maybe it's waiting in the lost &amp; found?
+    </p>
+
+    <div class="error-actions">
+      <a href="/" class="btn btn-primary">Go Home</a>
+      <a href="/browse" class="btn btn-ghost">Browse Lost Items</a>
+    </div>
+  </div>
+</body>
+</html>
