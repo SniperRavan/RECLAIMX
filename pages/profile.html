@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <title>My Profile — ReclaimX</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="../assets/css/global.css"/>
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg"/>
+  <link rel="stylesheet" href="/assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
   <style>
     .profile-header { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; display:flex; align-items:center; gap:24px; margin-bottom:20px; }
     .profile-avatar-lg { width:80px; height:80px; border-radius:50%; background:var(--accent-dim); border:2px solid rgba(0,212,170,0.4); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700; color:var(--accent); flex-shrink:0; font-family:var(--font-display); overflow:hidden; }
@@ -147,10 +150,12 @@
 
 <div id="toastContainer" class="toast-container"></div>
 
+<script src="/assets/js/auth-guard.js"></script>
 <script src="../assets/js/main.js"></script>
+<script src="/assets/js/pwa.js"></script>
 <script>
-  fetch('../components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
-  fetch('../components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
+  fetch('/components/sidebar.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-placeholder').innerHTML=html; });
+  fetch('/components/toast.html').then(r=>r.text()).then(html=>{ document.body.insertAdjacentHTML('beforeend',html); });
 
   const CATEGORY_ICONS = {
     Accessories: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><polyline points="12 9 12 12 13.5 13.5"/></svg>',
@@ -185,7 +190,7 @@
 
   (async function initProfile() {
     const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
-    if (!user) { window.location.href = 'login.html'; return; }
+    if (!user) { window.location.href = '/login'; return; }
 
     const name   = user.name || user.email || 'User';
     const score  = user.trust_score || 0;
