@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+  <title>Report Lost Item — ReclaimX</title>
+  <link rel="stylesheet" href="/assets/css/global.css"/>
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
+  <style>
+    .form-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; margin-bottom:20px; }
+    .form-card-title { font-size:1rem; font-weight:700; margin-bottom:4px; display:flex; align-items:center; }
+    .form-card-sub { font-size:0.78rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:20px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .privacy-note { background:var(--accent-dim); border:1px solid rgba(0,212,170,0.2); border-radius:var(--radius-md); padding:12px 16px; font-size:0.78rem; color:var(--accent); display:flex; gap:10px; align-items:flex-start; margin-bottom:6px; }
+    .danger-note { background:rgba(255,77,109,0.08); border:1px solid rgba(255,77,109,0.2); border-radius:var(--radius-md); padding:12px 16px; font-size:0.78rem; color:var(--danger); display:flex; gap:10px; align-items:flex-start; margin-bottom:20px; }
+    .image-preview-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+    .image-preview { width:100%; aspect-ratio:1; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--border); }
+    .file-upload-area { min-height: 120px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+    @media(max-width:700px) { .two-col { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-placeholder"></div>
+
+  <main class="main-content">
+    <header class="main-header">
+      <button id="menuBtn" style="display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;margin-right:12px;padding:4px;" onclick="document.getElementById('appSidebar').classList.add('open')">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+      <div>
+        <h1>Report Lost Item</h1>
+        <p>Only the item name is public. All other details are private and encrypted.</p>
+      </div>
+      <a href="/browse" class="btn btn-ghost btn-sm">← Browse</a>
+    </header>
+
+    <div class="page-content" style="max-width:760px">
+
+      <div class="privacy-note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span><strong>Privacy first:</strong> Only the item name is publicly listed. Description, images, and verification details are never shown to other users.</span>
+      </div>
+
+      <form id="lostForm" novalidate>
+
+        <div class="form-card">
+          <div class="form-card-title">Item Information</div>
+          <div class="form-card-sub">PUBLIC — Item name will appear in the browse feed</div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Item Name <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" type="text" id="itemName" placeholder="e.g. Black Leather Wallet" required maxlength="80"/>
+              <span class="form-hint">Keep it brief — max 80 chars</span>
+              <span class="form-error" id="itemNameError"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category <span style="color:var(--danger)">*</span></label>
+              <select class="form-select" id="category" required>
+                <option value="">Select category…</option>
+                <option>Accessories</option><option>Bags</option><option>Books</option>
+                <option>Clothing</option><option>Documents</option><option>Electronics</option>
+                <option>Keys</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Campus <span style="color:var(--danger)">*</span></label>
+              <select class="form-select" id="campus" required>
+                <option value="">Select campus…</option>
+                <option value="campus_a">Campus A — Main Campus</option>
+                <option value="campus_b">Campus B — North Wing</option>
+                <option value="campus_c">Campus C — Engineering Block</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Seen Location <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" type="text" id="lastSeen" placeholder="e.g. Library Ground Floor, Table 4" required/>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Brief Description <span style="color:var(--text-muted)">(private)</span></label>
+            <textarea class="form-textarea" id="description" rows="3" placeholder="Colour, brand, approximate size… (this stays private)"></textarea>
+            <span class="form-hint" id="sensitiveWarning" style="color:var(--danger);display:none;align-items:center;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Sensitive data detected — please remove ID/card numbers.
+            </span>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;color:var(--text-secondary)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Verification Details
+          </div>
+          <div class="form-card-sub">PRIVATE — Only you can see these. Used to verify genuine ownership during a claim.</div>
+
+          <div class="danger-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>Do <strong>NOT</strong> enter Aadhaar numbers, ATM/card numbers, PAN, or phone numbers here.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Interior color or lining</label>
+            <input class="form-input" type="text" id="hColor" placeholder="e.g. Red lining, beige inside…"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unique marks, scratches, stickers, or engravings</label>
+            <input class="form-input" type="text" id="hMarks" placeholder="e.g. Scratch on bottom left corner, initials 'AS' written in blue…"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">What does it contain?</label>
+            <input class="form-input" type="text" id="hContains" placeholder="e.g. 3 debit cards, college ID, some cash…"/>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;color:var(--text-secondary)"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            Photos (optional)
+          </div>
+          <div class="form-card-sub">PRIVATE — Photos help AI matching but are never shown publicly</div>
+
+<!--
+            NEW-G FIX: Removed for="imageInput" attribute from this label.
+            Having BOTH for="imageInput" AND the input wrapped inside the label
+            caused the file picker to open twice on click in Chrome/Safari.
+            The wrapping alone is sufficient — no need for the for= attribute.
+          -->
+
+          <label class="file-upload-area" id="uploadArea" style="min-height:120px;padding:24px;cursor:pointer;">
+            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;"/>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <div style="font-size:0.9rem;">Click to upload or drag &amp; drop</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">JPEG · PNG · WebP · Max 5MB each · Up to 2 photos</div>
+          </label>
+
+          <div id="previewGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px"></div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:4px">
+          <a href="/dashboard" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+            Submit Lost Report
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/pwa.js"></script>
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  fetch('/components/sidebar.html')
+  .then(r => {
+    if (!r.ok) throw new Error('Sidebar load failed');
+    return r.text();
+  })
+  .then(html => {
+    document.getElementById('sidebar-placeholder').innerHTML = html;
+  })
+  .catch(err => {
+    console.error(err);
+  });
+
+  fetch('/components/toast.html')
+  .then(r => {
+    if (!r.ok) throw new Error('Toast load failed');
+    return r.text();
+  })
+  .then(html => {
+    document.body.insertAdjacentHTML('beforeend', html);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  const user = JSON.parse(sessionStorage.getItem('rx_user') || 'null');
+
+if (
+  !user ||
+  !user.uid ||
+  typeof user.email !== 'string'
+) {
+  sessionStorage.removeItem('rx_user');
+  window.location.replace('/login');
+  throw new Error('Authentication required');
+}
+
+  const DRAFT_KEY = 'rx_lost_draft';
+
+  const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+  if (draft) {
+    if (draft.itemName)    document.getElementById('itemName').value    = draft.itemName;
+    if (draft.category)    document.getElementById('category').value    = draft.category;
+    if (draft.campus)      document.getElementById('campus').value      = draft.campus;
+    if (draft.lastSeen)    document.getElementById('lastSeen').value    = draft.lastSeen;
+    if (draft.description) document.getElementById('description').value = draft.description;
+    if (draft.hColor)      document.getElementById('hColor').value      = draft.hColor;
+    if (draft.hMarks)      document.getElementById('hMarks').value      = draft.hMarks;
+    if (draft.hContains)   document.getElementById('hContains').value   = draft.hContains;
+    window.ReclaimX?.toast('Draft restored from last session.', 'info');
+  }
+
+  function saveDraft() {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      itemName:    document.getElementById('itemName').value,
+      category:    document.getElementById('category').value,
+      campus:      document.getElementById('campus').value,
+      lastSeen:    document.getElementById('lastSeen').value,
+      description: document.getElementById('description').value,
+      hColor:      document.getElementById('hColor').value,
+      hMarks:      document.getElementById('hMarks').value,
+      hContains:   document.getElementById('hContains').value,
+    }));
+  }
+
+  ['itemName','category','campus','lastSeen','description','hColor','hMarks','hContains']
+    .forEach(id => document.getElementById(id).addEventListener('input', saveDraft));
+
+  const MAX_SIZE = 5 * 1024 * 1024;
+  const ALLOWED  = ['image/jpeg', 'image/png', 'image/webp'];
+  let selectedFiles = [];
+
+  function handleFiles(files) {
+    const grid = document.getElementById('previewGrid');
+
+    if (selectedFiles.length >= 2) {
+      window.ReclaimX?.toast('Maximum 2 photos allowed. Remove one first.', 'warning');
+      return;
+    }
+
+    grid.innerHTML = '';
+    selectedFiles  = [];
+
+    const valid = files.filter(f => {
+      if (!ALLOWED.includes(f.type)) { window.ReclaimX?.toast(`${f.name} — only JPEG, PNG, WebP allowed.`, 'error'); return false; }
+      if (f.size > MAX_SIZE) { window.ReclaimX?.toast(`${f.name} exceeds 5MB limit.`, 'error'); return false; }
+      return true;
+    }).slice(0, 2);
+
+    if (files.length > 2) window.ReclaimX?.toast('Maximum 2 photos. Only first 2 kept.', 'warning');
+
+    valid.forEach((file) => {
+      selectedFiles.push(file);
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);';
+      const img = document.createElement('img');
+
+      // added the URL.revokeObjectURL for memory leakeage issue
+      const objectUrl = URL.createObjectURL(file);
+img.src = objectUrl;
+
+img.onload = () => {
+  URL.revokeObjectURL(objectUrl);
+};
+
+      img.style.cssText = 'width:100%;aspect-ratio:1;object-fit:cover;display:block;';
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+      del.style.cssText = 'position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s';
+      del.onclick = () => { selectedFiles.splice(selectedFiles.indexOf(file), 1); wrap.remove(); };
+      wrap.append(img, del);
+      grid.appendChild(wrap);
+    });
+  }
+
+  document.getElementById('imageInput').addEventListener('change', (e) => {
+    handleFiles(Array.from(e.target.files));
+  });
+
+  const area = document.getElementById('uploadArea');
+  area.addEventListener('dragover',  e => { e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
+  area.addEventListener('drop', e => {
+    e.preventDefault(); area.classList.remove('drag-over'); handleFiles(Array.from(e.dataTransfer.files));
+  });
+
+  document.getElementById('description').addEventListener('input', (e) => {
+    const has = window.ReclaimX?.hasSensitiveData(e.target.value);
+    document.getElementById('sensitiveWarning').style.display = has ? 'flex' : 'none';
+  });
+
+  document.getElementById('lostForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const itemName = document.getElementById('itemName').value.trim();
+    const category = document.getElementById('category').value;
+    const campus   = document.getElementById('campus').value;
+    const lastSeen = document.getElementById('lastSeen').value.trim();
+    const desc     = document.getElementById('description').value.trim();
+    const btn      = document.getElementById('submitBtn');
+
+    if (!itemName) { document.getElementById('itemNameError').textContent='Item name is required.'; document.getElementById('itemNameError').classList.add('visible'); return; }
+    if (!category) { alert('Please select a category.'); return; }
+    if (!campus)   { alert('Please select your campus.'); return; }
+    if (!lastSeen) { alert('Please enter the last seen location.'); return; }
+    if (window.ReclaimX?.hasSensitiveData(desc)) { alert('Sensitive data detected in description. Please remove it.'); return; }
+
+    btn.innerHTML = '<span class="loading-spinner"></span> Submitting…';
+    btn.disabled  = true;
+
+    const formData = new FormData();
+    formData.append('itemName', itemName);
+    formData.append('category', category);
+    formData.append('campusId', campus);
+    formData.append('lastSeenLocation', lastSeen);
+    formData.append('description', desc);
+    formData.append('hiddenAttributes', JSON.stringify({
+      colorInside: document.getElementById('hColor').value.trim(),
+      uniqueMarks: document.getElementById('hMarks').value.trim(),
+      contains:    document.getElementById('hContains').value.trim(),
+    }));
+    selectedFiles.forEach(f => formData.append('images', f));
+
+    try {
+      const token = await window.getToken();
+      const res   = await fetch(`${window.API_BASE}/api/items/lost`, {
+        method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData,
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Submission failed');
+      window.ReclaimX?.toast('Lost item reported! AI matching is running…', 'success');
+      localStorage.removeItem(DRAFT_KEY);
+      setTimeout(() => window.location.href = '/dashboard', 1500);
+    } catch (err) {
+      window.ReclaimX?.toast(err.message || 'Failed to submit. Please try again.', 'error');
+      btn.textContent = 'Submit Lost Report';
+      btn.disabled    = false;
+    }
+  });
+
+  document.getElementById('lostForm').addEventListener('keydown', (e) => {
+    if (
+  e.key === 'Enter' &&
+  !e.shiftKey &&
+  e.target.tagName !== 'TEXTAREA' &&
+  e.target.type !== 'file'
+) {
+      e.preventDefault();
+      document.getElementById('submitBtn').click();
+    }
+  });
+</script>
+</body>
+</html>
