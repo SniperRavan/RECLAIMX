@@ -35,7 +35,7 @@
         <h1>Report Lost Item</h1>
         <p>Only the item name is public. All other details are private and encrypted.</p>
       </div>
-      <a href="browse.html" class="btn btn-ghost btn-sm">← Browse</a>
+      <a href="/browse" class="btn btn-ghost btn-sm">← Browse</a>
     </header>
 
     <div class="page-content" style="max-width:760px">
@@ -146,7 +146,7 @@
         </div>
 
         <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:4px">
-          <a href="dashboard.html" class="btn btn-ghost">Cancel</a>
+          <a href="/dashboard" class="btn btn-ghost">Cancel</a>
           <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
             Submit Lost Report
           </button>
@@ -158,8 +158,9 @@
 
 <div id="toastContainer" class="toast-container"></div>
 
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/pwa.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/pwa.js"></script>
 <script type="module">
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
