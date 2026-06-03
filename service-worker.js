@@ -86,12 +86,10 @@ self.addEventListener('fetch', (e) => {
 
       // Nothing in cache — fetch from network
       // If that also fails (offline), fall back to a sensible page
-      return networkFetch.catch(() => {
-        // For page navigations, send to login rather than dashboard
-        // (dashboard requires auth, login works without network for cached assets)
-       if (request.headers.get('Accept')?.includes('text/html')) {
-  return (
-    await caches.match('/login') ||
+      return networkFetch.catch(async () => {
+  if (request.headers.get('Accept')?.includes('text/html')) {
+    return (
+      await caches.match('/login') ||
     await caches.match('/pages/login.html') ||
     await caches.match('/index.html')
   );
