@@ -1,8 +1,14 @@
 {
+  "cleanUrls": true,
+
   "rewrites": [
-    {
-      "source": "/test",
-      "destination": "/pages/login.html"
-    }
+    { "source": "/login", "destination": "/pages/login" },
+    { "source": "/register", "destination": "/pages/register" },
+    { "source": "/dashboard", "destination": "/pages/dashboard" },
+    { "source": "/browse", "destination": "/pages/browse" },
+    { "source": "/matches", "destination": "/pages/matches" },
+    { "source": "/profile", "destination": "/pages/profile" },
+    { "source": "/report-lost", "destination": "/pages/report-lost" },
+    { "source": "/report-found", "destination": "/pages/report-found" }
   ]
 }
