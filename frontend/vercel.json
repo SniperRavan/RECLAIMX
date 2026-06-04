@@ -1,26 +1,8 @@
 {
-  "cleanUrls": true,
-
   "rewrites": [
-    { "source": "/login", "destination": "/pages/login.html" },
-    { "source": "/register", "destination": "/pages/register.html" },
-    { "source": "/dashboard", "destination": "/pages/dashboard.html" },
-    { "source": "/browse", "destination": "/pages/browse.html" },
-    { "source": "/matches", "destination": "/pages/matches.html" },
-    { "source": "/report-lost", "destination": "/pages/report-lost.html" },
-    { "source": "/report-found", "destination": "/pages/report-found.html" },
-    { "source": "/profile", "destination": "/pages/profile.html" }
-  ],
-
-  "headers": [
     {
-      "source": "/pages/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
+      "source": "/test",
+      "destination": "/pages/login.html"
     }
   ]
 }
