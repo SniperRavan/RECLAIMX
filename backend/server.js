@@ -7,6 +7,7 @@ const express    = require('express');
 const cors       = require('cors');
 const helmet     = require('helmet');
 const rateLimit  = require('express-rate-limit');
+app.set('trust proxy', 1);
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler'); 
 require('dotenv').config({ path: './backend/.env' });
 
