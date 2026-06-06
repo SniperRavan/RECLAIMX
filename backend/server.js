@@ -3,15 +3,16 @@
 // Main Express server entry point
 // ================================================================
 
-const express    = require('express');
-const cors       = require('cors');
-const helmet     = require('helmet');
-const rateLimit  = require('express-rate-limit');
-app.set('trust proxy', 1);
-const { errorHandler, notFoundHandler } = require('./middleware/errorHandler'); 
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 require('dotenv').config({ path: './backend/.env' });
 
 const app = express();
+
+app.set('trust proxy', 1);
 
 // ── Security middleware ──────────────────────────────────────
 app.use(helmet());
@@ -34,10 +35,10 @@ app.use(rateLimit({
 }));
 
 // ── Routes ───────────────────────────────────────────────────
-app.use('/api/auth',    require('./routes/authRoutes'));
-app.use('/api/items',   require('./routes/itemRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/items', require('./routes/itemRoutes'));
 app.use('/api/matches', require('./routes/matchRoutes'));
-app.use('/api/config',  require('./routes/configRoutes'));
+app.use('/api/config', require('./routes/configRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
