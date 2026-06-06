@@ -207,24 +207,158 @@
       background: rgba(0, 0, 0, 0.15);
     }
 
-    .match-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .resolved-banner {
-      background: rgba(0, 212, 170, 0.08);
-      border-top: 1px solid rgba(0, 212, 170, 0.15);
-      padding: 10px 20px;
-      font-size: 0.78rem;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     .matches-content {
       padding: 0 36px 36px;
+    }
+
+    /* ── Verify Modal ─────────────────────────────────────────── */
+    .verify-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(4, 6, 9, 0.85);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .verify-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .verify-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      animation: fadeUp 0.25s ease;
+      overflow: hidden;
+    }
+
+    .verify-modal-topbar {
+      height: 4px;
+      background: var(--violet);
+    }
+
+    .verify-modal-header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .verify-modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .verify-modal-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      line-height: 1.5;
+    }
+
+    .verify-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .verify-close:hover {
+      color: var(--text-primary);
+      background: var(--bg-surface);
+    }
+
+    .verify-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .verify-question-label {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    /* Result states */
+    .verify-result {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .verify-result.success {
+      background: rgba(0, 212, 170, 0.08);
+      border: 1px solid rgba(0, 212, 170, 0.25);
+      color: var(--accent);
+    }
+
+    .verify-result.fail {
+      background: rgba(255, 77, 109, 0.08);
+      border: 1px solid rgba(255, 77, 109, 0.25);
+      color: var(--danger);
+    }
+
+    .verify-result.visible {
+      display: flex;
+    }
+
+    .verify-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* Strike indicator */
+    .strike-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .strike-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+
+    .strike-dot.used {
+      background: var(--danger);
+      border-color: var(--danger);
     }
 
     @media(max-width:900px) {
@@ -307,11 +441,88 @@
     </main>
   </div>
 
+  <!-- ── Verification Modal ──────────────────────────────────── -->
+  <div class="verify-overlay" id="verifyOverlay" onclick="if(event.target===this)closeVerify()">
+    <div class="verify-modal">
+      <div class="verify-modal-topbar"></div>
+      <button class="verify-close" onclick="closeVerify()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="verify-modal-header">
+        <div class="verify-modal-title">
+          <i class="fa-solid fa-shield-halved" style="color:var(--violet);margin-right:8px;font-size:0.95rem"></i>
+          Ownership Verification
+        </div>
+        <div class="verify-modal-sub">
+          Answer the 3 private questions you filled in when reporting this item.<br />
+          Score ≥ 60% required to pass. Wrong answers count as a strike.
+        </div>
+      </div>
+
+      <div class="verify-body">
+        <!-- Result banner (hidden until submit) -->
+        <div class="verify-result" id="verifyResult"></div>
+
+        <!-- Q1 -->
+        <div class="form-group" style="margin-bottom:0">
+          <div class="verify-question-label">
+            <i class="fa-solid fa-palette" style="margin-right:6px"></i>
+            Interior colour or lining
+          </div>
+          <input class="form-input" type="text" id="vq1" placeholder="e.g. Red lining, beige inside…" />
+        </div>
+
+        <!-- Q2 -->
+        <div class="form-group" style="margin-bottom:0">
+          <div class="verify-question-label">
+            <i class="fa-solid fa-fingerprint" style="margin-right:6px"></i>
+            Unique marks, scratches, stickers, or engravings
+          </div>
+          <input class="form-input" type="text" id="vq2" placeholder="e.g. Scratch on bottom left corner…" />
+        </div>
+
+        <!-- Q3 -->
+        <div class="form-group" style="margin-bottom:0">
+          <div class="verify-question-label">
+            <i class="fa-solid fa-box-open" style="margin-right:6px"></i>
+            What does it contain?
+          </div>
+          <input class="form-input" type="text" id="vq3" placeholder="e.g. 3 debit cards, college ID…" />
+        </div>
+
+        <!-- Strike tracker -->
+        <div id="strikeWrap" style="display:none">
+          <div style="font-size:0.72rem;color:var(--danger);font-family:var(--font-mono);margin-bottom:6px">
+            FAILED ATTEMPTS (suspended at 3)
+          </div>
+          <div class="strike-dots">
+            <div class="strike-dot" id="sd1"></div>
+            <div class="strike-dot" id="sd2"></div>
+            <div class="strike-dot" id="sd3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="verify-footer">
+        <button class="btn btn-ghost btn-sm" onclick="closeVerify()">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="verifySubmitBtn" onclick="submitVerify()">
+          <i class="fa-solid fa-shield-check" style="font-size:11px"></i>
+          Submit Answers
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
   <script src="/assets/js/auth-guard.js"></script>
   <script src="/assets/js/main.js"></script>
   <script src="/assets/js/pwa.js"></script>
   <script>
-    fetch('/components/sidebar.html').then(r => r.text()).then(html => {document.getElementById('sidebar-placeholder').innerHTML = html;});
+    fetch('/components/sidebar.html')
+      .then(r => r.text())
+      .then(html => {document.getElementById('sidebar-placeholder').innerHTML = html;});
 
     const CATEGORY_ICONS = {
       Accessories: '<i class="fa-solid fa-gem"></i>',
@@ -324,8 +535,12 @@
       Other: '<i class="fa-solid fa-box-open"></i>'
     };
 
-    const ICON_MAP = '<i class="fa-solid fa-location-dot" style="font-size:10px; opacity:0.7; margin-right:4px;"></i>';
+    const ICON_MAP = '<i class="fa-solid fa-location-dot" style="font-size:10px;opacity:0.7;margin-right:4px;"></i>';
 
+    // Active claim being verified
+    let activeClaimId = null;
+
+    // ── Tab switching ─────────────────────────────────────────
     function setTab(btn, tab) {
       document.querySelectorAll('.match-tab').forEach(t => t.classList.remove('active'));
       btn.classList.add('active');
@@ -334,65 +549,171 @@
       });
     }
 
-    async function openVerify(claimId) {
+    // ── Open verify modal ─────────────────────────────────────
+    function openVerify(claimId) {
+      activeClaimId = claimId;
 
-      const q1 = prompt("Question 1:");
-      if (q1 === null) return;
+      // Reset modal state
+      document.getElementById('vq1').value = '';
+      document.getElementById('vq2').value = '';
+      document.getElementById('vq3').value = '';
 
-      const q2 = prompt("Question 2:");
-      if (q2 === null) return;
+      const result = document.getElementById('verifyResult');
+      result.className = 'verify-result';
+      result.innerHTML = '';
 
-      const q3 = prompt("Question 3:");
-      if (q3 === null) return;
+      document.getElementById('strikeWrap').style.display = 'none';
+
+      const btn = document.getElementById('verifySubmitBtn');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-shield-check" style="font-size:11px"></i> Submit Answers';
+
+      document.getElementById('verifyOverlay').classList.add('open');
+
+      // Focus first input
+      setTimeout(() => document.getElementById('vq1').focus(), 100);
+    }
+
+    function closeVerify() {
+      document.getElementById('verifyOverlay').classList.remove('open');
+      activeClaimId = null;
+    }
+
+    // ── Submit verification answers ───────────────────────────
+    async function submitVerify() {
+      if (!activeClaimId) return;
+
+      const q1 = document.getElementById('vq1').value.trim();
+      const q2 = document.getElementById('vq2').value.trim();
+      const q3 = document.getElementById('vq3').value.trim();
+
+      if (!q1 && !q2 && !q3) {
+        window.ReclaimX?.toast('Please answer at least one question.', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('verifySubmitBtn');
+      const result = document.getElementById('verifyResult');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner" style="width:14px;height:14px;border-width:2px"></span> Verifying…';
+      result.className = 'verify-result';
+      result.innerHTML = '';
 
       try {
-
         const token = await window.getToken();
-
-        const res = await fetch(
-          `${window.API_BASE}/api/matches/verify`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              claimId,
-              answers: {
-                q1,
-                q2,
-                q3
-              }
-            })
-          }
-        );
+        const res = await fetch(`${window.API_BASE}/api/matches/verify`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            claimId: activeClaimId,
+            answers: {q1, q2, q3},
+          }),
+        });
 
         const data = await res.json();
 
-        console.log(data);
-
         if (data.passed) {
-          alert("Verification successful!");
-          loadMatches();
-        } else {
-          alert("Verification failed.");
-        }
+          // ── Pass ──
+          result.className = 'verify-result success visible';
+          result.innerHTML = `
+            <i class="fa-solid fa-circle-check" style="font-size:1.4rem;flex-shrink:0"></i>
+            <div>
+              <div style="font-weight:700;margin-bottom:2px">Verification passed!</div>
+              <div style="font-size:0.78rem;opacity:0.8">
+                Score: ${Math.round((data.score || 1) * 100)}%
+                ${data.unverifiable ? '· Auto-passed (no hidden fields set)' : ''}
+              </div>
+            </div>`;
 
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Passed';
+
+          window.ReclaimX?.toast('Ownership verified! Claim moved to Pending.', 'success');
+
+          // Reload matches after short delay so user sees the result
+          setTimeout(() => {
+            closeVerify();
+            loadMatches();
+          }, 2000);
+
+        } else {
+          // ── Fail ──
+          const strikes = data.attemptsUsed || 1;
+          const suspended = data.suspended;
+
+          result.className = 'verify-result fail visible';
+          result.innerHTML = `
+            <i class="fa-solid fa-circle-xmark" style="font-size:1.4rem;flex-shrink:0"></i>
+            <div>
+              <div style="font-weight:700;margin-bottom:2px">
+                ${suspended ? 'Account suspended — 3 failed attempts.' : 'Verification failed.'}
+              </div>
+              <div style="font-size:0.78rem;opacity:0.8">
+                Score: ${Math.round((data.score || 0) * 100)}% · Need ≥ 60%
+              </div>
+            </div>`;
+
+          // Show strike dots
+          const strikeWrap = document.getElementById('strikeWrap');
+          strikeWrap.style.display = 'block';
+          ['sd1', 'sd2', 'sd3'].forEach((id, i) => {
+            document.getElementById(id).classList.toggle('used', i < strikes);
+          });
+
+          btn.disabled = suspended;
+          btn.innerHTML = suspended
+            ? '<i class="fa-solid fa-ban" style="font-size:11px"></i> Account Suspended'
+            : '<i class="fa-solid fa-shield-check" style="font-size:11px"></i> Try Again';
+
+          if (!suspended) btn.disabled = false;
+
+          window.ReclaimX?.toast(
+            suspended ? 'Account suspended after 3 failed attempts.' : 'Answers incorrect. Try again.',
+            suspended ? 'error' : 'warning'
+          );
+        }
       } catch (err) {
-        console.error(err);
-        alert("Verification error.");
+        result.className = 'verify-result fail visible';
+        result.innerHTML = `
+          <i class="fa-solid fa-triangle-exclamation" style="font-size:1.4rem;flex-shrink:0"></i>
+          <div>
+            <div style="font-weight:700">Network error</div>
+            <div style="font-size:0.78rem;opacity:0.8">Check connection and try again.</div>
+          </div>`;
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-shield-check" style="font-size:11px"></i> Submit Answers';
+        console.error('[Verify]', err);
       }
     }
 
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeVerify();
+    });
+
+    // Enter key submits in modal
+    ['vq1', 'vq2', 'vq3'].forEach(id => {
+      document.getElementById(id)?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') submitVerify();
+      });
+    });
+
+    // ── Load matches ──────────────────────────────────────────
     async function loadMatches() {
       try {
         const token = await window.getToken();
-        const res = await fetch(`${window.API_BASE}/api/matches`, {headers: {'Authorization': `Bearer ${token}`}});
-        if (!res.ok) throw new Error(`Matches Error: ${res.status}`);
+        const res = await fetch(`${window.API_BASE}/api/matches`, {
+          headers: {'Authorization': `Bearer ${token}`},
+        });
+        if (!res.ok) throw new Error(`${res.status}`);
         const claims = await res.json();
 
         const counts = {new: 0, pending: 0, resolved: 0, dismissed: 0};
+
         const html = claims.map(c => {
           let tab = 'new';
           if (c.status === 'Verified') tab = 'pending';
@@ -406,49 +727,73 @@
           const isHigh = c.match_score > 80;
 
           return `
-          <div class="match-card ${isHigh ? 'high-confidence' : ''}" data-tab="${tab}" style="display:${tab === 'new' ? '' : 'none'}">
-            <div class="match-card-header">
-              <div class="match-icon">${icon}</div>
-              <div class="match-header-info">
-                <div class="match-item-name">${lost.item_name}</div>
-                <div class="match-meta">
-                  <span>${ICON_MAP} Found: ${found.found_location || '—'}</span>
-                  <span><i class="fa-solid fa-clock" style="font-size:10px; margin-right:4px;"></i> ${window.ReclaimX?.timeAgo(c.created_at)}</span>
+            <div class="match-card ${isHigh ? 'high-confidence' : ''}"
+                 data-tab="${tab}"
+                 style="display:${tab === 'new' ? '' : 'none'}">
+              <div class="match-card-header">
+                <div class="match-icon">${icon}</div>
+                <div class="match-header-info">
+                  <div class="match-item-name">${lost.item_name || '—'}</div>
+                  <div class="match-meta">
+                    <span>${ICON_MAP} Found: ${found.found_location || '—'}</span>
+                    <span>
+                      <i class="fa-solid fa-clock" style="font-size:10px;margin-right:4px;"></i>
+                      ${window.ReclaimX?.timeAgo(c.created_at) || '—'}
+                    </span>
+                  </div>
+                </div>
+                <div class="score-dial">
+                  <div class="score-ring" style="--pct:${c.match_score}">
+                    <span class="score-num text-accent">${Math.round(c.match_score)}%</span>
+                  </div>
+                  <div class="score-label">Confidence</div>
                 </div>
               </div>
-              <div class="score-dial">
-                <div class="score-ring" style="--pct:${c.match_score}">
-                  <span class="score-num text-accent">${Math.round(c.match_score)}%</span>
-                </div>
-                <div class="score-label">Confidence</div>
+              <div class="match-card-body">
+                Lost at: ${lost.last_seen_location || '—'} &nbsp;·&nbsp; Found at: ${found.found_location || '—'}
               </div>
-            </div>
-            <div class="match-card-body">
-              Lost at: ${lost.last_seen_location || '—'} · Found at: ${found.found_location || '—'}
-            </div>
-            <div class="match-card-footer">
-              <div style="font-size:0.75rem;color:var(--text-muted)">Status: ${c.status}</div>
-              ${tab === 'new' ? `<button class="btn btn-primary btn-sm" onclick="openVerify('${c.id}')">Verify Claim</button>` : ''}
-            </div>
-          </div>`;
+              <div class="match-card-footer">
+                <div style="font-size:0.75rem;color:var(--text-muted)">Status: ${c.status}</div>
+                <div class="match-actions">
+                  ${tab === 'new' ? `
+                    <button class="btn btn-primary btn-sm" onclick="openVerify('${c.id}')">
+                      <i class="fa-solid fa-shield-halved" style="font-size:11px"></i> Verify Claim
+                    </button>` : ''}
+                  ${tab === 'pending' ? `
+                    <span style="font-size:0.78rem;color:var(--warning)">
+                      <i class="fa-solid fa-hourglass-half" style="margin-right:4px"></i>
+                      Awaiting handover confirmation
+                    </span>` : ''}
+                  ${tab === 'resolved' ? `
+                    <span style="font-size:0.78rem;color:var(--accent)">
+                      <i class="fa-solid fa-circle-check" style="margin-right:4px"></i>
+                      Successfully returned
+                    </span>` : ''}
+                </div>
+              </div>
+            </div>`;
         }).join('');
 
-        document.getElementById('matchesContainer').innerHTML = html || `<div style="text-align:center;padding:60px;opacity:0.5;"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem; margin-bottom:16px;"></i><div>No matches found yet.</div></div>`;
+        document.getElementById('matchesContainer').innerHTML = html ||
+          `<div style="text-align:center;padding:60px;opacity:0.5;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:3rem;margin-bottom:16px;"></i>
+            <div>No matches found yet.</div>
+           </div>`;
 
-        // Update counters
         ['New', 'Pending', 'Resolved', 'Dismissed'].forEach(t => {
           const el = document.getElementById('s' + t);
-          if (el) el.textContent = counts[t.toLowerCase()];
           const tabEl = document.getElementById('tab' + t);
+          if (el) el.textContent = counts[t.toLowerCase()];
           if (tabEl) tabEl.textContent = counts[t.toLowerCase()];
         });
 
       } catch (err) {
-        // ── "UNPLUGGED CORD" ERROR STATE ──
         document.getElementById('matchesContainer').innerHTML = `
-        <div style="text-align:center;padding:60px 20px;display:flex;flex-direction:column;align-items:center;">
-          <div style="width:80px;height:80px;margin-bottom:24px;">
-              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); width: 100%; height: 100%;">
+          <div style="text-align:center;padding:60px 20px;display:flex;flex-direction:column;align-items:center;">
+            <div style="width:80px;height:80px;margin-bottom:24px;">
+              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round"
+                   style="color:var(--text-muted);width:100%;height:100%;">
                 <rect x="8" y="20" width="16" height="24" rx="4" fill="var(--bg-elevated)"/>
                 <line x1="24" y1="26" x2="30" y2="26" stroke="var(--accent)" stroke-width="4"/>
                 <line x1="24" y1="38" x2="30" y2="38" stroke="var(--accent)" stroke-width="4"/>
@@ -458,10 +803,10 @@
                 <line x1="33" y1="20" x2="37" y2="16" stroke="var(--violet)"/>
                 <line x1="33" y1="44" x2="37" y2="48" stroke="var(--violet)"/>
               </svg>
-          </div>
-          <h3 style="font-size:1.2rem;margin-bottom:8px;">Connection Lost</h3>
-          <p style="font-size:0.85rem;color:var(--text-secondary);">Check your connection or start your backend.</p>
-        </div>`;
+            </div>
+            <h3 style="font-size:1.2rem;margin-bottom:8px;">Connection Lost</h3>
+            <p style="font-size:0.85rem;color:var(--text-secondary);">Check your connection or start your backend.</p>
+          </div>`;
       }
     }
 
