@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('login page loads', async ({ page }) => {
-  await page.goto('/login');
+  await page.goto('/pages/login.html');
 
   await expect(page).toHaveTitle(/Login/i);
 
@@ -11,11 +11,10 @@ test('login page loads', async ({ page }) => {
 });
 
 test('empty form shows validation', async ({ page }) => {
-  await page.goto('/login');
+  await page.goto('/pages/login.html');
 
   await page.click('#emailBtn');
 
-  await expect(page.locator('#errorBox')).toContainText(
-    'Please enter your email and password.'
-  );
+  await expect(page.locator('#errorBox'))
+    .toContainText('Please enter your email and password.');
 });
