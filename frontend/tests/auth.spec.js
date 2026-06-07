@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
-test('debug login page', async ({ page }) => {
+test('find script failure', async ({ page }) => {
   page.on('console', msg => {
-    console.log('BROWSER:', msg.text());
+    console.log('CONSOLE:', msg.type(), msg.text());
   });
 
   page.on('pageerror', err => {
@@ -11,17 +11,12 @@ test('debug login page', async ({ page }) => {
 
   await page.goto('/pages/login.html');
 
-  const fnType = await page.evaluate(() => {
-    return typeof window.signInWithEmail;
-  });
+  await page.waitForTimeout(5000);
 
-  console.log({ fnType });
+  const result = await page.evaluate(() => ({
+    apiBase: window.API_BASE,
+    signIn: typeof window.signInWithEmail,
+  }));
 
-  await page.click('#emailBtn');
-
-  const errorText = await page.locator('#errorBox').textContent();
-
-  console.log({ errorText });
-
-  await page.waitForTimeout(3000);
+  console.log(result);
 });
