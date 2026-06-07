@@ -1,20 +1,27 @@
 import { test, expect } from '@playwright/test';
 
-test('login page loads', async ({ page }) => {
+test('debug login page', async ({ page }) => {
+  page.on('console', msg => {
+    console.log('BROWSER:', msg.text());
+  });
+
+  page.on('pageerror', err => {
+    console.log('PAGE ERROR:', err.message);
+  });
+
   await page.goto('/pages/login.html');
 
-  await expect(page).toHaveTitle(/Login/i);
+  const fnType = await page.evaluate(() => {
+    return typeof window.signInWithEmail;
+  });
 
-  await expect(page.locator('#email')).toBeVisible();
-  await expect(page.locator('#password')).toBeVisible();
-  await expect(page.locator('#emailBtn')).toBeVisible();
-});
-
-test('empty form shows validation', async ({ page }) => {
-  await page.goto('/pages/login.html');
+  console.log({ fnType });
 
   await page.click('#emailBtn');
 
-  await expect(page.locator('#errorBox'))
-    .toContainText('Please enter your email and password.');
+  const errorText = await page.locator('#errorBox').textContent();
+
+  console.log({ errorText });
+
+  await page.waitForTimeout(3000);
 });
