@@ -1,22 +1,24 @@
 import { test } from '@playwright/test';
 
-test('find script failure', async ({ page }) => {
+test('verify login validation', async ({ page }) => {
   page.on('console', msg => {
-    console.log('CONSOLE:', msg.type(), msg.text());
-  });
-
-  page.on('pageerror', err => {
-    console.log('PAGE ERROR:', err.message);
+    console.log('BROWSER:', msg.text());
   });
 
   await page.goto('/pages/login.html');
 
-  await page.waitForTimeout(5000);
+  const before = await page.locator('#errorBox').textContent();
+  console.log({ before });
 
-  const result = await page.evaluate(() => ({
-    apiBase: window.API_BASE,
-    signIn: typeof window.signInWithEmail,
-  }));
+  await page.click('#emailBtn');
 
-  console.log(result);
+  await page.waitForTimeout(1000);
+
+  const after = await page.locator('#errorBox').textContent();
+  const visible = await page.locator('#errorBox').isVisible();
+
+  console.log({
+    after,
+    visible
+  });
 });
