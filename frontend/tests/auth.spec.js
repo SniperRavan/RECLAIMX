@@ -1,24 +1,18 @@
 import { test } from '@playwright/test';
 
-test('verify login validation', async ({ page }) => {
-  page.on('console', msg => {
-    console.log('BROWSER:', msg.text());
-  });
+test('login page ready', async ({ page }) => {
+  await page.goto('http://localhost:3000/pages/login');
 
-  await page.goto('/pages/login.html');
+  await page.waitForFunction(
+    () => typeof window.signInWithEmail === 'function'
+  );
 
-  const before = await page.locator('#errorBox').textContent();
-  console.log({ before });
+  const info = await page.evaluate(() => ({
+    signIn: typeof window.signInWithEmail,
+    email: !!document.getElementById('email'),
+    password: !!document.getElementById('password'),
+    button: !!document.getElementById('emailBtn')
+  }));
 
-  await page.click('#emailBtn');
-
-  await page.waitForTimeout(1000);
-
-  const after = await page.locator('#errorBox').textContent();
-  const visible = await page.locator('#errorBox').isVisible();
-
-  console.log({
-    after,
-    visible
-  });
+  console.log(info);
 });

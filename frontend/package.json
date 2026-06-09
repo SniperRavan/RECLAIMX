@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "service-worker.js",
-  "scripts": {},
+  "scripts": {
+    "build": "echo frontend-static-site"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

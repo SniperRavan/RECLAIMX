@@ -84,7 +84,7 @@
       <a href="#" style="font-size:0.78rem;color:var(--accent)" onclick="forgotPassword()">Forgot password?</a>
     </div>
 
-    <button class="btn btn-primary" id="emailBtn" onclick="signInWithEmail()" style="width:100%;padding:12px;font-size:0.95rem">
+    <button class="btn btn-primary" id="emailBtn" style="width:100%;padding:12px;font-size:0.95rem">
       Login to ReclaimX
     </button>
 
@@ -187,6 +187,10 @@
       showError(msgs[err.code] || 'Login failed. Please try again.');
     }
   };
+
+  document
+  .getElementById('emailBtn')
+  .addEventListener('click', window.signInWithEmail);
 
   window.togglePwd = function () {
     const p = document.getElementById('password');
