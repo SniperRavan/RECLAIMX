@@ -19,17 +19,22 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
+  webServer: {
+    command: 'npx serve . -l 3000',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
+
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
