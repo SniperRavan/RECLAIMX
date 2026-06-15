@@ -1,871 +1,2870 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ReclaimX — Smart Campus Lost & Found</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/assets/css/global.css"/>
-  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
-  <link rel="manifest" href="/manifest.json"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <link rel="manifest" href="/manifest.json" />
   <style>
-    /* ── Override global for landing page richness ── */
-    body { overflow-x: hidden; }
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
 
-    /* ── Animated mesh background ── */
-    .bg-mesh {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── Focus visible ── */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    /* ── Background — simplified, no heavy blur ── */
+    .bg-base {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       background: #060810;
-      overflow: hidden;
     }
-    .bg-mesh::before {
+
+    .bg-base::before {
       content: '';
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       background:
-        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(0,212,170,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(124,92,252,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 50% 50%, rgba(0,212,170,0.04) 0%, transparent 70%);
-      animation: meshShift 12s ease-in-out infinite alternate;
-    }
-    @keyframes meshShift {
-      0%   { opacity: 0.6; transform: scale(1) translateY(0); }
-      100% { opacity: 1;   transform: scale(1.05) translateY(-20px); }
+        radial-gradient(ellipse 55% 45% at 10% 15%, rgba(0, 212, 170, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse 45% 40% at 90% 85%, rgba(124, 92, 252, 0.05) 0%, transparent 50%);
     }
 
-    /* Grid overlay */
     .bg-grid {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
-    }
-
-    /* Floating orbs */
-    .orb {
-      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
-      filter: blur(80px);
-      animation: orbFloat 8s ease-in-out infinite alternate;
-    }
-    .orb-1 { width:500px;height:500px; top:-150px;left:-150px; background:rgba(0,212,170,0.06); }
-    .orb-2 { width:400px;height:400px; bottom:-100px;right:-100px; background:rgba(124,92,252,0.07); animation-delay:-4s; }
-    .orb-3 { width:300px;height:300px; top:40%;left:60%; background:rgba(0,212,170,0.04); animation-delay:-2s; }
-    @keyframes orbFloat {
-      0%   { transform: translate(0,0) scale(1); }
-      100% { transform: translate(30px,30px) scale(1.1); }
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 72px 72px;
     }
 
     /* ── Navbar ── */
     .navbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 0 60px; height: 68px;
-      display: flex; align-items: center; justify-content: space-between;
-      transition: all 0.3s;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 56px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s, border 0.3s;
     }
+
     .navbar.scrolled {
-      background: rgba(6,8,16,0.85);
-      backdrop-filter: blur(24px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+      background: rgba(6, 8, 16, 0.92);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
-    .nav-logo { font-family: var(--font-display); font-size: 1.35rem; font-weight: 800; }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; align-items: center; gap: 32px; }
-    .nav-link { font-size: 0.85rem; color: var(--text-secondary); transition: color 0.2s; }
-    .nav-link:hover { color: var(--text-primary); }
-    .nav-cta { display: flex; gap: 10px; align-items: center; }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-link {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-cta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Uiverse Burger */
+    .square {
+      border: 1px solid rgba(0, 212, 170, 0.45);
+      height: 28px;
+      width: 28px;
+      display: none;
+      margin: 0;
+      transform: rotate(45deg);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .square .burgerwrap {
+      height: 18px;
+      width: 21px;
+      transform: rotate(-45deg);
+      padding-left: 3px;
+      padding-top: 8px;
+      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
+    }
+
+    .square:hover {
+      transform: rotate(135deg);
+      border-color: rgba(0, 212, 170, 0.9);
+      box-shadow: 0 0 12px rgba(0, 212, 170, 0.2);
+    }
+
+    .square:hover .burgerwrap {
+      transform: rotate(-135deg);
+    }
+
+    .square span {
+      height: 2px;
+      width: 14px;
+      background: linear-gradient(145deg, #00d4aa, #7c5cfc);
+      display: block;
+      margin-bottom: 2px;
+      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
+    }
+
+    .square span::after {
+      content: '';
+      height: 2px;
+      width: 14px;
+      position: absolute;
+      background: #fff;
+      left: -22px;
+      margin-top: -4px;
+      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
+    }
+
+    .square:hover span {
+      margin-left: 26px;
+    }
+
+    .square:hover span::after {
+      left: 0.2px;
+    }
+
+    .square span:nth-of-type(1),
+    .square span:nth-of-type(1)::after {
+      transition-delay: 0.1s;
+    }
+
+    .square span:nth-of-type(2),
+    .square span:nth-of-type(2)::after {
+      transition-delay: 0.2s;
+    }
+
+    .square span:nth-of-type(3),
+    .square span:nth-of-type(3)::after {
+      transition-delay: 0.3s;
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: rgba(6, 8, 16, 0.97);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 12px 20px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mobile-nav.open {
+      display: flex;
+    }
+
+    .mobile-nav a {
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .mobile-nav a:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
 
     /* ── Hero ── */
     .hero {
       min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      text-align: center;
-      padding: 100px 24px 60px;
-      position: relative; z-index: 1;
+      display: flex;
+      align-items: center;
+      padding: 96px 56px 56px;
+      position: relative;
+      z-index: 1;
+      gap: 48px;
     }
-    .hero-content { max-width: 780px; }
+
+    .hero-left {
+      flex: 1;
+      max-width: 520px;
+    }
+
+    .hero-right {
+      flex: 0 0 52%;
+      position: relative;
+    }
 
     .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(124,92,252,0.1);
-      border: 1px solid rgba(124,92,252,0.25);
-      border-radius: 100px; padding: 6px 18px;
-      font-size: 0.72rem; font-family: var(--font-mono);
-      color: var(--violet); letter-spacing: 1px;
-      text-transform: uppercase; margin-bottom: 32px;
-      animation: fadeUp 0.6s ease both;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124, 92, 252, 0.08);
+      border: 1px solid rgba(124, 92, 252, 0.22);
+      border-radius: 100px;
+      padding: 5px 16px;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--violet);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
     }
-    .hero-eyebrow-dot {
-      width: 6px; height: 6px; border-radius: 50%;
+
+    .hero-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
       background: var(--violet);
-      box-shadow: 0 0 8px var(--violet);
       animation: pulse-glow 2s infinite;
     }
 
     .hero-title {
-      font-size: clamp(2.8rem, 6vw, 4.5rem);
-      font-weight: 800; line-height: 1.05;
-      letter-spacing: -2.5px; margin-bottom: 24px;
-      animation: fadeUp 0.6s 0.1s ease both;
+      font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
     }
-    .hero-title .line2 { color: var(--accent); }
-    .hero-title .line3 {
-      background: linear-gradient(135deg, #00d4aa, #7c5cfc);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+
+    .hero-title .hl {
+      color: var(--accent);
+    }
+
+    .hero-title .gr {
+      background: linear-gradient(120deg, #00d4aa 0%, #7c5cfc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .hero-sub {
-      font-size: 1.05rem; color: var(--text-secondary); line-height: 1.8;
-      max-width: 520px; margin: 0 auto 40px;
-      animation: fadeUp 0.6s 0.2s ease both;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 460px;
+      margin-bottom: 32px;
     }
 
     .hero-cta {
-      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
-      animation: fadeUp 0.6s 0.3s ease both;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
     }
 
-    .btn-hero-primary {
-      padding: 14px 32px; border-radius: 12px;
-      background: var(--accent); color: #000;
-      font-size: 0.9rem; font-weight: 700;
-      border: none; cursor: pointer;
+    .btn-ph {
+      padding: 12px 28px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #000;
+      font-size: 0.875rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
       font-family: var(--font-body);
-      transition: all 0.25s;
-      box-shadow: 0 0 30px rgba(0,212,170,0.25);
-      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 0 20px rgba(0, 212, 170, 0.15);
     }
-    .btn-hero-primary:hover {
+
+    .btn-ph:hover {
       background: #00ffcc;
-      box-shadow: 0 0 50px rgba(0,212,170,0.45);
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
 
-    .btn-hero-ghost {
-      padding: 14px 32px; border-radius: 12px;
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(12px);
+    .btn-gh {
+      padding: 12px 28px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
       color: var(--text-secondary);
-      font-size: 0.9rem; font-weight: 600;
-      border: 1px solid rgba(255,255,255,0.1);
-      cursor: pointer; font-family: var(--font-body);
-      transition: all 0.25s;
-      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      font-family: var(--font-body);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
     }
-    .btn-hero-ghost:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(0,212,170,0.3);
+
+    .btn-gh:hover {
+      border-color: rgba(0, 212, 170, 0.3);
       color: var(--text-primary);
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
 
-    /* Lottie hero animation */
-    .hero-lottie-wrap {
-      width: 220px; height: 220px; margin: 0 auto 20px;
-      animation: fadeUp 0.6s 0.0s ease both;
+    .hero-trust {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
     }
 
-    /* Hero scroll indicator */
-    .scroll-hint {
-      position: absolute; bottom: 32px; left: 50%;
-      transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      color: var(--text-muted); font-size: 0.68rem; font-family: var(--font-mono);
-      letter-spacing: 1px; text-transform: uppercase;
-      animation: fadeIn 1s 1s ease both;
+    .trust-avs {
+      display: flex;
     }
-    .scroll-hint-line {
-      width: 1px; height: 40px;
-      background: linear-gradient(to bottom, transparent, var(--accent));
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
-    @keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
-    /* ── Social Proof Bar ── */
-    .social-proof {
-      position: relative; z-index: 1;
-      padding: 28px 0;
-      display: flex; justify-content: center; align-items: center; gap: 48px;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      background: rgba(11,15,26,0.6); backdrop-filter: blur(10px);
+    .trust-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #060810;
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-left: -6px;
+      flex-shrink: 0;
     }
-    .proof-item { text-align: center; }
-    .proof-num {
-      font-family: var(--font-display); font-size: 2rem;
-      font-weight: 800; letter-spacing: -1px;
+
+    .trust-av:first-child {
+      margin-left: 0;
+    }
+
+    .tdiv {
+      width: 1px;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-img-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .hero-img-glow {
+      position: absolute;
+      inset: -10px;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0, 212, 170, 0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-img {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 212, 170, 0.12);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      display: block;
+    }
+
+    .hero-float {
+      position: absolute;
+      background: rgba(13, 19, 32, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-float-1 {
+      bottom: -16px;
+      left: -16px;
+    }
+
+    .hero-float-2 {
+      top: 16px;
+      right: -16px;
+    }
+
+    .fl {
+      font-size: 0.6rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+
+    .fv {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
       color: var(--accent);
     }
-    .proof-label {
-      font-size: 0.68rem; font-family: var(--font-mono);
-      color: var(--text-muted); text-transform: uppercase;
-      letter-spacing: 1px; margin-top: 3px;
+
+    .fs {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
-    .proof-divider {
-      width: 1px; height: 40px;
-      background: rgba(255,255,255,0.06);
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-muted);
+      font-size: 0.62rem;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .sh-line {
+      width: 1px;
+      height: 30px;
+      background: linear-gradient(to bottom, transparent, var(--accent));
+      animation: scrollP 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollP {
+
+      0%,
+      100% {
+        opacity: 0.25
+      }
+
+      50% {
+        opacity: 0.8
+      }
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      position: relative;
+      z-index: 1;
+      background: rgba(11, 15, 26, 0.7);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stats-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+
+    .stat-item {
+      padding: 28px 24px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-item:last-child {
+      border-right: none;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--accent);
+    }
+
+    .stat-name {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin: 4px 0 6px;
+    }
+
+    .stat-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 140px;
+      margin: 0 auto;
+    }
+
+    /* ── Section shared ── */
+    .section-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-pad {
+      padding: 80px 56px;
+    }
+
+    .section-pad-sm {
+      padding: 60px 56px;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .section-h {
+      font-size: clamp(1.7rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Why ReclaimX Works ── */
+    .why-section {
+      background: rgba(11, 15, 26, 0.5);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .why-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 28px 24px;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .why-card:hover {
+      border-color: rgba(0, 212, 170, 0.18);
+      transform: translateY(-3px);
+    }
+
+    .why-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+    }
+
+    .why-icon.t {
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.18);
+      color: var(--accent);
+    }
+
+    .why-icon.p {
+      background: rgba(124, 92, 252, 0.1);
+      border: 1px solid rgba(124, 92, 252, 0.18);
+      color: var(--violet);
+    }
+
+    .why-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .why-desc {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .why-vs {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .why-vs span {
+      color: var(--accent);
     }
 
     /* ── Features ── */
-    .features-section {
-      position: relative; z-index: 1;
-      padding: 100px 60px;
-      max-width: 1140px; margin: 0 auto;
+    .features-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 14px;
     }
-    .section-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 0.68rem; font-family: var(--font-mono);
-      color: var(--accent); letter-spacing: 1px; text-transform: uppercase;
-      margin-bottom: 16px;
+
+    .feat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 26px 22px;
+      transition: border-color 0.25s, transform 0.25s;
+      position: relative;
+      overflow: hidden;
     }
-    .section-eyebrow::before {
-      content: ''; display: block; width: 24px; height: 1px;
+
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    }
+
+    .feat-card:hover {
+      border-color: rgba(0, 212, 170, 0.18);
+      transform: translateY(-3px);
+    }
+
+    .feat-card.large {
+      grid-row: span 2;
+      padding: 36px 32px;
+    }
+
+    .feat-card.large:hover {
+      border-color: rgba(0, 212, 170, 0.25);
+    }
+
+    .feat-card.v:hover {
+      border-color: rgba(124, 92, 252, 0.2);
+    }
+
+    .feat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      font-size: 1.2rem;
+    }
+
+    .feat-icon.t {
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.18);
+      color: var(--accent);
+    }
+
+    .feat-icon.p {
+      background: rgba(124, 92, 252, 0.1);
+      border: 1px solid rgba(124, 92, 252, 0.18);
+      color: var(--violet);
+    }
+
+    .feat-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .feat-card.large .feat-title {
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+    }
+
+    .feat-desc {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .feat-card.large .feat-desc {
+      font-size: 0.88rem;
+    }
+
+    .feat-badge {
+      display: inline-flex;
+      margin-top: 14px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.62rem;
+      font-family: var(--font-mono);
+    }
+
+    .feat-badge.t {
+      background: rgba(0, 212, 170, 0.08);
+      border: 1px solid rgba(0, 212, 170, 0.15);
+      color: var(--accent);
+    }
+
+    .feat-badge.p {
+      background: rgba(124, 92, 252, 0.08);
+      border: 1px solid rgba(124, 92, 252, 0.15);
+      color: var(--violet);
+    }
+
+    .feat-score-visual {
+      margin-top: 24px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .score-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .score-bar-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
       background: var(--accent);
     }
-    .features-title { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
-    .features-sub { color: var(--text-secondary); font-size: 1rem; margin-bottom: 60px; max-width: 480px; }
 
-    .features-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    /* ── Screenshot showcase ── */
+    .showcase-section {
+      background: rgba(11, 15, 26, 0.5);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .feature-card {
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 20px; padding: 32px 28px;
-      transition: all 0.3s; position: relative; overflow: hidden;
-      cursor: default;
+    .showcase-item {
+      display: flex;
+      align-items: center;
+      gap: 56px;
+      padding: 48px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .feature-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    }
-    .feature-card::after {
-      content: ''; position: absolute; inset: 0; border-radius: 20px;
-      background: radial-gradient(circle at 80% 20%, rgba(0,212,170,0.04) 0%, transparent 60%);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .feature-card:hover {
-      border-color: rgba(0,212,170,0.2);
-      transform: translateY(-4px);
-      background: rgba(255,255,255,0.05);
-    }
-    .feature-card:hover::after { opacity: 1; }
 
-    .feature-card.violet-card::after {
-      background: radial-gradient(circle at 80% 20%, rgba(124,92,252,0.05) 0%, transparent 60%);
+    .showcase-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
-    .feature-card.violet-card:hover { border-color: rgba(124,92,252,0.25); }
 
-    .feature-icon-wrap {
-      width: 52px; height: 52px; border-radius: 14px;
-      background: rgba(0,212,170,0.1);
-      border: 1px solid rgba(0,212,170,0.2);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px; font-size: 1.4rem; color: var(--accent);
-      position: relative; z-index: 1;
+    .showcase-item.rev {
+      flex-direction: row-reverse;
     }
-    .feature-icon-wrap.violet {
-      background: rgba(124,92,252,0.1);
-      border-color: rgba(124,92,252,0.2);
+
+    .showcase-text {
+      flex: 1;
+    }
+
+    .showcase-num {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .showcase-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .showcase-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+
+    .showcase-bullets {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .showcase-bullet {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+    }
+
+    .showcase-bullet i {
+      color: var(--accent);
+      font-size: 11px;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .showcase-img-wrap {
+      flex: 0 0 52%;
+      position: relative;
+    }
+
+    /* Browser mockup */
+    .browser-frame {
+      background: rgba(13, 19, 32, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .browser-bar {
+      background: rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .browser-dot.r {
+      background: rgba(255, 77, 109, 0.7);
+    }
+
+    .browser-dot.y {
+      background: rgba(251, 191, 36, 0.7);
+    }
+
+    .browser-dot.g {
+      background: rgba(0, 212, 170, 0.7);
+    }
+
+    .browser-url {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .browser-body {
+      padding: 0;
+    }
+
+    .browser-body img {
+      width: 100%;
+      display: block;
+    }
+
+    .browser-body-placeholder {
+      height: 260px;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.04) 0%, rgba(124, 92, 252, 0.04) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+
+    .browser-body-placeholder i {
+      font-size: 2.5rem;
+      opacity: 0.2;
+    }
+
+    .browser-body-placeholder span {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      opacity: 0.4;
+    }
+
+    .showcase-img-wrap:hover .browser-frame {
+      border-color: rgba(0, 212, 170, 0.2);
+    }
+
+    /* ── Timeline ── */
+    .timeline-section {}
+
+    .timeline {
+      max-width: 820px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, rgba(0, 212, 170, 0.4), rgba(124, 92, 252, 0.2), transparent);
+    }
+
+    .tl-item {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .tl-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tl-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--bg-card);
+      border: 2px solid rgba(0, 212, 170, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tl-icon.p {
+      border-color: rgba(124, 92, 252, 0.4);
       color: var(--violet);
     }
 
-    .feature-title {
-      font-size: 1rem; font-weight: 700; margin-bottom: 10px;
-      color: var(--text-primary); position: relative; z-index: 1;
+    .tl-body {
+      flex: 1;
+      padding-top: 10px;
     }
-    .feature-desc {
-      font-size: 0.84rem; color: var(--text-secondary);
-      line-height: 1.7; position: relative; z-index: 1;
+
+    .tl-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
     }
-    .feature-tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      margin-top: 16px; padding: 3px 10px; border-radius: 100px;
-      font-size: 0.62rem; font-family: var(--font-mono);
-      background: rgba(0,212,170,0.08);
-      border: 1px solid rgba(0,212,170,0.15);
-      color: var(--accent); position: relative; z-index: 1;
+
+    .tl-desc {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
     }
-    .feature-tag.violet-tag {
-      background: rgba(124,92,252,0.08);
-      border-color: rgba(124,92,252,0.15);
+
+    .tl-badge {
+      display: inline-flex;
+      margin-top: 8px;
+      padding: 2px 10px;
+      border-radius: 100px;
+      font-size: 0.62rem;
+      font-family: var(--font-mono);
+      background: rgba(0, 212, 170, 0.08);
+      border: 1px solid rgba(0, 212, 170, 0.15);
+      color: var(--accent);
+    }
+
+    .tl-badge.p {
+      background: rgba(124, 92, 252, 0.08);
+      border-color: rgba(124, 92, 252, 0.15);
       color: var(--violet);
     }
 
-    /* ── How it works ── */
-    .how-section {
-      position: relative; z-index: 1;
-      padding: 80px 60px;
-      background: rgba(11,15,26,0.6);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .how-inner { max-width: 900px; margin: 0 auto; }
-    .how-steps {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
-      position: relative; margin-top: 56px;
-    }
-    .how-steps::before {
-      content: ''; position: absolute;
-      top: 26px; left: 13%; right: 13%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), var(--violet), var(--accent), transparent);
-      opacity: 0.25;
-    }
-    .how-step { text-align: center; padding: 0 16px; }
-    .how-step-num {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 18px; font-size: 1.1rem; color: var(--accent);
-      position: relative; z-index: 1;
-      transition: all 0.3s;
-    }
-    .how-step:hover .how-step-num {
-      background: rgba(0,212,170,0.1);
-      border-color: rgba(0,212,170,0.3);
-      box-shadow: 0 0 24px rgba(0,212,170,0.2);
-    }
-    .how-step-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-primary); }
-    .how-step-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; }
+    /* ── FAQ ── */
+    .faq-section {}
 
-    /* ── CTA Section ── */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      max-width: 1000px;
+      align-items: start;
+    }
+
+    .faq-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .faq-item:hover {
+      border-color: rgba(0, 212, 170, 0.18);
+    }
+
+    .faq-item.open {
+      border-color: rgba(0, 212, 170, 0.25);
+    }
+
+    .faq-q {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .faq-q i {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-q i {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    .faq-a {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: none;
+    }
+
+    .faq-item.open .faq-a {
+      display: block;
+    }
+
+    /* ── Social proof ── */
+    .proof-section {
+      background: rgba(11, 15, 26, 0.5);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .proof-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .proof-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .proof-text {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    .proof-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .proof-av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 212, 170, 0.12);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .proof-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .proof-role {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ── CTA ── */
     .cta-section {
-      position: relative; z-index: 1;
-      padding: 100px 60px;
+      position: relative;
+      z-index: 1;
+      padding: 80px 56px;
       text-align: center;
     }
-    .cta-glass {
-      max-width: 680px; margin: 0 auto;
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 28px; padding: 60px 48px;
-      position: relative; overflow: hidden;
-    }
-    .cta-glass::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,212,170,0.4), transparent);
-    }
-    .cta-glass::after {
-      content: ''; position: absolute; inset: 0; border-radius: 28px;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,170,0.06) 0%, transparent 60%);
-    }
-    .cta-title { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; position: relative; z-index: 1; }
-    .cta-sub { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 36px; max-width: 400px; margin-left:auto; margin-right:auto; position: relative; z-index: 1; }
 
-    /* ── Footer ── */
-    .footer {
-      position: relative; z-index: 1;
-      background: rgba(6,8,16,0.95);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 60px 60px 32px;
+    .cta-box {
+      max-width: 620px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 52px 44px;
+      position: relative;
+      overflow: hidden;
     }
-    .footer-top {
-      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 48px;
-      padding-bottom: 48px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 212, 170, 0.35), transparent);
+    }
+
+    .cta-title {
+      font-size: clamp(1.7rem, 3vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 14px;
+    }
+
+    .cta-sub {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
       margin-bottom: 36px;
-    }
-    .footer-logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 14px; display: block; }
-    .footer-logo span { color: var(--accent); }
-    .footer-tagline { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; max-width: 220px; margin-bottom: 24px; }
-    .footer-socials { display: flex; gap: 10px; }
-    .footer-social-btn {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-muted); transition: all 0.2s;
-      text-decoration: none; font-size: 0.9rem;
-    }
-    .footer-social-btn:hover {
-      background: rgba(0,212,170,0.1);
-      border-color: rgba(0,212,170,0.25);
-      color: var(--accent);
-      transform: translateY(-2px);
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .footer-col-title {
-      font-size: 0.72rem; font-family: var(--font-mono);
-      color: var(--text-muted); text-transform: uppercase;
-      letter-spacing: 1.5px; margin-bottom: 18px;
+    .cta-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      align-items: center;
     }
-    .footer-links { display: flex; flex-direction: column; gap: 10px; }
-    .footer-link {
-      font-size: 0.83rem; color: var(--text-secondary);
-      text-decoration: none; transition: color 0.2s;
-      display: flex; align-items: center; gap: 6px;
+
+    /* Uiverse animated button (teal) */
+    .rx-btn {
+      --w: #e8edf5;
+      --t1: #b3f0e6;
+      --t2: #00d4aa;
+      --t3: #00b893;
+      --t4: #007a65;
+      --t5: #004d41;
+      --r: 13px;
+      border-radius: var(--r);
+      outline: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: var(--font-body);
+      background: transparent;
+      letter-spacing: -0.4px;
+      border: 0;
+      position: relative;
+      width: 190px;
+      height: 56px;
     }
-    .footer-link:hover { color: var(--accent); }
-    .footer-link-badge {
-      padding: 1px 6px; border-radius: 100px;
-      font-size: 0.58rem; font-family: var(--font-mono);
-      background: rgba(0,212,170,0.1);
-      color: var(--accent); letter-spacing: 0.5px;
+
+    .rx-btn .bg {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      filter: blur(1px);
     }
-    .footer-link-badge.soon {
-      background: rgba(251,191,36,0.1);
+
+    .rx-btn .bg::before,
+    .rx-btn .bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: calc(var(--r)*1.1);
+      background: var(--t5);
+    }
+
+    .rx-btn .bg::before {
+      filter: blur(4px);
+      box-shadow: -4px 4px 0 rgba(0, 140, 110, 0.3), -8px 8px 0 rgba(0, 140, 110, 0.2);
+    }
+
+    .rx-btn .wrap {
+      border-radius: inherit;
+      overflow: hidden;
+      height: 100%;
+      transform: translate(4px, -4px);
+      padding: 3px;
+      background: linear-gradient(to bottom, var(--t1) 0%, var(--t4) 100%);
+      position: relative;
+      transition: transform 0.3s;
+    }
+
+    .rx-btn .outline {
+      position: absolute;
+      overflow: hidden;
+      inset: 0;
+      opacity: 0;
+      border-radius: inherit;
+      transition: opacity 0.4s;
+    }
+
+    .rx-btn .outline::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      width: 80px;
+      height: 220px;
+      margin: auto;
+      background: linear-gradient(to right, transparent, white, transparent);
+      animation: spinRx 3s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .rx-btn .content {
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      position: relative;
+      height: 100%;
+      gap: 10px;
+      border-radius: calc(var(--r)*0.8);
+      font-weight: 600;
+      background: linear-gradient(to bottom, var(--t3) 0%, var(--t4) 100%);
+      box-shadow: inset -2px 8px 8px -4px var(--t2), inset 1px -2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .rx-btn .char {
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rx-btn .char span {
+      display: block;
+      color: transparent;
+      position: relative;
+    }
+
+    /* Space for "Get Start" (before the 4th letter) */
+    .rx-btn .char.s1 span:nth-child(4) {
+      margin-left: 5px;
+    }
+
+    /* Space for "Join Free" (before the 5th letter) */
+    .rx-btn .char.s2 span:nth-child(5) {
+      margin-left: 5px;
+    }
+
+    .rx-btn .char.s1 span {
+      animation: rxCA 1.2s ease backwards calc(var(--i)*0.03s);
+    }
+
+    .rx-btn .char.s1 span::before,
+    .rx-btn .char span::after {
+      content: attr(data-l);
+      position: absolute;
+      color: var(--w);
+      left: 0;
+    }
+
+    .rx-btn .char span::before {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+
+    .rx-btn .char.s2 {
+      position: absolute;
+      left: 55px;
+    }
+
+    .rx-btn .char.s2 span::after {
+      opacity: 1;
+    }
+
+    .rx-btn .ico {
+      animation: rxRA 0.8s cubic-bezier(0.7, -0.5, 0.3, 1.2) forwards;
+      z-index: 10;
+    }
+
+    .rx-btn .ico div,
+    .rx-btn .ico div::before,
+    .rx-btn .ico div::after {
+      height: 2px;
+      border-radius: 1px;
+      background: var(--w);
+    }
+
+    .rx-btn .ico div::before,
+    .rx-btn .ico div::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      transform-origin: center right;
+      width: 10px;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .rx-btn .ico div {
+      position: relative;
+      width: 18px;
+      background: linear-gradient(to bottom, var(--w), var(--t1));
+      animation: rxSA 1s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+
+    .rx-btn .ico div::before {
+      transform: rotate(44deg);
+      top: 1px;
+      animation: rxR1 1s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .rx-btn .ico div::after {
+      bottom: 1px;
+      transform: rotate(316deg);
+      background: linear-gradient(200deg, var(--w), var(--t1));
+      animation: rxR2 1s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .rx-btn .path {
+      position: absolute;
+      z-index: 12;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      stroke-dasharray: 150 480;
+      stroke-dashoffset: 150;
+      pointer-events: none;
+    }
+
+    .rx-btn .spl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      stroke-dasharray: 60 60;
+      stroke-dashoffset: 60;
+      transform: translate(-17%, -31%);
+      stroke: var(--t3);
+    }
+
+    .rx-btn:hover .wrap {
+      transform: translate(5px, -5px);
+    }
+
+    .rx-btn:hover .outline {
+      opacity: 1;
+    }
+
+    .rx-btn:hover .outline::before,
+    .rx-btn:hover .ico div,
+    .rx-btn:hover .ico div::before,
+    .rx-btn:hover .ico div::after {
+      animation-play-state: running;
+    }
+
+    /* Keep standard click effects */
+    .rx-btn:active .wrap {
+      transform: translate(2px, -2px);
+    }
+
+    .rx-btn:active .spl {
+      animation: rxSP 0.8s cubic-bezier(0.3, 0, 0, 1) forwards 0.05s;
+    }
+
+    .rx-btn:focus .path {
+      animation: rxP 1.6s ease forwards 0.2s;
+    }
+
+    /* Hide "Join Free" by default */
+    .rx-btn .char.s2 span::after {
+      animation: rxCD 0.5s ease forwards calc(var(--i)*0.03s);
+    }
+
+    /* On HOVER: hide "Get Start", show "Join Free", and move the arrow */
+    .rx-btn:hover .char.s1 span {
+      animation: rxCD 0.5s ease forwards calc(var(--i)*0.03s);
+    }
+
+    .rx-btn:hover .char.s2 span::after {
+      animation: rxCA 1s ease backwards calc(var(--i)*0.03s);
+    }
+
+    .rx-btn:hover .ico {
+      animation: rxAR 1s cubic-bezier(0.7, -0.5, 0.3, 1.5) forwards;
+    }
+
+    @keyframes spinRx {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes rxCA {
+      0% {
+        transform: translateY(50%);
+        opacity: 0
+      }
+
+      50% {
+        transform: translateY(-15%);
+        opacity: 1
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    @keyframes rxCD {
+      0% {
+        transform: translateY(0);
+        opacity: 1
+      }
+
+      100% {
+        transform: translateY(-70%);
+        opacity: 0
+      }
+    }
+
+    @keyframes rxAR {
+      0% {
+        opacity: 1
+      }
+
+      50% {
+        transform: translateX(40px);
+        opacity: 0
+      }
+
+      51% {
+        transform: translateX(-140px);
+        opacity: 0
+      }
+
+      100% {
+        transform: translateX(-90px);
+        opacity: 1
+      }
+    }
+
+    @keyframes rxSA {
+      50% {
+        transform: translateX(3px)
+      }
+    }
+
+    @keyframes rxR1 {
+      50% {
+        transform: rotate(30deg)
+      }
+
+      80% {
+        transform: rotate(55deg)
+      }
+    }
+
+    @keyframes rxR2 {
+      50% {
+        transform: rotate(330deg)
+      }
+
+      80% {
+        transform: rotate(300deg)
+      }
+    }
+
+    @keyframes rxRA {
+      0% {
+        transform: translateX(-90px)
+      }
+
+      100% {
+        transform: translateX(0)
+      }
+    }
+
+    @keyframes rxP {
+      from {
+        stroke: white
+      }
+
+      to {
+        stroke-dashoffset: -480;
+        stroke: #b3f0e6
+      }
+    }
+
+    @keyframes rxSP {
+      to {
+        stroke-dasharray: 2 60;
+        stroke-dashoffset: -60
+      }
+    }
+
+    /* ── Footer (30% shorter) ── */
+    .footer {
+      position: relative;
+      z-index: 1;
+      background: rgba(6, 8, 16, 0.98);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 40px 56px 24px;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr 1fr 1fr 1.2fr;
+      gap: 36px;
+      padding-bottom: 36px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 24px;
+    }
+
+    .flogo {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      display: block;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .flogo span {
+      color: var(--accent);
+    }
+
+    .ftagline {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+
+    /* Squircle dock */
+    .sdock {
+      position: relative;
+      width: fit-content;
+    }
+
+    .sdock-blur {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .sdock-inner {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      padding: 6px;
+    }
+
+    .sicon {
+      clip-path: url(#squircleClip);
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+
+    .sicon:hover {
+      transform: scale(1.1) translateY(-5px);
+    }
+
+    .sicon.gh {
+      background: linear-gradient(135deg, #374151, #111827);
+    }
+
+    .sicon.li {
+      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    }
+
+    .sicon svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .fcol-title {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 14px;
+    }
+
+    .flinks {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .flink {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .flink:hover {
+      color: var(--accent);
+    }
+
+    .fbadge {
+      padding: 1px 5px;
+      border-radius: 100px;
+      font-size: 0.55rem;
+      font-family: var(--font-mono);
+      background: rgba(251, 191, 36, 0.1);
       color: var(--warning);
     }
 
-    .footer-bottom {
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 12px;
-    }
-    .footer-copy {
-      font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);
-    }
-    .footer-copy a { color: var(--accent); text-decoration: none; }
-    .footer-legal { display: flex; gap: 20px; }
-    .footer-legal a {
-      font-size: 0.75rem; color: var(--text-muted);
-      text-decoration: none; transition: color 0.2s; font-family: var(--font-mono);
-    }
-    .footer-legal a:hover { color: var(--text-secondary); }
-    .footer-version {
-      font-size: 0.68rem; font-family: var(--font-mono);
+    /* Message box */
+    .ffb-label {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
       color: var(--text-muted);
-      padding: 3px 8px; border-radius: 6px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
     }
 
-    /* Mobile nav */
-    .mobile-nav {
-      display: none; position: fixed; top: 68px; left: 0; right: 0;
-      background: rgba(6,8,16,0.95); backdrop-filter: blur(24px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      padding: 12px 20px; z-index: 99;
-      flex-direction: column; gap: 4px;
+    .msgbox {
+      width: 100%;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0 10px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      transition: border 0.2s;
     }
-    .mobile-nav.open { display: flex; }
-    .mobile-nav a {
-      padding: 10px 14px; border-radius: 10px;
-      color: var(--text-secondary); font-size: 0.9rem; transition: all 0.15s;
+
+    .msgbox:focus-within {
+      border-color: rgba(0, 212, 170, 0.3);
     }
-    .mobile-nav a:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+
+    .fuw {
+      width: fit-content;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    #ffile {
+      display: none;
+    }
+
+    .fuw label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .fuw label svg {
+      height: 14px;
+    }
+
+    .fuw label svg path,
+    .fuw label svg circle {
+      transition: stroke 0.3s;
+    }
+
+    .fuw label:hover svg path {
+      stroke: var(--accent);
+    }
+
+    .fuw label:hover svg circle {
+      stroke: var(--accent);
+    }
+
+    .fuw label:hover .ftt {
+      display: block;
+    }
+
+    .ftt {
+      position: absolute;
+      top: -32px;
+      display: none;
+      color: white;
+      font-size: 9px;
+      white-space: nowrap;
+      background: #000;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #fmsg {
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      outline: none;
+      border: none;
+      padding-left: 8px;
+      color: var(--text-primary);
+      font-size: 0.78rem;
+      font-family: var(--font-body);
+    }
+
+    #fmsg::placeholder {
+      color: var(--text-muted);
+    }
+
+    #fmsg:focus~#fsend svg path,
+    #fmsg:valid~#fsend svg path {
+      fill: rgba(0, 212, 170, 0.1);
+      stroke: var(--accent);
+    }
+
+    #fsend {
+      width: fit-content;
+      height: 100%;
+      background: transparent;
+      outline: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 0 0 0 6px;
+    }
+
+    #fsend svg {
+      height: 14px;
+      transition: all 0.3s;
+    }
+
+    #fsend svg path {
+      transition: all 0.3s;
+    }
+
+    #fsend:hover svg path {
+      fill: rgba(0, 212, 170, 0.1);
+      stroke: var(--accent);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .fcopy {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .fcopy a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .flegal {
+      display: flex;
+      gap: 16px;
+    }
+
+    .flegal a {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      font-family: var(--font-mono);
+    }
+
+    .flegal a:hover {
+      color: var(--text-secondary);
+    }
+
+    .fver {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
 
     /* ── Responsive ── */
-    @media (max-width: 900px) {
-      .features-grid { grid-template-columns: 1fr; }
-      .how-steps { grid-template-columns: 1fr 1fr; gap: 32px; }
-      .how-steps::before { display: none; }
-      .navbar, .footer { padding-left: 24px; padding-right: 24px; }
-      .features-section, .cta-section, .how-section { padding-left: 24px; padding-right: 24px; }
-      .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
-      .footer-brand { grid-column: 1 / -1; }
-      .nav-links { display: none !important; }
-      .hero-title { font-size: clamp(2.2rem, 8vw, 3rem); }
+    @media (max-width: 1100px) {
+      .features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .feat-card.large {
+        grid-column: span 2;
+        grid-row: span 1;
+      }
     }
-    @media (max-width: 480px) {
-      .social-proof { flex-wrap: wrap; gap: 24px; }
-      .footer-top { grid-template-columns: 1fr; }
-      .footer-bottom { flex-direction: column; align-items: flex-start; }
+
+    @media (max-width: 1024px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 88px 32px 52px;
+        gap: 36px;
+      }
+
+      .hero-right {
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto;
+        flex: none;
+      }
+
+      .hero-left {
+        max-width: 100%;
+        flex: none;
+      }
+
+      .hero-sub {
+        margin: 0 auto 32px;
+      }
+
+      .hero-cta,
+      .hero-trust {
+        justify-content: center;
+      }
+
+      .hero-float-1 {
+        left: 0;
+        bottom: -12px;
+      }
+
+      .hero-float-2 {
+        right: 0;
+        top: 12px;
+      }
+
+      .showcase-item {
+        flex-direction: column !important;
+        gap: 28px;
+      }
+
+      .showcase-img-wrap {
+        flex: none;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .navbar {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none !important;
+      }
+
+      .square {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .section-pad,
+      .section-pad-sm {
+        padding: 56px 20px;
+      }
+
+      .why-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feat-card.large {
+        grid-column: span 1;
+      }
+
+      .proof-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        padding: 32px 20px 20px;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .footer-brand {
+        grid-column: 1/-1;
+      }
+
+      .cta-section {
+        padding: 60px 20px;
+      }
+
+      .stats-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stat-item:nth-child(2) {
+        border-right: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding: 80px 16px 44px;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+        letter-spacing: -1px;
+      }
+
+      .hero-float {
+        display: none;
+      }
+
+      .stats-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .cta-btns {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .tl-item {
+        gap: 16px;
+      }
+
+      .timeline::before {
+        left: 20px;
+      }
+
+      .tl-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- Backgrounds -->
-<div class="bg-mesh"></div>
-<div class="bg-grid"></div>
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
+  <svg width="0" height="0" style="position:absolute;pointer-events:none">
+    <defs>
+      <clipPath id="squircleClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0,0.5 C 0,0 0,0 0.5,0 S 1,0 1,0.5 1,1 0.5,1 0,1 0,0.5"></path>
+      </clipPath>
+    </defs>
+  </svg>
 
-<!-- Navbar -->
-<nav class="navbar" id="mainNav">
-  <a href="/" class="nav-logo">Reclaim<span>X</span></a>
-  <div class="nav-links">
-    <a href="#features" class="nav-link">Features</a>
-    <a href="#how" class="nav-link">How it works</a>
-    <a href="/browse" class="nav-link">Browse Items</a>
-  </div>
-  <div class="nav-cta">
-    <a href="/login" class="btn btn-ghost btn-sm">Sign In</a>
-    <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
-    <button id="mobileMenuBtn" aria-label="Toggle menu" aria-expanded="false"
-      style="display:none;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-primary);cursor:pointer;padding:8px 10px;border-radius:8px;margin-left:4px">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
-  </div>
-</nav>
+  <div class="bg-base"></div>
+  <div class="bg-grid"></div>
 
-<div class="mobile-nav" id="mobileNav" aria-hidden="true">
-  <a href="#features">Features</a>
-  <a href="#how">How it works</a>
-  <a href="/browse">Browse Items</a>
-  <a href="/login">Sign In</a>
-  <a href="/register" style="background:rgba(0,212,170,0.1);color:var(--accent);font-weight:600;border:1px solid rgba(0,212,170,0.2)">Get Started →</a>
-</div>
-
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-eyebrow">
-      <span class="hero-eyebrow-dot"></span>
-      Smart Campus Recovery System
+  <!-- Navbar -->
+  <nav class="navbar" id="mainNav">
+    <a href="/" class="nav-logo">Reclaim<span>X</span></a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#how" class="nav-link">How it works</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="/browse" class="nav-link">Browse Items</a>
+      <a href="/security" class="nav-link">Security</a>
     </div>
-
-    <!-- Lottie animation -->
-    <div class="hero-lottie-wrap" id="heroLottie"></div>
-
-    <h1 class="hero-title">
-      Lost something<br/>
-      <span class="line2">on campus?</span><br/>
-      <span class="line3">We'll find it.</span>
-    </h1>
-    <p class="hero-sub">
-      ReclaimX matches lost & found items in real time using a weighted scoring engine —
-      privacy-first, fraud-proof, free for every student.
-    </p>
-    <div class="hero-cta">
-      <a href="/register" class="btn-hero-primary">
-        <i class="fa-solid fa-rocket" style="font-size:13px"></i>
-        Start Reporting Free
-      </a>
-      <a href="/browse" class="btn-hero-ghost">
-        <i class="fa-solid fa-magnifying-glass" style="font-size:13px"></i>
-        Browse Lost Items
+    <div class="nav-cta">
+      <a href="/login" class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+      <a href="#" class="square" id="burgerBtn" aria-label="Toggle menu">
+        <div class="burgerwrap"><span></span><span></span><span></span></div>
       </a>
     </div>
-  </div>
-  <div class="scroll-hint">
-    <span>scroll</span>
-    <div class="scroll-hint-line"></div>
-  </div>
-</section>
+  </nav>
 
-<!-- Social Proof / Stats Bar -->
-<div class="social-proof">
-  <div class="proof-item">
-    <div class="proof-num">55%+</div>
-    <div class="proof-label">Match Threshold</div>
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" id="mobileNav" aria-hidden="true">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#faq">FAQ</a>
+    <a href="/browse">Browse Items</a>
+    <a href="/security">Security</a>
+    <a href="/login">Sign In</a>
+    <a href="/register"
+      style="background:rgba(0,212,170,0.1);color:var(--accent);font-weight:600;border:1px solid rgba(0,212,170,0.2)">Get
+      Started →</a>
   </div>
-  <div class="proof-divider"></div>
-  <div class="proof-item">
-    <div class="proof-num">&lt;2s</div>
-    <div class="proof-label">Scoring Speed</div>
-  </div>
-  <div class="proof-divider"></div>
-  <div class="proof-item">
-    <div class="proof-num">0</div>
-    <div class="proof-label">Public Sensitive Data</div>
-  </div>
-  <div class="proof-divider"></div>
-  <div class="proof-item">
-    <div class="proof-num">100%</div>
-    <div class="proof-label">Free for Students</div>
-  </div>
-</div>
 
-<!-- Features -->
-<section class="features-section" id="features">
-  <div class="section-eyebrow">Features</div>
-  <h2 class="features-title">Everything your campus needs</h2>
-  <p class="features-sub">Built for students. Privacy-first, fraud-proof, scoring-powered.</p>
-
-  <div class="features-grid">
-    <div class="feature-card violet-card">
-      <div class="feature-icon-wrap violet">
-        <i class="fa-solid fa-brain-circuit"></i>
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow"><span class="hero-dot"></span>For college students · Free forever</div>
+      <h1 class="hero-title">
+        Lost something<br />
+        <span class="hl">on campus?</span><br />
+        <span class="gr">We'll match it.</span>
+      </h1>
+      <p class="hero-sub">
+        ReclaimX automatically matches lost and found reports on your campus using a weighted scoring engine — no manual
+        searching, no sharing private details publicly, no fraud.
+      </p>
+      <div class="hero-cta">
+        <a href="/register" class="btn-ph">
+          <i class="fa-solid fa-rocket" style="font-size:12px"></i>
+          Report for Free
+        </a>
+        <a href="/browse" class="btn-gh">
+          <i class="fa-solid fa-magnifying-glass" style="font-size:12px"></i>
+          Browse Items
+        </a>
       </div>
-      <div class="feature-title">Hybrid Scoring Engine</div>
-      <div class="feature-desc">Text similarity + image signal + location proximity + time decay — combined into one weighted confidence score per match.</div>
-      <div class="feature-tag violet-tag">Jaccard + weighted signals</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon-wrap">
-        <i class="fa-solid fa-eye-slash"></i>
-      </div>
-      <div class="feature-title">Privacy First</div>
-      <div class="feature-desc">Only the item name is ever publicly visible. Descriptions, photos, and verification details are always private and encrypted.</div>
-      <div class="feature-tag">Zero public sensitive data</div>
-    </div>
-    <div class="feature-card violet-card">
-      <div class="feature-icon-wrap violet">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
-      <div class="feature-title">Fraud Prevention</div>
-      <div class="feature-desc">3-question dynamic verification from private hidden attributes. 3 failed attempts trigger automatic account suspension.</div>
-      <div class="feature-tag violet-tag">3-strike system</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon-wrap">
-        <i class="fa-solid fa-trophy"></i>
-      </div>
-      <div class="feature-title">Trust Score System</div>
-      <div class="feature-desc">Earn points for successful returns. Bronze → Silver → Gold. Both parties earn +10 points on every verified handover.</div>
-      <div class="feature-tag">+10 pts per return</div>
-    </div>
-    <div class="feature-card violet-card">
-      <div class="feature-icon-wrap violet">
-        <i class="fa-solid fa-wifi-slash"></i>
-      </div>
-      <div class="feature-title">Works Offline</div>
-      <div class="feature-desc">Full PWA support with IndexedDB queue. Report items without signal — submissions auto-sync the moment you reconnect.</div>
-      <div class="feature-tag violet-tag">Service Worker cached</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon-wrap">
-        <i class="fa-solid fa-building-columns"></i>
-      </div>
-      <div class="feature-title">Multi-Campus Ready</div>
-      <div class="feature-desc">campus_id field in every table enables isolation between campuses without any schema changes. A filter, not a rebuild.</div>
-      <div class="feature-tag">Supabase row-level isolation</div>
-    </div>
-  </div>
-</section>
-
-<!-- How it works -->
-<section class="how-section" id="how">
-  <div class="how-inner">
-    <div style="text-align:center">
-      <div class="section-eyebrow" style="justify-content:center">How it works</div>
-      <h2 style="font-size:2rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:10px">Four steps to recover your item</h2>
-      <p style="color:var(--text-secondary);font-size:0.9rem">Simple flow, serious fraud prevention underneath.</p>
-    </div>
-    <div class="how-steps">
-      <div class="how-step">
-        <div class="how-step-num">
-          <i class="fa-solid fa-file-pen"></i>
+      <div class="hero-trust">
+        <div class="trust-avs">
+          <div class="trust-av">SR</div>
+          <div class="trust-av">MK</div>
+          <div class="trust-av">AJ</div>
+          <div class="trust-av" style="font-size:0.55rem">+10</div>
         </div>
-        <div class="how-step-title">1. Report</div>
-        <div class="how-step-desc">Describe your item with hidden verification details only you know.</div>
+        <div class="tdiv"></div>
+        <span>Trusted by students on campus</span>
+        <div class="tdiv"></div>
+        <span style="color:var(--accent)"><i class="fa-solid fa-shield-check"
+            style="margin-right:4px;font-size:10px"></i>Privacy-first</span>
       </div>
-      <div class="how-step">
-        <div class="how-step-num" style="color:var(--violet);border-color:rgba(124,92,252,0.2)">
-          <i class="fa-solid fa-bolt"></i>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-img-wrap">
+        <div class="hero-img-glow"></div>
+        <img src="/assets/images/hero.png" alt="ReclaimX dashboard showing matched items" class="hero-img" />
+        <div class="hero-float hero-float-1">
+          <div class="fl"><i class="fa-solid fa-bolt"
+              style="color:var(--accent);margin-right:4px;font-size:9px"></i>Match Score</div>
+          <div class="fv">87%</div>
+          <div class="fs">Blue Backpack · Campus A</div>
         </div>
-        <div class="how-step-title">2. Match</div>
-        <div class="how-step-desc">Engine scores all opposing items instantly. Score ≥ 40 → claim created.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-step-num">
-          <i class="fa-solid fa-lock"></i>
+        <div class="hero-float hero-float-2">
+          <div class="fl"><i class="fa-solid fa-trophy"
+              style="color:var(--warning);margin-right:4px;font-size:9px"></i>Trust Points</div>
+          <div class="fv" style="color:var(--warning)">+10</div>
+          <div class="fs">Item successfully returned</div>
         </div>
-        <div class="how-step-title">3. Verify</div>
-        <div class="how-step-desc">Answer 3 private questions. 60% word similarity required to pass.</div>
       </div>
-      <div class="how-step">
-        <div class="how-step-num" style="color:var(--violet);border-color:rgba(124,92,252,0.2)">
-          <i class="fa-solid fa-handshake"></i>
+    </div>
+
+    <div class="scroll-hint"><span>scroll</span>
+      <div class="sh-line"></div>
+    </div>
+  </section>
+
+  <!-- ── Stats bar ── -->
+  <div class="stats-bar section-wrap">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num">55%+</div>
+        <div class="stat-name">Match Threshold</div>
+        <div class="stat-desc">Minimum confidence score before a match is created</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">&lt;2s</div>
+        <div class="stat-name">Scoring Speed</div>
+        <div class="stat-desc">Time to score all campus items after a report is submitted</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-name">Sensitive Data Exposed</div>
+        <div class="stat-desc">Only item names appear publicly — all other details are private</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-name">Free for Students</div>
+        <div class="stat-desc">No subscriptions, no fees, no ads — ever</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Screenshots ── -->
+  <section class="section-wrap showcase-section section-pad" id="screenshots">
+    <div style="max-width:1060px;margin:0 auto">
+      <div class="section-tag">See it in action</div>
+      <h2 class="section-h">Real screens from the platform</h2>
+      <p class="section-sub" style="margin-bottom:0">Every screen designed to reduce friction while keeping your data
+        private.</p>
+
+      <div style="margin-top:48px">
+        <!-- 1: Report Lost -->
+        <div class="showcase-item">
+          <div class="showcase-text">
+            <div class="showcase-num">01 · Report</div>
+            <div class="showcase-title">Report a lost item in under 2 minutes</div>
+            <div class="showcase-desc">Fill in the item name (public), description (private), location, and hidden
+              verification details. These hidden details are used later to prove ownership — and are never shown to
+              anyone else.</div>
+            <div class="showcase-bullets">
+              <div class="showcase-bullet"><i class="fa-solid fa-check"></i>Item name is the only public field</div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check"></i>Hidden attributes stored encrypted for
+                verification</div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check"></i>Draft saves automatically — finish later
+              </div>
+            </div>
+          </div>
+          <div class="showcase-img-wrap">
+            <div class="browser-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <div class="browser-dot r"></div>
+                  <div class="browser-dot y"></div>
+                  <div class="browser-dot g"></div>
+                </div>
+                <div class="browser-url">reclaimx-chi.vercel.app/report-lost</div>
+              </div>
+              <div class="browser-body">
+                <img src="assets/images/report-lost.png" alt="Report Lost Item screen"
+                  onerror="this.parentElement.innerHTML='<div class=\'browser-body-placeholder\'><i class=\'fa-solid fa-file-pen\'></i><span>assets/images/report-lost.png</span></div>'" />
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="how-step-title">4. Collect</div>
-        <div class="how-step-desc">Both parties confirm handover. +10 trust points each. Case closed.</div>
+
+        <!-- 2: Matches -->
+        <div class="showcase-item rev">
+          <div class="showcase-text">
+            <div class="showcase-num" style="color:var(--violet)">02 · Match</div>
+            <div class="showcase-title">See your matches with confidence scores</div>
+            <div class="showcase-desc">The scoring engine runs automatically when new reports arrive. You see each match
+              with a percentage confidence ring showing how strong the match is across all four scoring signals.</div>
+            <div class="showcase-bullets">
+              <div class="showcase-bullet"><i class="fa-solid fa-check" style="color:var(--violet)"></i>Confidence score
+                based on 4 weighted signals</div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check" style="color:var(--violet)"></i>High-confidence
+                matches highlighted automatically</div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check" style="color:var(--violet)"></i>Dismiss false
+                matches with one click</div>
+            </div>
+          </div>
+          <div class="showcase-img-wrap">
+            <div class="browser-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <div class="browser-dot r"></div>
+                  <div class="browser-dot y"></div>
+                  <div class="browser-dot g"></div>
+                </div>
+                <div class="browser-url">reclaimx-chi.vercel.app/matches</div>
+              </div>
+              <div class="browser-body">
+                <img src="assets/images/matches.png" alt="My Matches screen"
+                  onerror="this.parentElement.innerHTML='<div class=\'browser-body-placeholder\'><i class=\'fa-solid fa-bolt\'></i><span>assets/images/matches.png</span></div>'" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3: Verify -->
+        <div class="showcase-item">
+          <div class="showcase-text">
+            <div class="showcase-num">03 · Verify</div>
+            <div class="showcase-title">Prove ownership before any contact</div>
+            <div class="showcase-desc">The claimer must answer 3 private questions about the item before any contact
+              information is shared. Answers are scored using Jaccard word similarity — 60% or above passes.</div>
+            <div class="showcase-bullets">
+              <div class="showcase-bullet"><i class="fa-solid fa-check"></i>Questions drawn from your private report
+              </div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check"></i>Partial matches allowed — exact wording not
+                required</div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check"></i>3 wrong attempts = account suspended</div>
+            </div>
+          </div>
+          <div class="showcase-img-wrap">
+            <div class="browser-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <div class="browser-dot r"></div>
+                  <div class="browser-dot y"></div>
+                  <div class="browser-dot g"></div>
+                </div>
+                <div class="browser-url">reclaimx-chi.vercel.app/matches</div>
+              </div>
+              <div class="browser-body">
+                <img src="assets/images/verify.png" alt="Verification modal"
+                  onerror="this.parentElement.innerHTML='<div class=\'browser-body-placeholder\'><i class=\'fa-solid fa-lock\'></i><span>assets/images/verify.png</span></div>'" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4: Dashboard -->
+        <div class="showcase-item rev">
+          <div class="showcase-text">
+            <div class="showcase-num" style="color:var(--violet)">04 · Dashboard</div>
+            <div class="showcase-title">Track everything from one place</div>
+            <div class="showcase-desc">Your dashboard shows active reports, recent campus activity, match counts, and
+              your trust score — all in real time. Manage, delete, or view details on any report you've submitted.</div>
+            <div class="showcase-bullets">
+              <div class="showcase-bullet"><i class="fa-solid fa-check" style="color:var(--violet)"></i>Live campus
+                activity feed</div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check" style="color:var(--violet)"></i>Details modal —
+                no page reload</div>
+              <div class="showcase-bullet"><i class="fa-solid fa-check" style="color:var(--violet)"></i>Trust score with
+                Bronze / Silver / Gold levels</div>
+            </div>
+          </div>
+          <div class="showcase-img-wrap">
+            <div class="browser-frame">
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <div class="browser-dot r"></div>
+                  <div class="browser-dot y"></div>
+                  <div class="browser-dot g"></div>
+                </div>
+                <div class="browser-url">reclaimx-chi.vercel.app/dashboard</div>
+              </div>
+              <div class="browser-body">
+                <img src="assets/images/dashboard.png" alt="Dashboard screen"
+                  onerror="this.parentElement.innerHTML='<div class=\'browser-body-placeholder\'><i class=\'fa-solid fa-grid-2\'></i><span>assets/images/dashboard.png</span></div>'" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-glass">
-    <div style="margin-bottom:20px;position:relative;z-index:1">
-      <span style="font-size:2.5rem">🎯</span>
+  <!-- ── Why ReclaimX Works ── -->
+  <section class="section-wrap why-section section-pad">
+    <div style="max-width:1100px;margin:0 auto">
+      <div class="section-tag">Why it works</div>
+      <h2 class="section-h">Built differently from the start</h2>
+      <p class="section-sub">Most campus lost & found systems are notice boards. ReclaimX is a matching engine with
+        fraud prevention built into every step.</p>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon t"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+          <div class="why-title">Automatic matching, not manual searching</div>
+          <div class="why-desc">When you submit a report, the scoring engine immediately checks every opposing report on
+            your campus. You don't browse — you get notified when a match is found.</div>
+          <div class="why-vs">Old way: Post on WhatsApp group, hope someone responds<br /><span>ReclaimX way: Engine
+              scores and notifies automatically</span></div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon t"><i class="fa-solid fa-eye-slash"></i></div>
+          <div class="why-title">Your details stay private by default</div>
+          <div class="why-desc">Only the item name is ever publicly visible. Your description, photos, and contact
+            details are never shown to anyone — not even matched finders — until ownership is verified.</div>
+          <div class="why-vs">Old way: Post photo of your ID on Facebook<br /><span>ReclaimX way: Zero sensitive data
+              shown publicly</span></div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon p"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="why-title">Fraud prevention, not just matching</div>
+          <div class="why-desc">Anyone can claim they own something. ReclaimX requires claimants to answer 3 questions
+            derived from your private report — details only the real owner would know.</div>
+          <div class="why-vs">Old way: Trust whoever shows up and says "it's mine"<br /><span>ReclaimX way: Verified
+              ownership before any contact</span></div>
+        </div>
+      </div>
     </div>
-    <h2 class="cta-title">Ready to find your item?</h2>
-    <p class="cta-sub">Free for every student. Private by design. Under 2 minutes to register.</p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1">
-      <a href="/register" class="btn-hero-primary">
-        <i class="fa-solid fa-user-plus" style="font-size:13px"></i>
-        Create Free Account
-      </a>
-      <a href="/browse" class="btn-hero-ghost">
-        <i class="fa-solid fa-eye" style="font-size:13px"></i>
-        Browse First
-      </a>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-top">
-    <!-- Brand -->
-    <div class="footer-brand">
-      <a class="footer-logo">Reclaim<span>X</span></a>
-      <p class="footer-tagline">Smart campus lost & found. Privacy-first, fraud-proof, free for every student.</p>
-      <div class="footer-socials">
-        <a href="https://github.com/SniperRavan/RECLAIMX" target="_blank" class="footer-social-btn" title="GitHub">
-          <i class="fa-brands fa-github"></i>
-        </a>
-        <a href="mailto:support@reclaimx.app" class="footer-social-btn" title="Email">
-          <i class="fa-solid fa-envelope"></i>
-        </a>
-        <a href="#" class="footer-social-btn" title="Twitter / X">
-          <i class="fa-brands fa-x-twitter"></i>
+  <!-- ── Features ── -->
+  <section class="section-wrap section-pad" id="features"
+    style="max-width:1100px;margin:0 auto;padding-left:56px;padding-right:56px">
+    <div class="section-tag">Features</div>
+    <h2 class="section-h">How the platform works</h2>
+    <p class="section-sub">Six core capabilities designed around the real problems students face when losing things on
+      campus.</p>
+    <div class="features-grid" />
+
+    <!-- Large card: Scoring Engine -->
+    <div class="feat-card large" style="border-color:rgba(0,212,170,0.12)">
+      <div class="feat-icon t" style="width:56px;height:56px;border-radius:14px"><i class="fa-solid fa-brain-circuit"
+          style="font-size:1.4rem"></i></div>
+      <div class="feat-title">Weighted Scoring Engine</div>
+      <div class="feat-desc">When you submit a report, the engine immediately scores it against every open opposing
+        report on your campus. No ML required — the weighted combination of four signals produces reliable match
+        scores in under 2 seconds.</div>
+      <div class="feat-score-visual">
+        <div class="score-bar-label"><span>Text similarity (item name + description)</span><span>40%</span></div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill" style="width:40%;background:var(--accent)"></div>
+        </div>
+        <div class="score-bar-label"><span>Image presence signal</span><span>30%</span></div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill" style="width:30%;background:#7c5cfc"></div>
+        </div>
+        <div class="score-bar-label"><span>Location token overlap</span><span>20%</span></div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill" style="width:20%;background:var(--accent)"></div>
+        </div>
+        <div class="score-bar-label"><span>Time decay (72h window)</span><span>10%</span></div>
+        <div class="score-bar-track" style="margin-bottom:0">
+          <div class="score-bar-fill" style="width:10%;background:#7c5cfc"></div>
+        </div>
+      </div>
+      <div class="feat-badge t" style="margin-top:20px">Jaccard similarity · campus-scoped · campus_id + category
+        filter</div>
+    </div>
+
+    <div class="feat-card v">
+      <div class="feat-icon p"><i class="fa-solid fa-eye-slash"></i></div>
+      <div class="feat-title">Privacy First</div>
+      <div class="feat-desc">Only the item name is public. Descriptions, images, and hidden attributes are stored
+        privately and never shown to other users.</div>
+      <div class="feat-badge p">Zero public sensitive data</div>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon t"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="feat-title">Fraud Prevention</div>
+      <div class="feat-desc">3-question dynamic verification from private report attributes. 3 failed attempts trigger
+        automatic account suspension.</div>
+      <div class="feat-badge t">3-strike system</div>
+    </div>
+
+    <div class="feat-card v">
+      <div class="feat-icon p"><i class="fa-solid fa-trophy"></i></div>
+      <div class="feat-title">Trust Score System</div>
+      <div class="feat-desc">Earn points for successful returns. Bronze to Silver to Gold. Both reporter and finder
+        earn +10 points on every confirmed handover.</div>
+      <div class="feat-badge p">+10 pts per return</div>
+    </div>
+
+    <div class="feat-card v">
+      <div class="feat-icon p">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0 4 15h9a5 5 0 0 0 1.7-.3"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      </div>
+      <div class="feat-title">Works Offline</div>
+      <div class="feat-desc">Full PWA support. Submit reports without network — they sync automatically when you
+        reconnect.</div>
+      <div class="feat-badge p">Service Worker + offline queue</div>
+    </div>
+  </section>
+
+  <!-- ── How Recovery Works (timeline) ── -->
+  <section class="section-wrap section-pad" id="how">
+    <div style="max-width:900px;margin:0 auto">
+      <div class="section-tag">Recovery flow</div>
+      <h2 class="section-h">How recovery works, step by step</h2>
+      <p class="section-sub">From the moment you lose something to the moment you get it back — here's exactly what
+        happens.</p>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-icon"><i class="fa-solid fa-file-pen"></i></div>
+          <div class="tl-body">
+            <div class="tl-title">1. You report the lost item</div>
+            <div class="tl-desc">Add the item name, last-seen location, category, campus, and private verification
+              details (interior colour, unique marks, contents). The scoring engine starts watching immediately.</div>
+            <div class="tl-badge">Takes under 2 minutes</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-icon p"><i class="fa-solid fa-bolt"></i></div>
+          <div class="tl-body">
+            <div class="tl-title">2. Someone reports a found item</div>
+            <div class="tl-desc">A finder submits a found report on your campus with the same category. The engine
+              immediately scores it against your report using text, image, location, and time signals.</div>
+            <div class="tl-badge p">Scoring runs in &lt;2 seconds</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-icon"><i class="fa-solid fa-bell"></i></div>
+          <div class="tl-body">
+            <div class="tl-title">3. You're notified of a match</div>
+            <div class="tl-desc">If the score is 40 or above, a claim is created and you see it in "My Matches" with a
+              confidence percentage. High-confidence matches (80%+) are highlighted.</div>
+            <div class="tl-badge">Match threshold: 40/100</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-icon p"><i class="fa-solid fa-lock"></i></div>
+          <div class="tl-body">
+            <div class="tl-title">4. The claimer verifies ownership</div>
+            <div class="tl-desc">The claimer answers 3 questions generated from your private hidden attributes. Answers
+              are scored with Jaccard word similarity — 60% needed to pass. 3 wrong attempts = suspension.</div>
+            <div class="tl-badge p">Verification threshold: 60%</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-icon"><i class="fa-solid fa-handshake"></i></div>
+          <div class="tl-body">
+            <div class="tl-title">5. Secure handover at a campus location</div>
+            <div class="tl-desc">Both parties meet at a safe campus location. Both confirm the handover in the app. Each
+              earns +10 trust points. The case is closed and reports are resolved.</div>
+            <div class="tl-badge">+10 trust points for both parties</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Social Proof ── -->
+  <section class="section-wrap proof-section section-pad-sm">
+    <div style="max-width:1060px;margin:0 auto">
+      <div class="section-tag">Student feedback</div>
+      <h2 class="section-h" style="margin-bottom:36px">What students say</h2>
+      <div class="proof-cards">
+        <div class="proof-card">
+          <div class="proof-text">"Reported my lost keys and got matched the same day. The verification questions were
+            smart — it was immediately obvious only I would know those answers."</div>
+          <div class="proof-author">
+            <div class="proof-av">SR</div>
+            <div>
+              <div class="proof-name">Sniper R.</div>
+              <div class="proof-role">Computer Science · Campus A</div>
+            </div>
+          </div>
+        </div>
+        <div class="proof-card">
+          <div class="proof-text">"I found a wallet near the library. Reported it as found and within 20 minutes the
+            engine had matched it to someone's lost report. No awkward posting on groups."</div>
+          <div class="proof-author">
+            <div class="proof-av">MK</div>
+            <div>
+              <div class="proof-name">Meera K.</div>
+              <div class="proof-role">Information Technology · Campus B</div>
+            </div>
+          </div>
+        </div>
+        <div class="proof-card">
+          <div class="proof-text">"The privacy model is exactly right. I didn't have to post photos of my ID on a
+            WhatsApp group. My details stayed private until ownership was actually verified."</div>
+          <div class="proof-author">
+            <div class="proof-av">AJ</div>
+            <div>
+              <div class="proof-name">Arjun J.</div>
+              <div class="proof-role">Electronics · Campus A</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section class="section-wrap section-pad" id="faq">
+    <div style="max-width:1060px;margin:0 auto">
+      <div class="section-tag">FAQ</div>
+      <h2 class="section-h">Common questions</h2>
+      <p class="section-sub">Answers to what students actually ask about matching, verification, and privacy.</p>
+      <div class="faq-grid">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">How does the matching engine actually work? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">When a report is submitted, the engine scores it against every open opposing report on the
+            same campus with the same category. The score is a weighted combination of: text similarity (40%), image
+            presence signal (30%), location token overlap (20%), and time decay (10%). A score of 40 or above creates a
+            match claim. Campus and category must match exactly — no cross-campus matching.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">What are the 3 verification questions? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">The questions are generated from 3 private fields you fill in when reporting a lost item:
+            interior colour or lining, unique marks/scratches/stickers/engravings, and what the item contains. These are
+            never shown publicly. The claimer's answers are compared using Jaccard word similarity — 60% or above is a
+            pass. Wrong answers below 60% count as failed attempts. 3 failures trigger account suspension and fraud
+            logging.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">What information is publicly visible? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">Only the item name is publicly visible in the browse feed. Your description, photos, hidden
+            verification attributes, and contact information are never shown to any other user. Images are stored
+            privately on Cloudinary and are only used internally by the scoring engine for the image presence signal.
+          </div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">How does campus isolation work? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">Every lost and found report stores a campus_id field. The matching engine only queries
+            items where campus_id matches exactly. There is no cross-campus matching. Students on Campus A will never
+            see or be matched with reports from Campus B. This is a query filter, not a separate database — adding new
+            campuses requires no schema changes.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Can I be scammed or impersonated? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">The verification system is specifically designed to prevent this. Since only you know the
+            hidden attributes (interior colour, unique marks, contents), anyone trying to falsely claim your item would
+            fail the 3-question verification. Three failed attempts suspend the account and log the fraud. There is no
+            way to pass verification without knowing the private details you stored when reporting.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Does ReclaimX work on mobile? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">Yes. ReclaimX is a Progressive Web App (PWA). You can install it on Android or iOS from the
+            browser — no app store needed. It works offline: reports submitted without a network connection are queued
+            in IndexedDB and automatically synced when you reconnect.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Is there a cost for students or campuses? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">ReclaimX is completely free for students. There are no subscriptions, no premium tiers, no
+            ads. It is an academic final year project. Adding a new campus requires only a new campus_id value — no
+            infrastructure cost or admin setup.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">What data does ReclaimX store about me? <i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">ReclaimX stores your name, email, campus, trust score, and submitted reports. Report data
+            includes the item name, category, location, description, and hidden verification attributes. Photos are
+            stored on Cloudinary. Firebase handles authentication — ReclaimX only stores the Firebase UID, not your
+            password. Sensitive data like Aadhaar numbers, PAN, and card numbers are actively filtered from
+            descriptions.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section section-wrap">
+    <div class="cta-box">
+      <div style="margin-bottom:16px">
+        <i class="fa-solid fa-crosshairs" style="font-size:2.2rem;color:var(--accent)"></i>
+      </div>
+      <h2 class="cta-title">Ready to recover your item?</h2>
+      <p class="cta-sub">Free for every student. Under 2 minutes to register. Your details stay private.</p>
+      <div class="cta-btns">
+        <button class="rx-btn" onclick="window.location.href='/register'">
+          <div class="bg"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 342 208" height="208" width="342"
+            class="spl">
+            <path stroke-linecap="round" stroke-width="3"
+              d="M54.1054 99.7837C54.1054 99.7837 40.0984 90.7874 26.6893 97.6362C13.2802 104.485 1.5 97.6362 1.5 97.6362">
+            </path>
+            <path stroke-linecap="round" stroke-width="3"
+              d="M285.273 99.7841C285.273 99.7841 299.28 90.7879 312.689 97.6367C326.098 104.486 340.105 95.4893 340.105 95.4893">
+            </path>
+            <path stroke-linecap="round" stroke-width="3" stroke-opacity="0.3"
+              d="M281.133 64.9917C281.133 64.9917 287.96 49.8089 302.934 48.2295C317.908 46.6501 319.712 36.5272 319.712 36.5272">
+            </path>
+            <path stroke-linecap="round" stroke-width="3" stroke-opacity="0.3"
+              d="M281.133 138.984C281.133 138.984 287.96 154.167 302.934 155.746C317.908 157.326 319.712 167.449 319.712 167.449">
+            </path>
+            <path stroke-linecap="round" stroke-width="3"
+              d="M112.609 57.4476C112.609 57.4476 117.401 41.5051 107.125 30.4998C96.8492 19.4945 98.5 12.9998 98.5 12.9998">
+            </path>
+            <path stroke-linecap="round" stroke-width="3"
+              d="M112.609 150.528C112.609 150.528 117.401 166.471 107.125 177.476C96.8492 188.481 98.5 194.976 98.5 194.976">
+            </path>
+          </svg>
+          <div class="wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 221 42" height="42" width="221"
+              class="path">
+              <path stroke-linecap="round" stroke-width="3"
+                d="M182.674 2H203C211.837 2 219 9.16344 219 18V24C219 32.8366 211.837 40 203 40H18C9.16345 40 2 32.8366 2 24V18C2 9.16344 9.16344 2 18 2H47.8855">
+              </path>
+            </svg>
+            <div class="outline"></div>
+            <div class="content">
+              <span class="char s1">
+                <span data-l="G" style="--i:1">G</span>
+                <span data-l="e" style="--i:2">e</span>
+                <span data-l="t" style="--i:3">t</span>
+                <span>&nbsp;</span>
+                <span data-l="S" style="--i:4">S</span>
+                <span data-l="t" style="--i:5">t</span>
+                <span data-l="a" style="--i:6">a</span>
+                <span data-l="r" style="--i:7">r</span>
+                <span data-l="t" style="--i:8">t</span>
+              </span>
+              <div class="ico">
+                <div></div>
+              </div>
+              <span class="char s2">
+                <span data-l="J" style="--i:1">J</span>
+                <span data-l="o" style="--i:2">o</span>
+                <span data-l="i" style="--i:3">i</span>
+                <span data-l="n" style="--i:4">n</span>
+                <span data-l="F" style="--i:5">F</span>
+                <span data-l="r" style="--i:6">r</span>
+                <span data-l="e" style="--i:7">e</span>
+                <span data-l="e" style="--i:8">e</span>
+              </span>
+            </div>
+          </div>
+        </button>
+        <a href="/browse" class="btn-gh" style="height:52px">
+          <i class="fa-solid fa-eye" style="font-size:12px"></i>Browse first
         </a>
       </div>
     </div>
+  </section>
 
-    <!-- Product -->
-    <div>
-      <div class="footer-col-title">Product</div>
-      <div class="footer-links">
-        <a href="/browse" class="footer-link">Browse Items</a>
-        <a href="/report-lost" class="footer-link">Report Lost</a>
-        <a href="/report-found" class="footer-link">Report Found</a>
-        <a href="/matches" class="footer-link">My Matches</a>
-        <a href="/dashboard" class="footer-link">Dashboard</a>
+  <!-- ── Footer ── -->
+  <footer class="footer section-wrap">
+    <div class="footer-top">
+      <div>
+        <a href="/" class="flogo">Reclaim<span>X</span></a>
+        <p class="ftagline">Campus lost & found. Privacy-first. Fraud-proof. Free for students.</p>
+        <div class="sdock">
+          <div class="sdock-blur"></div>
+          <div class="sdock-inner">
+            <a href="https://github.com/SniperRavan/RECLAIMX" target="_blank" rel="noopener" class="sicon gh"
+              title="GitHub">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/akash-das-dhibar-81983a2a1/" target="_blank" rel="noopener"
+              class="sicon li" title="LinkedIn">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="fcol-title">Product</div>
+        <div class="flinks">
+          <a href="/browse" class="flink">Browse Items</a>
+          <a href="/report-lost" class="flink">Report Lost</a>
+          <a href="/report-found" class="flink">Report Found</a>
+          <a href="/matches" class="flink">My Matches</a>
+          <a href="/dashboard" class="flink">Dashboard</a>
+        </div>
+      </div>
+      <div>
+        <div class="fcol-title">Legal</div>
+        <div class="flinks">
+          <a href="#" class="flink">Privacy Policy <span class="fbadge">Soon</span></a>
+          <a href="#" class="flink">Terms of Service <span class="fbadge">Soon</span></a>
+          <a href="/security" class="flink">Security</a>
+          <a href="#" class="flink">Cookie Policy <span class="fbadge">Soon</span></a>
+        </div>
+      </div>
+      <div>
+        <div class="fcol-title">Contribute</div>
+        <div class="flinks">
+          <a href="https://github.com/SniperRavan/RECLAIMX" target="_blank" class="flink"><i class="fa-brands fa-github"
+              style="font-size:10px;opacity:0.6"></i> Source Code</a>
+          <a href="https://github.com/SniperRavan/RECLAIMX/issues" target="_blank" class="flink"><i
+              class="fa-solid fa-bug" style="font-size:9px;opacity:0.6"></i> Report a Bug</a>
+          <a href="https://github.com/SniperRavan/RECLAIMX/issues" target="_blank" class="flink"><i
+              class="fa-solid fa-lightbulb" style="font-size:9px;opacity:0.6"></i> Feature Request</a>
+          <a href="https://reclaimx.onrender.com/api/health" target="_blank" class="flink"><i
+              class="fa-solid fa-circle-dot" style="font-size:8px;color:var(--success)"></i> API Status</a>
+        </div>
+      </div>
+      <div>
+        <div class="ffb-label">Send Feedback</div>
+        <div class="msgbox">
+          <div class="fuw">
+            <label for="ffile">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 337 337">
+                <circle stroke-width="20" stroke="#6c6c6c" fill="none" r="158.5" cy="168.5" cx="168.5"></circle>
+                <path stroke-linecap="round" stroke-width="25" stroke="#6c6c6c" d="M167.759 79V259"></path>
+                <path stroke-linecap="round" stroke-width="25" stroke="#6c6c6c" d="M79 167.138H259"></path>
+              </svg>
+              <span class="ftt">Attach image</span>
+            </label>
+            <input type="file" id="ffile" accept="image/*" />
+          </div>
+          <input required placeholder="Your feedback…" type="text" id="fmsg" />
+          <button id="fsend" type="button" onclick="sendFeedback()" title="Send feedback">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 664 663">
+              <path fill="none"
+                d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888">
+              </path>
+              <path stroke-linejoin="round" stroke-linecap="round" stroke-width="33.67" stroke="#6c6c6c"
+                d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888">
+              </path>
+            </svg>
+          </button>
+        </div>
+        <div style="font-size:0.6rem;color:var(--text-muted);margin-top:6px;font-family:var(--font-mono)">Sends to
+          akashdasdhibar2003@gmail.com</div>
       </div>
     </div>
-
-    <!-- Legal -->
-    <div>
-      <div class="footer-col-title">Legal</div>
-      <div class="footer-links">
-        <a href="#" class="footer-link">
-          Privacy Policy
-          <span class="footer-link-badge soon">Soon</span>
-        </a>
-        <a href="#" class="footer-link">
-          Terms of Service
-          <span class="footer-link-badge soon">Soon</span>
-        </a>
-        <a href="#" class="footer-link">
-          Cookie Policy
-          <span class="footer-link-badge soon">Soon</span>
-        </a>
-        <a href="#" class="footer-link">
-          Data Handling
-          <span class="footer-link-badge soon">Soon</span>
-        </a>
-      </div>
+    <div class="footer-bottom">
+      <div class="fcopy">© 2025 ReclaimX · MIT License · <a href="https://github.com/SniperRavan"
+          target="_blank">SniperRavan</a></div>
+      <div class="flegal"><a href="#">Privacy</a><a href="#">Terms</a><a href="/security">Security</a></div>
+      <div class="fver">v1.0.0</div>
     </div>
+  </footer>
 
-    <!-- Contribute -->
-    <div>
-      <div class="footer-col-title">Contribute</div>
-      <div class="footer-links">
-        <a href="https://github.com/SniperRavan/RECLAIMX" target="_blank" class="footer-link">
-          <i class="fa-brands fa-github" style="font-size:11px;opacity:0.6"></i>
-          Source Code
-        </a>
-        <a href="https://github.com/SniperRavan/RECLAIMX/issues" target="_blank" class="footer-link">
-          <i class="fa-solid fa-bug" style="font-size:10px;opacity:0.6"></i>
-          Report a Bug
-        </a>
-        <a href="https://github.com/SniperRavan/RECLAIMX/issues" target="_blank" class="footer-link">
-          <i class="fa-solid fa-lightbulb" style="font-size:10px;opacity:0.6"></i>
-          Feature Request
-        </a>
-        <a href="https://github.com/SniperRavan/RECLAIMX/blob/main/README.md" target="_blank" class="footer-link">
-          <i class="fa-solid fa-book" style="font-size:10px;opacity:0.6"></i>
-          Documentation
-        </a>
-      </div>
-    </div>
+  <!-- Scripts -->
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/pwa.js"></script>
+  <script>
+    // Navbar
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); }, { passive: true });
 
-    <!-- Connect -->
-    <div>
-      <div class="footer-col-title">Connect</div>
-      <div class="footer-links">
-        <a href="https://github.com/SniperRavan" target="_blank" class="footer-link">
-          <i class="fa-brands fa-github" style="font-size:11px;opacity:0.6"></i>
-          @SniperRavan
-        </a>
-        <a href="mailto:support@reclaimx.app" class="footer-link">
-          <i class="fa-solid fa-envelope" style="font-size:10px;opacity:0.6"></i>
-          Email Support
-        </a>
-        <a href="https://reclaimx.onrender.com/api/health" target="_blank" class="footer-link">
-          <i class="fa-solid fa-circle-dot" style="font-size:10px;color:var(--success);opacity:0.8"></i>
-          API Status
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer Bottom -->
-  <div class="footer-bottom">
-    <div class="footer-copy">
-      © 2025 ReclaimX. Final year project. MIT License. Built by
-      <a href="https://github.com/SniperRavan" target="_blank">@SniperRavan</a>.
-    </div>
-    <div class="footer-legal">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Cookies</a>
-    </div>
-    <div class="footer-version">v1.0.0</div>
-  </div>
-</footer>
-
-<script src="/assets/js/main.js"></script>
-<script src="/assets/js/pwa.js"></script>
-<script>
-  // Navbar scroll
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  }, { passive: true });
-
-  // Mobile menu
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const mobileNav     = document.getElementById('mobileNav');
-  if (window.innerWidth <= 900) mobileMenuBtn.style.display = 'block';
-  window.addEventListener('resize', () => {
-    mobileMenuBtn.style.display = window.innerWidth <= 900 ? 'block' : 'none';
-  });
-  mobileMenuBtn.addEventListener('click', () => {
-    const isOpen = mobileNav.classList.toggle('open');
-    mobileMenuBtn.setAttribute('aria-expanded', isOpen);
-    mobileNav.setAttribute('aria-hidden', !isOpen);
-  });
-  mobileNav.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileNav.classList.remove('open');
-      mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    // Burger
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    burgerBtn.addEventListener('click', e => {
+      e.preventDefault();
+      const o = mobileNav.classList.toggle('open');
+      mobileNav.setAttribute('aria-hidden', !o);
     });
-  });
-  document.addEventListener('click', e => {
-    if (!mobileMenuBtn.contains(e.target) && !mobileNav.contains(e.target)) {
-      mobileNav.classList.remove('open');
+    mobileNav.querySelectorAll('a').forEach(l => l.addEventListener('click', () => { mobileNav.classList.remove('open'); mobileNav.setAttribute('aria-hidden', 'true'); }));
+    document.addEventListener('click', e => { if (!burgerBtn.contains(e.target) && !mobileNav.contains(e.target)) mobileNav.classList.remove('open'); });
+
+    // FAQ accordion
+    function toggleFaq(el) {
+      const isOpen = el.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) el.classList.add('open');
     }
-  });
 
-  // Lottie hero animation
-  // Using a free Lottie search/magnify animation from lottiefiles CDN
-  lottie.loadAnimation({
-    container:     document.getElementById('heroLottie'),
-    renderer:      'svg',
-    loop:          true,
-    autoplay:      true,
-    path: 'https://assets9.lottiefiles.com/packages/lf20_hy4txm7l.json',
-  });
-
-  // Scroll-triggered fade-in for feature cards
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        entry.target.style.transition = `opacity 0.5s ${i * 0.08}s ease, transform 0.5s ${i * 0.08}s ease`;
-        entry.target.style.opacity    = '1';
-        entry.target.style.transform  = 'translateY(0)';
-        observer.unobserve(entry.target);
-      }
+    // Reveal observer
+    const ro = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+          ro.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.feat-card,.why-card,.proof-card,.faq-item,.tl-item,.showcase-item').forEach(el => {
+      el.style.opacity = '0'; el.style.transform = 'translateY(18px)'; ro.observe(el);
     });
-  }, { threshold: 0.1 });
 
-  document.querySelectorAll('.feature-card, .how-step').forEach((el, i) => {
-    el.style.opacity   = '0';
-    el.style.transform = 'translateY(24px)';
-    observer.observe(el);
-  });
-</script>
+    // Feedback → mailto
+    function sendFeedback() {
+      const msg = document.getElementById('fmsg').value.trim();
+      if (!msg) return;
+      window.location.href = `mailto:akashdasdhibar2003@gmail.com?subject=ReclaimX%20Feedback&body=${encodeURIComponent(msg)}`;
+      document.getElementById('fmsg').value = '';
+      window.ReclaimX?.toast('Opening mail client…', 'info');
+    }
+    document.getElementById('fmsg').addEventListener('keydown', e => { if (e.key === 'Enter') sendFeedback(); });
+  </script>
 </body>
+
 </html>
