@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/home-page.png" alt="Home Page" width="400"/>
+  <img src="docs/screenshots/home.png" alt="Home Page" width="400"/>
 </p>
 
 ---
