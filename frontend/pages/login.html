@@ -1,217 +1,1037 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-  <meta http-equiv="Pragma" content="no-cache"/>
-  <meta http-equiv="Expires" content="0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Login — ReclaimX</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/assets/css/global.css"/>
-  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
-  <link rel="manifest" href="/manifest.json"/>
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <link rel="manifest" href="/manifest.json" />
   <style>
-    .social-btn { width:100%; padding:11px; background:var(--bg-elevated); color:var(--text-primary); border:1px solid var(--border); border-radius:var(--radius-md); font-size:0.88rem; font-weight:600; font-family:var(--font-body); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.2s; margin-bottom:10px; }
-    .social-btn.google { background:#fff; color:#1f1f1f; border-color:#dadce0; }
-    .social-btn.github { background:#24292e; color:#fff; border-color:#24292e; }
-    .social-btn:hover { transform:translateY(-1px); box-shadow:0 2px 12px rgba(0,0,0,0.2); }
-    .social-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
-    .or-divider { display:flex; align-items:center; gap:12px; margin:18px 0; font-size:0.75rem; color:var(--text-muted); }
-    .or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background:var(--border); }
-    .error-box { background:rgba(255,77,109,0.08); border:1px solid rgba(255,77,109,0.25); border-radius:var(--radius-md); padding:11px 14px; font-size:0.82rem; color:var(--danger); margin-bottom:14px; display:none; }
-    .error-box.visible { display:block; }
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* ════════ LEFT PANEL ════════ */
+    .auth-left {
+      flex: 1;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 60% at 0% 20%, rgba(0, 212, 170, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 100% 85%, rgba(124, 92, 252, 0.07) 0%, transparent 55%);
+    }
+
+    .auth-left-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+
+    .auth-left-content {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      width: 100%;
+    }
+
+    .auth-left-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+      display: inline-block;
+      margin-bottom: 28px;
+    }
+
+    .auth-left-logo span {
+      color: var(--accent);
+    }
+
+    .auth-left-headline {
+      font-size: clamp(1.8rem, 3.2vw, 2.3rem);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .auth-left-headline span {
+      color: var(--accent);
+    }
+
+    .auth-left-sub {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 22px;
+      max-width: 380px;
+    }
+
+    .auth-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 26px;
+    }
+
+    .auth-benefit {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .auth-benefit-dot {
+      width: 19px;
+      height: 19px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 0.55rem;
+    }
+
+    /* ── Screenshot — larger, tilted, glowing ── */
+    .screenshot-stage {
+      position: relative;
+      padding: 28px 16px 8px;
+    }
+
+    .screenshot-glow-1 {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 212, 170, 0.18) 0%, transparent 70%);
+      top: -30px;
+      left: -40px;
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    .screenshot-glow-2 {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 92, 252, 0.16) 0%, transparent 70%);
+      bottom: -20px;
+      right: -30px;
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    .screenshot-carousel {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--bg-elevated);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow:
+        0 0 60px rgba(0, 212, 170, 0.10),
+        0 30px 70px rgba(0, 0, 0, 0.55);
+      transform: perspective(1400px) rotateY(-3deg) rotate(-0.6deg);
+      transition: transform 0.4s ease;
+    }
+
+    .screenshot-carousel:hover {
+      transform: perspective(1400px) rotateY(-1deg) rotate(-0.2deg);
+    }
+
+    .carousel-bar {
+      background: rgba(0, 0, 0, 0.35);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .carousel-dot.r {
+      background: rgba(255, 77, 109, 0.65);
+    }
+
+    .carousel-dot.y {
+      background: rgba(251, 191, 36, 0.65);
+    }
+
+    .carousel-dot.g {
+      background: rgba(0, 212, 170, 0.65);
+    }
+
+    .carousel-url {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .carousel-slides {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      min-height: 280px;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+      position: relative;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      display: block;
+      max-height: 320px;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .carousel-slide-placeholder {
+      width: 100%;
+      height: 280px;
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.05), rgba(124, 92, 252, 0.05));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+
+    .carousel-slide-placeholder i {
+      font-size: 2.6rem;
+      opacity: 0.2;
+    }
+
+    .carousel-slide-placeholder span {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      opacity: 0.35;
+    }
+
+    .carousel-footer {
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .carousel-caption {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .carousel-nav {
+      display: flex;
+      gap: 6px;
+    }
+
+    .carousel-pip {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: background 0.25s, transform 0.25s;
+      border: none;
+      padding: 0;
+    }
+
+    .carousel-pip.active {
+      background: var(--accent);
+      transform: scale(1.4);
+    }
+
+    .auth-left-trust {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding-left: 4px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .trust-pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse-glow 2s infinite;
+    }
+
+    /* ════════ RIGHT PANEL — Glassmorphism ════════ */
+    .auth-right {
+      width: 460px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 44px 44px;
+      position: relative;
+      z-index: 1;
+      background: rgba(13, 19, 32, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: -16px 0 48px rgba(0, 0, 0, 0.3);
+    }
+
+    .auth-right::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 212, 170, 0.25), transparent);
+    }
+
+    .auth-logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 26px;
+    }
+
+    .auth-logo span {
+      color: var(--accent);
+    }
+
+    .auth-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 5px;
+    }
+
+    .auth-subtitle {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin-bottom: 22px;
+    }
+
+    .error-box {
+      background: rgba(255, 77, 109, 0.08);
+      border: 1px solid rgba(255, 77, 109, 0.25);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: var(--danger);
+      margin-bottom: 14px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .error-box.visible {
+      display: flex;
+    }
+
+    /* .campus-select-row {
+      margin-bottom: 14px;
+    }
+
+    .campus-select-row select {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 9px 12px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .campus-select-row select:focus {
+      border-color: var(--accent);
+    }
+
+    .campus-select-label {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+      display: block;
+    } */
+
+    .auth-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+      margin-bottom: 18px;
+    }
+
+    .remember-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .remember-wrap input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .forgot-link {
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+      line-height: 1;
+    }
+
+    .forgot-link:hover {
+      opacity: 0.75;
+    }
+
+    .btn-glow-primary {
+      width: 100%;
+      padding: 12px;
+      font-size: 0.92rem;
+      box-shadow: 0 0 25px rgba(0, 212, 170, 0.18);
+      transition: box-shadow 0.25s, transform 0.2s;
+    }
+
+    .btn-glow-primary:hover {
+      box-shadow: 0 0 38px rgba(0, 212, 170, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .social-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.86rem;
+      font-weight: 600;
+      font-family: var(--font-body);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .social-btn.google {
+      background: #fffffff5;
+      color: #1f1f1f;
+      border-color: #dadce0;
+    }
+
+    .social-btn.github {
+      background: #24292e;
+      color: #fff;
+      border-color: #24292e;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .social-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .auth-trust {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .auth-trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      background: rgba(0, 212, 170, 0.07);
+      border: 1px solid rgba(0, 212, 170, 0.15);
+      color: var(--text-muted);
+    }
+
+    .auth-trust-badge i {
+      color: var(--accent);
+      font-size: 0.6rem;
+    }
+
+    .newtons-cradle {
+      --uib-size: 28px;
+      --uib-speed: 1.2s;
+      --uib-color: currentColor;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--uib-size);
+      height: var(--uib-size);
+      margin-right: 8px;
+    }
+
+    .newtons-cradle__dot {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      width: 25%;
+      transform-origin: center top;
+    }
+
+    .newtons-cradle__dot::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 25%;
+      border-radius: 50%;
+      background-color: var(--uib-color);
+    }
+
+    .newtons-cradle__dot:first-child {
+      animation: ncSwing var(--uib-speed) linear infinite;
+    }
+
+    .newtons-cradle__dot:last-child {
+      animation: ncSwing2 var(--uib-speed) linear infinite;
+    }
+
+    @keyframes ncSwing {
+      0% {
+        transform: rotate(0deg);
+        animation-timing-function: ease-out
+      }
+
+      25% {
+        transform: rotate(70deg);
+        animation-timing-function: ease-in
+      }
+
+      50% {
+        transform: rotate(0deg);
+        animation-timing-function: linear
+      }
+    }
+
+    @keyframes ncSwing2 {
+      0% {
+        transform: rotate(0deg);
+        animation-timing-function: linear
+      }
+
+      50% {
+        transform: rotate(0deg);
+        animation-timing-function: ease-out
+      }
+
+      75% {
+        transform: rotate(-70deg);
+        animation-timing-function: ease-in
+      }
+    }
+
+    @media (max-width: 900px) {
+      .auth-left {
+        display: none;
+      }
+
+      .auth-right {
+        width: 100%;
+        border-left: none;
+        background: var(--bg-base);
+        backdrop-filter: none;
+        padding: 40px 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .auth-right {
+        padding: 32px 20px;
+      }
+    }
   </style>
 </head>
+
 <body>
-<div class="auth-page">
-  <div class="auth-left">
-    <div style="max-width:420px">
-      <div style="font-family:var(--font-display);font-size:2.2rem;font-weight:800;margin-bottom:16px">
-        Reclaim<span style="color:var(--accent)">X</span>
+  <div class="auth-page">
+
+    <!-- ══ LEFT PANEL ══ -->
+    <div class="auth-left">
+      <div class="auth-left-grid"></div>
+      <div class="auth-left-content">
+
+        <a href="/" class="auth-left-logo">Reclaim<span>X</span></a>
+
+        <h1 class="auth-left-headline">
+          Smart Lost &amp; Found<br />
+          for <span>Your Campus</span>
+        </h1>
+        <p class="auth-left-sub">
+          Recover laptops, phones, wallets, keys, and more.
+          Report once — our engine finds the match.
+        </p>
+
+        <div class="auth-benefits">
+          <div class="auth-benefit">
+            <div class="auth-benefit-dot"><i class="fa-solid fa-check"></i></div>Find matches instantly
+          </div>
+          <div class="auth-benefit">
+            <div class="auth-benefit-dot"><i class="fa-solid fa-check"></i></div>Stay private
+          </div>
+          <div class="auth-benefit">
+            <div class="auth-benefit-dot"><i class="fa-solid fa-check"></i></div>Verify ownership
+          </div>
+          <div class="auth-benefit">
+            <div class="auth-benefit-dot"><i class="fa-solid fa-check"></i></div>Build trust through successful returns
+          </div>
+        </div>
+
+        <!-- Screenshot — bigger, tilted, glowing -->
+        <div class="screenshot-stage">
+          <div class="screenshot-glow-1"></div>
+          <div class="screenshot-glow-2"></div>
+
+          <div class="screenshot-carousel">
+            <div class="carousel-bar">
+              <div class="carousel-dots">
+                <div class="carousel-dot r"></div>
+                <div class="carousel-dot y"></div>
+                <div class="carousel-dot g"></div>
+              </div>
+              <div class="carousel-url" id="carouselUrl">reclaimx-chi.vercel.app/dashboard</div>
+            </div>
+
+            <div class="carousel-slides">
+              <div class="carousel-slide active" data-url="reclaimx-chi.vercel.app/dashboard"
+                data-caption="Dashboard — your campus activity">
+                <img src="/assets/images/dashboard.png" alt="ReclaimX Dashboard"
+                  onerror="this.parentElement.innerHTML='<div class=\'carousel-slide-placeholder\'><i class=\'fa-solid fa-grid-2\'></i><span>assets/images/dashboard.png</span></div>'" />
+              </div>
+              <div class="carousel-slide" data-url="reclaimx-chi.vercel.app/browse"
+                data-caption="Browse — all open reports on campus">
+                <img src="/assets/images/browse.png" alt="ReclaimX Browse"
+                  onerror="this.parentElement.innerHTML='<div class=\'carousel-slide-placeholder\'><i class=\'fa-solid fa-magnifying-glass\'></i><span>assets/images/browse.png</span></div>'" />
+              </div>
+              <div class="carousel-slide" data-url="reclaimx-chi.vercel.app/report-lost"
+                data-caption="Report — hidden verification details">
+                <img src="/assets/images/report-lost.png" alt="ReclaimX Report Lost"
+                  onerror="this.parentElement.innerHTML='<div class=\'carousel-slide-placeholder\'><i class=\'fa-solid fa-file-pen\'></i><span>assets/images/report-lost.png</span></div>'" />
+              </div>
+              <div class="carousel-slide" data-url="reclaimx-chi.vercel.app/matches"
+                data-caption="Matches — scoring engine results">
+                <img src="/assets/images/matches.png" alt="ReclaimX Matches"
+                  onerror="this.parentElement.innerHTML='<div class=\'carousel-slide-placeholder\'><i class=\'fa-solid fa-bolt\'></i><span>assets/images/matches.png</span></div>'" />
+              </div>
+            </div>
+
+            <div class="carousel-footer">
+              <div class="carousel-caption" id="carouselCaption">Dashboard — your campus activity</div>
+              <div class="carousel-nav">
+                <button class="carousel-pip active" onclick="goSlide(0)" aria-label="Slide 1"></button>
+                <button class="carousel-pip" onclick="goSlide(1)" aria-label="Slide 2"></button>
+                <button class="carousel-pip" onclick="goSlide(2)" aria-label="Slide 3"></button>
+                <button class="carousel-pip" onclick="goSlide(3)" aria-label="Slide 4"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="auth-left-trust">
+            <span class="trust-pulse-dot"></span>
+            Trusted across multiple campuses · growing network
+          </div>
+        </div>
+
       </div>
-      <h2 style="font-size:1.8rem;margin-bottom:14px;line-height:1.3">
-        Smart lost &amp; found<br/>for your campus
-      </h2>
-      <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:32px">
-        Report lost items, get matched instantly by our scoring engine, and verify ownership
-        with privacy-first verification — all on one platform.
-      </p>
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div style="display:flex;gap:12px;align-items:center;font-size:0.85rem;color:var(--text-secondary)">
-          <span style="color:var(--accent);font-size:1.2rem">✓</span> Smart scoring: text + location + time signals
-        </div>
-        <div style="display:flex;gap:12px;align-items:center;font-size:0.85rem;color:var(--text-secondary)">
-          <span style="color:var(--accent);font-size:1.2rem">✓</span> Privacy-first — only item name is public
-        </div>
-        <div style="display:flex;gap:12px;align-items:center;font-size:0.85rem;color:var(--text-secondary)">
-          <span style="color:var(--accent);font-size:1.2rem">✓</span> Fraud prevention with 3-question verification
-        </div>
-        <div style="display:flex;gap:12px;align-items:center;font-size:0.85rem;color:var(--text-secondary)">
-          <span style="color:var(--accent);font-size:1.2rem">✓</span> Trust score system rewards honest users
+    </div>
+
+    <!-- ══ RIGHT PANEL ══ -->
+    <div class="auth-right">
+      <div class="auth-logo">Reclaim<span>X</span></div>
+      <h2 class="auth-title">Welcome back</h2>
+      <p class="auth-subtitle">Sign in to your ReclaimX account</p>
+
+      <div class="error-box" id="errorBox" role="alert" aria-live="polite">
+        <i class="fa-solid fa-circle-exclamation" style="flex-shrink:0"></i>
+        <span id="errorText"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">College Email</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+          <input class="form-input" type="email" id="email" placeholder="you@college.edu" autocomplete="email" />
         </div>
       </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input class="form-input" type="password" id="password" placeholder="••••••••"
+            autocomplete="current-password" />
+          <button type="button" class="input-action" id="pwdToggle" aria-label="Show password" onclick="togglePwd()">
+            <i class="fa-solid fa-eye" id="pwdIcon" style="font-size:13px"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- <div class="campus-select-row" id="campusRow" style="display:none">
+        <label class="campus-select-label" for="campusSelect">Campus (first sign-in only)</label>
+        <select id="campusSelect">
+          <option value="campus_a">Campus A — Main Campus</option>
+          <option value="campus_b">Campus B — North Wing</option>
+          <option value="campus_c">Campus C — Engineering Block</option>
+        </select>
+      </div> -->
+
+      <div class="auth-row">
+        <label class="remember-wrap">
+          <input type="checkbox" id="rememberMe" />
+          Remember me
+        </label>
+        <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+      </div>
+
+      <button class="btn btn-primary btn-glow-primary" id="emailBtn">
+        Sign In to ReclaimX
+      </button>
+
+      <div class="auth-trust">
+        <span class="auth-trust-badge"><i class="fa-solid fa-building-columns"></i> Campus Verified</span>
+        <span class="auth-trust-badge"><i class="fa-solid fa-shield-check"></i> Privacy First</span>
+        <span class="auth-trust-badge"><i class="fa-solid fa-star"></i> Free For Students</span>
+      </div>
+
+      <div class="or-divider">or continue with</div>
+
+      <button class="social-btn google" id="googleBtn">
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#EA4335"
+            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4"
+            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05"
+            d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+          <path fill="#34A853"
+            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+        </svg>
+        Continue with Google
+      </button>
+
+      <button class="social-btn github" id="githubBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+          <path
+            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+        </svg>
+        Continue with GitHub
+      </button>
+
+      <div class="auth-switch">Don't have an account? <a href="/register">Create one free</a></div>
     </div>
   </div>
 
-  <div class="auth-right">
-    <div class="auth-logo">Reclaim<span>X</span></div>
-    <h1 class="auth-title">Welcome back</h1>
-    <p class="auth-subtitle">Sign in to your ReclaimX account</p>
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-    <div class="error-box" id="errorBox"></div>
+  <script src="/assets/js/auth-guard.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/pwa.js"></script>
 
-    <div class="form-group">
-      <label class="form-label" for="email">College Email</label>
-      <div class="input-wrap">
-        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <input class="form-input" type="email" id="email" placeholder="you@college.edu" autocomplete="email"/>
-      </div>
-    </div>
+  <script>
+    const slides = document.querySelectorAll('.carousel-slide');
+    const pips = document.querySelectorAll('.carousel-pip');
+    const urlEl = document.getElementById('carouselUrl');
+    const captionEl = document.getElementById('carouselCaption');
+    let current = 0, timer;
 
-    <div class="form-group">
-      <label class="form-label" for="password">Password</label>
-      <div class="input-wrap">
-        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <input class="form-input" type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
-        <button type="button" class="input-action" onclick="togglePwd()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div style="display:flex;justify-content:flex-end;margin-bottom:18px">
-      <a href="#" style="font-size:0.78rem;color:var(--accent)" onclick="forgotPassword()">Forgot password?</a>
-    </div>
-
-    <button class="btn btn-primary" id="emailBtn" style="width:100%;padding:12px;font-size:0.95rem">
-      Login to ReclaimX
-    </button>
-
-    <div class="or-divider">or continue with</div>
-
-    <button class="social-btn google" id="googleBtn" onclick="signInWith('google')">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
-    </button>
-
-    <button class="social-btn github" id="githubBtn" onclick="signInWith('github')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      Continue with GitHub
-    </button>
-
-    <div class="auth-switch">Don't have an account? <a href="/register">Create one</a></div>
-  </div>
-</div>
-
-<div id="toastContainer" class="toast-container" aria-live="polite"></div>
-
-<script src="/assets/js/auth-guard.js"></script>
-<script src="/assets/js/main.js"></script>
-<script src="/assets/js/pwa.js"></script>
-
-<script type="module">
-  import {
-    auth, API_BASE,
-    GoogleAuthProvider, GithubAuthProvider, signInWithPopup,
-    signInWithEmailAndPassword, sendPasswordResetEmail
-  } from '/assets/js/firebase-config.js';
-
-  function showError(msg) { const b = document.getElementById('errorBox'); b.textContent = msg; b.classList.add('visible'); }
-  function clearError()   { document.getElementById('errorBox').classList.remove('visible'); }
-
-  async function handleSuccess(user) {
-    const token = await user.getIdToken();
-    let backendUser = null;
-    try {
-      const res = await fetch(`${API_BASE}/api/auth/session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken: token, campusId: 'campus_a' }),
-      });
-      backendUser = (await res.json()).user;
-    } catch { /* non-critical */ }
-
-    const displayName = backendUser?.name || user.displayName || user.email.split('@')[0];
-    sessionStorage.setItem('rx_token', token);
-    sessionStorage.setItem('rx_user', JSON.stringify({
-      uid:   user.uid,
-      email: user.email,
-      name:  displayName,
-      photo: backendUser?.photo || user.photoURL || '',
-      trust_score: backendUser?.trust_score || 0,
-    }));
-    window.location.href = '/dashboard';
-  }
-
-  window.signInWith = async function (provider) {
-    clearError();
-    const p   = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
-    const btn = document.getElementById(provider + 'Btn');
-    btn.disabled = true;
-    try {
-      const result = await signInWithPopup(auth, p);
-      await handleSuccess(result.user);
-    } catch (err) {
-      btn.disabled = false;
-      if (err.code === 'auth/popup-closed-by-user') return;
-      if (err.code === 'auth/popup-blocked') return showError('Popup blocked — allow popups for this site.');
-      if (err.code === 'auth/account-exists-with-different-credential') return showError('Account exists with a different sign-in method.');
-      showError('Sign-in failed. Please try again.');
+    function goSlide(idx) {
+      slides[current].classList.remove('active');
+      pips[current].classList.remove('active');
+      current = idx;
+      slides[current].classList.add('active');
+      pips[current].classList.add('active');
+      urlEl.textContent = slides[current].dataset.url;
+      captionEl.textContent = slides[current].dataset.caption;
+      clearInterval(timer);
+      timer = setInterval(() => goSlide((current + 1) % slides.length), 4000);
     }
-  };
-
-  window.signInWithEmail = async function () {
-    clearError();
-    const email = document.getElementById('email').value.trim();
-    const pwd   = document.getElementById('password').value;
-    if (!email || !pwd) return showError('Please enter your email and password.');
-    const btn = document.getElementById('emailBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loading-spinner"></span> Logging in…';
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, pwd);
-      if (!cred.user.emailVerified) {
-        btn.disabled = false; btn.textContent = 'Login to ReclaimX';
-        return showError('Please verify your email first. Check your inbox (and spam folder).');
-      }
-      await handleSuccess(cred.user);
-    } catch (err) {
-      btn.disabled = false; btn.textContent = 'Login to ReclaimX';
-      const msgs = {
-        'auth/user-not-found':       'No account with this email.',
-        'auth/wrong-password':       'Incorrect password.',
-        'auth/invalid-credential':   'Email or password is incorrect.',
-        'auth/too-many-requests':    'Too many attempts. Try again later.',
-      };
-      showError(msgs[err.code] || 'Login failed. Please try again.');
-    }
-  };
-
-  document
-  .getElementById('emailBtn')
-  .addEventListener('click', window.signInWithEmail);
-
-  window.togglePwd = function () {
-    const p = document.getElementById('password');
-    p.type = p.type === 'password' ? 'text' : 'password';
-  };
-
-  window.forgotPassword = async function () {
-    clearError();
-    const email = document.getElementById('email').value.trim();
-    if (!email) return showError('Enter your email above first.');
-    try {
-      await sendPasswordResetEmail(auth, email);
-      alert(`Reset email sent to ${email}`);
-    } catch { showError('Could not send reset email. Check the address.'); }
-  };
-
-  ['email','password'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => {
-      if (e.key === 'Enter') { e.preventDefault(); window.signInWithEmail(); }
+    timer = setInterval(() => goSlide((current + 1) % slides.length), 4000);
+    document.querySelector('.screenshot-carousel').addEventListener('mouseenter', () => clearInterval(timer));
+    document.querySelector('.screenshot-carousel').addEventListener('mouseleave', () => {
+      timer = setInterval(() => goSlide((current + 1) % slides.length), 4000);
     });
-  });
-</script>
+  </script>
+
+  <script type="module">
+    import {
+      auth, API_BASE,
+      GoogleAuthProvider, GithubAuthProvider, signInWithPopup,
+      signInWithEmailAndPassword, sendPasswordResetEmail
+    } from '/assets/js/firebase-config.js';
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      document.getElementById('errorText').textContent = msg;
+      box.classList.add('visible');
+    }
+    function clearError() { document.getElementById('errorBox').classList.remove('visible'); }
+
+    function setOAuthLoading(btn, loading, label) {
+      btn.disabled = loading;
+      if (loading) {
+        btn.innerHTML = `
+        <div class="newtons-cradle">
+          <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+          <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+        </div>Signing in with ${label}…`;
+      }
+    }
+
+    function resolveCampusId() {
+      const saved = localStorage.getItem('rx_campus_id');
+      if (saved) return saved;
+      const sel = document.getElementById('campusSelect');
+      return sel ? sel.value : 'campus_a';
+    }
+
+    async function handleSuccess(user, campusIdOverride) {
+      const token = await user.getIdToken();
+      const campusId = campusIdOverride || resolveCampusId();
+      let backendUser = null;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken: token, campusId }),
+        });
+        backendUser = (await res.json()).user;
+      } catch { /* non-critical */ }
+
+      const displayName = backendUser?.name || user.displayName || user.email.split('@')[0];
+      const userData = JSON.stringify({
+        uid: user.uid, email: user.email, name: displayName,
+        photo: backendUser?.photo || user.photoURL || '',
+        trust_score: backendUser?.trust_score || 0,
+      });
+
+      sessionStorage.setItem('rx_token', token);
+      sessionStorage.setItem('rx_user', userData);
+      localStorage.setItem('rx_campus_id', backendUser?.campus_id || campusId);
+
+      if (document.getElementById('rememberMe').checked) {
+        localStorage.setItem('rx_token', token);
+        localStorage.setItem('rx_user', userData);
+      }
+      window.location.href = '/dashboard';
+    }
+
+    if (!localStorage.getItem('rx_campus_id')) {
+      document.getElementById('campusRow').style.display = 'block';
+    }
+
+    async function signInWith(provider) {
+      clearError();
+      const p = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
+      const btn = document.getElementById(provider + 'Btn');
+      const orig = btn.innerHTML;
+      setOAuthLoading(btn, true, provider === 'google' ? 'Google' : 'GitHub');
+      try {
+        const result = await signInWithPopup(auth, p);
+        await handleSuccess(result.user);
+      } catch (err) {
+        btn.innerHTML = orig;
+        setOAuthLoading(btn, false);
+        if (err.code === 'auth/popup-closed-by-user') return;
+        if (err.code === 'auth/popup-blocked') return showError('Popup blocked — allow popups for this site.');
+        if (err.code === 'auth/account-exists-with-different-credential') return showError('Account exists with a different sign-in method.');
+        showError('Sign-in failed. Please try again.');
+      }
+    }
+    document.getElementById('googleBtn').addEventListener('click', () => signInWith('google'));
+    document.getElementById('githubBtn').addEventListener('click', () => signInWith('github'));
+
+    async function signInWithEmail() {
+      clearError();
+      const email = document.getElementById('email').value.trim();
+      const pwd = document.getElementById('password').value;
+      if (!email || !pwd) return showError('Please enter your email and password.');
+
+      const btn = document.getElementById('emailBtn');
+      btn.disabled = true;
+      btn.innerHTML = `
+      <div class="newtons-cradle" style="--uib-color:#000">
+        <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+        <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+      </div>Signing in…`;
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, pwd);
+        if (!cred.user.emailVerified) {
+          btn.disabled = false;
+          btn.textContent = 'Sign In to ReclaimX';
+          return showError('Verify your email first — check your inbox and spam folder.');
+        }
+        await handleSuccess(cred.user);
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Sign In to ReclaimX';
+        const msgs = {
+          'auth/user-not-found': 'No account found with this email.',
+          'auth/wrong-password': 'Incorrect password.',
+          'auth/invalid-credential': 'Email or password is incorrect.',
+          'auth/too-many-requests': 'Too many attempts — try again later.',
+        };
+        showError(msgs[err.code] || 'Login failed. Please try again.');
+      }
+    }
+    document.getElementById('emailBtn').addEventListener('click', signInWithEmail);
+
+    window.togglePwd = function () {
+      const p = document.getElementById('password');
+      const icon = document.getElementById('pwdIcon');
+      const btn = document.getElementById('pwdToggle');
+      const showing = p.type === 'text';
+      p.type = showing ? 'password' : 'text';
+      icon.className = showing ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+      btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    };
+
+    document.getElementById('forgotLink').addEventListener('click', async (e) => {
+      e.preventDefault();
+      clearError();
+      const email = document.getElementById('email').value.trim();
+      if (!email) return showError('Enter your email above first.');
+      try {
+        await sendPasswordResetEmail(auth, email);
+        window.ReclaimX?.toast(`Reset link sent to ${email} — check your inbox.`, 'success');
+      } catch {
+        showError('Could not send reset email. Check the address.');
+      }
+    });
+
+    ['email', 'password'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); signInWithEmail(); }
+      });
+    });
+  </script>
 </body>
+
 </html>
