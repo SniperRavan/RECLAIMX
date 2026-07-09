@@ -19,8 +19,9 @@ app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow localhost or your specific production CLIENT_URL
-    if (!origin || /^https?:\/\/localhost(:\d+)?$/.test(origin) || origin === process.env.CLIENT_URL) {
+    // Allow localhost or your specific production CLIENT_URL(s)
+    const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(o => o.trim()) : [];
+    if (!origin || /^https?:\/\/localhost(:\d+)?$/.test(origin) || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     callback(new Error('Not allowed by CORS'));
