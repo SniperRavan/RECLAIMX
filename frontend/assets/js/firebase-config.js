@@ -26,24 +26,39 @@ try {
   if (!res.ok) throw new Error(`Config returned ${res.status}`);
   config = await res.json();
 } catch (err) {
-  console.error('[Firebase] Could not load config:', err.message);
-  document.body.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:center;
-      min-height:100vh;font-family:'DM Sans',sans-serif;background:#060810;
-      color:#e8edf5;text-align:center;padding:24px;">
-      <div>
-        <div style="font-size:2.5rem;margin-bottom:16px">⚠️</div>
-        <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px">Cannot connect to server</div>
-        <div style="font-size:0.875rem;color:#8892a4;margin-bottom:24px;max-width:320px;">
-          The server may be starting up. This usually takes 10–20 seconds on first load.
+  console.warn('[Firebase] Could not load config from backend:', err.message);
+  
+  // Fallback if running locally/testing so the page still loads
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.log('[Firebase] Local environment detected. Falling back to dummy config for UI rendering.');
+    config = {
+      apiKey: "AIzaSyDummyKeyForTestingOnly",
+      authDomain: "reclaimx-dummy.firebaseapp.com",
+      projectId: "reclaimx-dummy",
+      storageBucket: "reclaimx-dummy.appspot.com",
+      messagingSenderId: "000000000000",
+      appId: "1:000000000000:web:000000000000"
+    };
+  } else {
+    // Show full error UI on production
+    document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;
+        min-height:100vh;font-family:'DM Sans',sans-serif;background:#060810;
+        color:#e8edf5;text-align:center;padding:24px;">
+        <div>
+          <div style="font-size:2.5rem;margin-bottom:16px">⚠️</div>
+          <div style="font-size:1.1rem;font-weight:600;margin-bottom:8px">Cannot connect to server</div>
+          <div style="font-size:0.875rem;color:#8892a4;margin-bottom:24px;max-width:320px;">
+            The server may be starting up. This usually takes 10–20 seconds on first load.
+          </div>
+          <button onclick="location.reload()" style="background:#00d4aa;color:#000;border:none;
+            border-radius:10px;padding:12px 28px;font-size:0.9rem;font-weight:600;cursor:pointer;">
+            Retry
+          </button>
         </div>
-        <button onclick="location.reload()" style="background:#00d4aa;color:#000;border:none;
-          border-radius:10px;padding:12px 28px;font-size:0.9rem;font-weight:600;cursor:pointer;">
-          Retry
-        </button>
-      </div>
-    </div>`;
-  throw err; // stop module — exports won't be reached, page shows retry UI
+      </div>`;
+    throw err; // stop module — exports won't be reached, page shows retry UI
+  }
 }
 
 const app  = getApps().length ? getApps()[0] : initializeApp(config);
