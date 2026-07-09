@@ -24,10 +24,6 @@
   <a href="#-api-reference">📡 API</a>
 </p>
 
-<p align="center">
-  <img src="docs/screenshots/home.png" alt="Home Page" width="400"/>
-</p>
-
 ---
 
 ## 📑 Table of Contents
@@ -86,8 +82,8 @@ ReclaimX replaces the traditional campus lost & found notice board with an autom
 ## 📸 Screenshots
 
 | Home Page | Login Page | Signup Page |
-|---|---|---|
-| ![Home Page](docs/screenshots/home.png) | ![Login Page](docs/screenshots/login.png) | ![Signup Page](docs/screenshots/signup.png) |
+|------------|------------|-------------|
+| [🏠 View Full Homepage](docs/screenshots/home.png) | ![Login Page](docs/screenshots/login.png) | ![Signup Page](docs/screenshots/signup.png) |
 
 | Dashboard | Browse Items |
 |---|---|
