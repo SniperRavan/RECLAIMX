@@ -942,8 +942,9 @@
       window.location.href = '/dashboard';
     }
 
-    if (!localStorage.getItem('rx_campus_id')) {
-      document.getElementById('campusRow').style.display = 'block';
+    const campusRow = document.getElementById('campusRow');
+    if (campusRow && !localStorage.getItem('rx_campus_id')) {
+      campusRow.style.display = 'block';
     }
 
     async function signInWith(provider) {
@@ -1002,7 +1003,8 @@
       }
     }
     document.getElementById('emailBtn').addEventListener('click', signInWithEmail);
-
+    window.signInWithEmail = signInWithEmail;
+    
     window.togglePwd = function () {
       const p = document.getElementById('password');
       const icon = document.getElementById('pwdIcon');
