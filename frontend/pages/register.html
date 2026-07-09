@@ -1,248 +1,1623 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-  <meta http-equiv="Pragma" content="no-cache"/>
-  <meta http-equiv="Expires" content="0"/>
-  <title>Register — ReclaimX</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Create Account — ReclaimX</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="/assets/css/global.css"/>
-  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg"/>
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <link rel="manifest" href="/manifest.json" />
   <style>
-    .social-btn { width:100%; padding:11px; background:var(--bg-elevated); color:var(--text-primary); border:1px solid var(--border); border-radius:var(--radius-md); font-size:0.88rem; font-weight:600; font-family:var(--font-body); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.2s; margin-bottom:10px; }
-    .social-btn.google { background:#fff; color:#1f1f1f; border-color:#dadce0; }
-    .social-btn.github { background:#24292e; color:#fff; border-color:#24292e; }
-    .social-btn:hover { transform:translateY(-1px); box-shadow:0 2px 12px rgba(0,0,0,0.2); }
-    .social-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
-    .or-divider { display:flex; align-items:center; gap:12px; margin:18px 0; font-size:0.75rem; color:var(--text-muted); }
-    .or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background:var(--border); }
-    .error-box { background:rgba(255,77,109,0.08); border:1px solid rgba(255,77,109,0.25); border-radius:var(--radius-md); padding:11px 14px; font-size:0.82rem; color:var(--danger); margin-bottom:14px; display:none; }
-    .error-box.visible { display:block; }
+    /* ── Accessibility & Motion ── */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── Page shell ── */
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* ═══════════════ LEFT PANEL ═══════════════ */
+    .auth-left {
+      flex: 1;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 56px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient glow layers */
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 65% 55% at 5% 15%, rgba(0, 212, 170, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 50% at 95% 85%, rgba(124, 92, 252, 0.07) 0%, transparent 55%);
+    }
+
+    /* Subtle grid overlay */
+    .auth-left-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+
+    .auth-left-content {
+      position: relative;
+      z-index: 1;
+      max-width: 440px;
+    }
+
+    /* Logo */
+    .auth-left-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+      display: inline-block;
+      margin-bottom: 32px;
+    }
+
+    .auth-left-logo span {
+      color: var(--accent);
+    }
+
+    /* Headline */
+    .auth-left-headline {
+      font-size: clamp(1.7rem, 2.8vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .auth-left-headline span {
+      color: var(--accent);
+    }
+
+    .auth-left-sub {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 360px;
+    }
+
+    /* Step-by-step flow */
+    .reg-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 32px;
+    }
+
+    .reg-step {
+      display: flex;
+      gap: 16px;
+      padding-bottom: 24px;
+      position: relative;
+    }
+
+    .reg-step:last-child {
+      padding-bottom: 0;
+    }
+
+    /* Vertical connector line between steps */
+    .reg-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 36px;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, rgba(0, 212, 170, 0.3), transparent);
+    }
+
+    .reg-step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      color: var(--accent);
+      position: relative;
+      z-index: 1;
+    }
+
+    .reg-step-body {
+      flex: 1;
+    }
+
+    .reg-step-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .reg-step-desc {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Trust score preview */
+    .trust-preview {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 20px 22px;
+    }
+
+    .trust-preview-label {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+
+    .trust-levels {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .trust-level {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.82rem;
+    }
+
+    .trust-level-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .trust-level-badge.bronze {
+      background: rgba(217, 119, 6, 0.12);
+      color: #D97706;
+      border: 1px solid rgba(217, 119, 6, 0.2);
+    }
+
+    .trust-level-badge.silver {
+      background: rgba(148, 163, 184, 0.12);
+      color: #94A3B8;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .trust-level-badge.gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: #FBBF24;
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+
+    .trust-level-info {
+      flex: 1;
+    }
+
+    .trust-level-name {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .trust-level-range {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ═══════════════ RIGHT PANEL ═══════════════ */
+    .auth-right {
+      width: 500px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 36px 44px;
+      overflow-y: auto;
+      position: relative;
+      z-index: 1;
+      background: rgba(13, 19, 32, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    /* Top accent line */
+    .auth-right::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 212, 170, 0.25), transparent);
+    }
+
+    .auth-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 22px;
+    }
+
+    .auth-logo span {
+      color: var(--accent);
+    }
+
+    .auth-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 4px;
+    }
+
+    .auth-subtitle {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    /* ── Error box ── */
+    .error-box {
+      background: rgba(255, 77, 109, 0.08);
+      border: 1px solid rgba(255, 77, 109, 0.25);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: var(--danger);
+      margin-bottom: 14px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .error-box.visible {
+      display: flex;
+    }
+
+    /* ── Name row ── */
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ── Field validation states ── */
+    /*  Success: green border + check icon */
+    .form-group.success .form-input,
+    .form-group.success .custom-select-trigger {
+      border-color: rgba(16, 185, 129, 0.5) !important;
+    }
+
+    .form-group.success .field-status i {
+      color: #10B981;
+      display: flex !important;
+    }
+
+    /*  Error: red border + message */
+    .form-group.field-error .form-input,
+    .form-group.field-error .custom-select-trigger {
+      border-color: rgba(255, 77, 109, 0.5) !important;
+    }
+
+    .field-msg {
+      font-size: 0.72rem;
+      margin-top: 5px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .field-msg.visible {
+      display: flex;
+    }
+
+    .field-msg.err {
+      color: var(--danger);
+    }
+
+    .field-msg.ok {
+      color: #10B981;
+    }
+
+    /* Success icon inside input-wrap */
+    .field-status {
+      position: absolute;
+      right: 38px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .field-status i {
+      font-size: 12px;
+      display: none;
+    }
+
+    /* ═══════════════════════════════════════════════
+       CUSTOM DROPDOWN — campus selector
+       Inspired by command palette UI (dark glassmorphism)
+    ═══════════════════════════════════════════════ */
+    .custom-select-wrap {
+      position: relative;
+    }
+
+    /* The visible trigger button */
+    .custom-select-trigger {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      user-select: none;
+    }
+
+    .custom-select-trigger:hover {
+      border-color: var(--border-hover);
+    }
+
+    .custom-select-trigger:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .custom-select-trigger.open {
+      border-color: rgba(0, 212, 170, 0.4);
+      box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.08);
+    }
+
+    .custom-select-trigger.placeholder-state {
+      color: var(--text-muted);
+    }
+
+    /* Chevron icon — rotates when open */
+    .cst-chevron {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+
+    .custom-select-trigger.open .cst-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Dropdown panel — dark glassmorphism */
+    .custom-select-panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 6px);
+      z-index: 200;
+      background: rgba(11, 15, 26, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(124, 92, 252, 0.3);
+      /* violet border like reference image */
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      /* Animation: scale from top + fade */
+      transform-origin: top center;
+      transform: scaleY(0.9) translateY(-6px);
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-select-panel.open {
+      transform: scaleY(1) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Search input inside panel */
+    .csp-search-wrap {
+      padding: 10px 12px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
+    }
+
+    .csp-search-icon {
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      pointer-events: none;
+    }
+
+    .csp-search {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 7px 10px 7px 30px;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .csp-search:focus {
+      border-color: rgba(0, 212, 170, 0.3);
+    }
+
+    .csp-search::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Option list */
+    .csp-list {
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 6px;
+      /* Thin custom scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+
+    .csp-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .csp-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
+    /* Individual option */
+    .csp-option {
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s, color 0.15s;
+      outline: none;
+    }
+
+    .csp-option:hover,
+    .csp-option.focused {
+      background: rgba(0, 212, 170, 0.08);
+      color: var(--text-primary);
+    }
+
+    /* Selected option */
+    .csp-option.selected {
+      background: rgba(0, 212, 170, 0.1);
+      color: var(--accent);
+    }
+
+    .csp-option-check {
+      font-size: 0.7rem;
+      color: var(--accent);
+      opacity: 0;
+      flex-shrink: 0;
+      width: 14px;
+    }
+
+    .csp-option.selected .csp-option-check {
+      opacity: 1;
+    }
+
+    /* No results state */
+    .csp-empty {
+      padding: 20px 12px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .csp-empty.visible {
+      display: block;
+    }
+
+    /* Hidden native select (for form submission / accessibility fallback) */
+    .native-select-fallback {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 100%;
+    }
+
+    /* ═══════════════════════════════════════════════
+       PASSWORD REQUIREMENTS CHECKLIST
+    ═══════════════════════════════════════════════ */
+    .pwd-req-list {
+      display: none;
+      /* shown after user starts typing */
+      flex-direction: column;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 8px;
+    }
+
+    .pwd-req-list.visible {
+      display: flex;
+    }
+
+    .pwd-req-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .pwd-req-item.met {
+      color: #10B981;
+    }
+
+    .pwd-req-item.unmet {
+      color: var(--text-muted);
+    }
+
+    .pwd-req-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.6rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.25s;
+    }
+
+    .pwd-req-item.met .pwd-req-icon {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #10B981;
+    }
+
+    /* ── Password strength bars ── */
+    .strength-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .strength-bars {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      transition: background 0.3s ease;
+    }
+
+    .strength-bar.weak {
+      background: var(--danger);
+    }
+
+    .strength-bar.medium {
+      background: var(--warning);
+    }
+
+    .strength-bar.strong {
+      background: #10B981;
+    }
+
+    .strength-bar.very-strong {
+      background: var(--accent);
+    }
+
+    .strength-label {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      min-width: 72px;
+      text-align: right;
+      transition: color 0.3s;
+    }
+
+    /* ── Social buttons ── */
+    .social-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.86rem;
+      font-weight: 600;
+      font-family: var(--font-body);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .social-btn.google {
+      background: #fff;
+      color: #1f1f1f;
+      border-color: #dadce0;
+    }
+
+    .social-btn.github {
+      background: #24292e;
+      color: #fff;
+      border-color: #24292e;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .social-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Primary button with glow ── */
+    .btn-glow {
+      width: 100%;
+      padding: 12px;
+      font-size: 0.92rem;
+      box-shadow: 0 0 24px rgba(0, 212, 170, 0.18);
+      transition: box-shadow 0.25s, transform 0.2s;
+    }
+
+    .btn-glow:hover {
+      box-shadow: 0 0 36px rgba(0, 212, 170, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Newton's Cradle loader */
+    .newtons-cradle {
+      --uib-size: 26px;
+      --uib-speed: 1.2s;
+      --uib-color: currentColor;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--uib-size);
+      height: var(--uib-size);
+      margin-right: 8px;
+    }
+
+    .newtons-cradle__dot {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      width: 25%;
+      transform-origin: center top;
+    }
+
+    .newtons-cradle__dot::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 25%;
+      border-radius: 50%;
+      background-color: var(--uib-color);
+    }
+
+    .newtons-cradle__dot:first-child {
+      animation: ncSwing var(--uib-speed) linear infinite;
+    }
+
+    .newtons-cradle__dot:last-child {
+      animation: ncSwing2 var(--uib-speed) linear infinite;
+    }
+
+    @keyframes ncSwing {
+      0% {
+        transform: rotate(0deg);
+        animation-timing-function: ease-out
+      }
+
+      25% {
+        transform: rotate(70deg);
+        animation-timing-function: ease-in
+      }
+
+      50% {
+        transform: rotate(0deg);
+        animation-timing-function: linear
+      }
+    }
+
+    @keyframes ncSwing2 {
+      0% {
+        transform: rotate(0deg);
+        animation-timing-function: linear
+      }
+
+      50% {
+        transform: rotate(0deg);
+        animation-timing-function: ease-out
+      }
+
+      75% {
+        transform: rotate(-70deg);
+        animation-timing-function: ease-in
+      }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .auth-left {
+        display: none;
+      }
+
+      .auth-right {
+        width: 100%;
+        border-left: none;
+        background: var(--bg-base);
+        backdrop-filter: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .auth-right {
+        padding: 32px 20px;
+      }
+
+      .name-row {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
-<div class="auth-page">
-  <div class="auth-left">
-    <div style="max-width:400px;text-align:center">
-      <div style="width:90px;height:90px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;background:var(--violet-dim);border:1px solid rgba(124,92,252,0.25);border-radius:24px;box-shadow:0 8px 32px rgba(124,92,252,0.15);position:relative;">
-        <div style="position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(255,255,255,0.1),transparent 60%);border-radius:24px;pointer-events:none;"></div>
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="transform:translateY(2px);">
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-        </svg>
-      </div>
-      <h2 style="font-size:1.6rem;margin-bottom:12px">Join your campus community</h2>
-      <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:28px">ReclaimX is free for all students. Report lost items, help others find theirs, and build your trust score.</p>
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;text-align:left">
-        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Trust Score System</div>
-        <div style="display:flex;flex-direction:column;gap:12px;font-size:0.82rem;color:var(--text-secondary)">
-          <div style="display:flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(217,119,6,0.1)" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg><span><strong style="color:var(--text-primary)">Bronze</strong> — New member (0–49 pts)</span></div>
-          <div style="display:flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg><span><strong style="color:var(--text-primary)">Silver</strong> — Trusted helper (50–99 pts)</span></div>
-          <div style="display:flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(251,191,36,0.1)" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg><span><strong style="color:var(--text-primary)">Gold</strong> — Campus hero (100+ pts)</span></div>
+  <div class="auth-page">
+
+    <!-- ══════════════════════════════════════════════
+       LEFT PANEL
+       Shows the platform value proposition and
+       trust score system to build confidence
+  ══════════════════════════════════════════════ -->
+    <div class="auth-left">
+      <div class="auth-left-grid"></div>
+      <div class="auth-left-content">
+
+        <a href="/" class="auth-left-logo">Reclaim<span>X</span></a>
+
+        <h1 class="auth-left-headline">
+          Join your campus<br />
+          <span>lost &amp; found</span> network
+        </h1>
+        <p class="auth-left-sub">
+          Free for every student. Private by default. Matching engine runs automatically — you just report once.
+        </p>
+
+        <!-- Step-by-step flow — shows new users what happens next -->
+        <div class="reg-steps">
+          <div class="reg-step">
+            <div class="reg-step-icon"><i class="fa-solid fa-user-plus"></i></div>
+            <div class="reg-step-body">
+              <div class="reg-step-title">Create your account</div>
+              <div class="reg-step-desc">Takes under 2 minutes. No credit card. Just your college email.</div>
+            </div>
+          </div>
+          <div class="reg-step">
+            <div class="reg-step-icon"><i class="fa-solid fa-file-pen"></i></div>
+            <div class="reg-step-body">
+              <div class="reg-step-title">Report a lost or found item</div>
+              <div class="reg-step-desc">Add details and hidden verification attributes only you would know.</div>
+            </div>
+          </div>
+          <div class="reg-step">
+            <div class="reg-step-icon"
+              style="background:rgba(124,92,252,0.1);border-color:rgba(124,92,252,0.25);color:var(--violet)">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="reg-step-body">
+              <div class="reg-step-title">Engine matches automatically</div>
+              <div class="reg-step-desc">Scoring runs in under 2 seconds across text, image, location, and time.</div>
+            </div>
+          </div>
+          <div class="reg-step">
+            <div class="reg-step-icon"><i class="fa-solid fa-handshake"></i></div>
+            <div class="reg-step-body">
+              <div class="reg-step-title">Verify, collect, earn trust</div>
+              <div class="reg-step-desc">Prove ownership, meet safely on campus, and earn +10 trust points.</div>
+            </div>
+          </div>
         </div>
-        <div style="margin-top:14px;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono)">+10 pts per successful return</div>
+
+        <!-- Trust score preview — explains the system before signup -->
+        <div class="trust-preview">
+          <div class="trust-preview-label">Trust Score System — earned, not assigned</div>
+          <div class="trust-levels">
+            <div class="trust-level">
+              <div class="trust-level-badge bronze"><i class="fa-solid fa-award"></i></div>
+              <div class="trust-level-info">
+                <div class="trust-level-name">Bronze Helper</div>
+                <div class="trust-level-range">0 – 49 pts · Default on signup</div>
+              </div>
+            </div>
+            <div class="trust-level">
+              <div class="trust-level-badge silver"><i class="fa-solid fa-award"></i></div>
+              <div class="trust-level-info">
+                <div class="trust-level-name">Silver Helper</div>
+                <div class="trust-level-range">50 – 99 pts · +10 per successful return</div>
+              </div>
+            </div>
+            <div class="trust-level">
+              <div class="trust-level-badge gold"><i class="fa-solid fa-award"></i></div>
+              <div class="trust-level-info">
+                <div class="trust-level-name">Gold Hero</div>
+                <div class="trust-level-range">100+ pts · Campus recognition</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
 
-  <div class="auth-right" style="overflow-y:auto;padding-top:32px;padding-bottom:32px">
-    <div class="auth-logo">Reclaim<span>X</span></div>
-    <h1 class="auth-title">Create account</h1>
-    <p class="auth-subtitle">Join your campus lost &amp; found network</p>
+    <!-- ══════════════════════════════════════════════
+       RIGHT PANEL — Registration form
+       Custom dropdown, password requirements,
+       inline validation, social login
+  ══════════════════════════════════════════════ -->
+    <div class="auth-right">
+      <div class="auth-logo">Reclaim<span>X</span></div>
+      <h2 class="auth-title">Create your account</h2>
+      <p class="auth-subtitle">Join your campus lost &amp; found network — free forever</p>
 
-    <div class="error-box" id="errorBox"></div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
-      <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">First Name</label>
-        <input class="form-input" type="text" id="firstName" placeholder="Sniper"/>
+      <!-- Error box — shown on submit failures -->
+      <div class="error-box" id="errorBox" role="alert" aria-live="polite">
+        <i class="fa-solid fa-circle-exclamation" style="flex-shrink:0"></i>
+        <span id="errorText"></span>
       </div>
-      <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">Last Name</label>
-        <input class="form-input" type="text" id="lastName" placeholder="Ravan"/>
-      </div>
-    </div>
 
-    <div class="form-group">
-      <label class="form-label">Email</label>
-      <div class="input-wrap">
-        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <input class="form-input" type="email" id="email" placeholder="you@college.edu"/>
-      </div>
-    </div>
+      <!-- ── Social login (above form to reduce friction) ── -->
+      <button class="social-btn google" id="googleBtn" type="button" aria-label="Sign up with Google">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335"
+            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4"
+            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05"
+            d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+          <path fill="#34A853"
+            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+        </svg>
+        Sign up with Google
+      </button>
+      <button class="social-btn github" id="githubBtn" type="button" aria-label="Sign up with GitHub">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+          <path
+            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+        </svg>
+        Sign up with GitHub
+      </button>
 
-    <div class="form-group">
-      <label class="form-label">Campus</label>
-      <select class="form-select" id="campus">
-        <option value="">Select your campus…</option>
-        <option value="campus_a">Campus A — Main Campus</option>
-        <option value="campus_b">Campus B — North Wing</option>
-        <option value="campus_c">Campus C — Engineering Block</option>
-      </select>
-    </div>
+      <div class="or-divider">or register with email</div>
 
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <div class="input-wrap">
-        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <input class="form-input" type="password" id="password" placeholder="Min. 8 characters" oninput="updateStrength(this.value)"/>
-        <button type="button" class="input-action" onclick="togglePwd()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <!-- ── Registration form ── -->
+      <form id="registerForm" novalidate>
+
+        <!-- First + Last name -->
+        <div class="name-row">
+          <div class="form-group" id="fg-firstName">
+            <label class="form-label" for="firstName">First Name</label>
+            <div class="input-wrap">
+              <input class="form-input" type="text" id="firstName" placeholder="Sniper" autocomplete="given-name"
+                aria-required="true" aria-describedby="firstName-msg" />
+              <span class="field-status"><i class="fa-solid fa-check" style="color:#10B981"></i></span>
+            </div>
+            <div class="field-msg err" id="firstName-msg" role="alert"><i
+                class="fa-solid fa-circle-exclamation"></i><span></span></div>
+          </div>
+          <div class="form-group" id="fg-lastName">
+            <label class="form-label" for="lastName">Last Name</label>
+            <div class="input-wrap">
+              <input class="form-input" type="text" id="lastName" placeholder="Ravan" autocomplete="family-name"
+                aria-required="true" aria-describedby="lastName-msg" />
+              <span class="field-status"><i class="fa-solid fa-check" style="color:#10B981"></i></span>
+            </div>
+            <div class="field-msg err" id="lastName-msg" role="alert"><i
+                class="fa-solid fa-circle-exclamation"></i><span></span></div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group" id="fg-email">
+          <label class="form-label" for="email">College Email</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <input class="form-input" type="email" id="email" placeholder="you@college.edu" autocomplete="email"
+              aria-required="true" aria-describedby="email-msg" />
+            <span class="field-status"><i class="fa-solid fa-check" style="color:#10B981"></i></span>
+          </div>
+          <div class="field-msg err" id="email-msg" role="alert"><i
+              class="fa-solid fa-circle-exclamation"></i><span></span></div>
+        </div>
+
+        <!-- ── CUSTOM DROPDOWN — Campus selector ──
+           Replaces native <select> with an animated
+           command-palette style dropdown:
+           - Glassmorphism dark panel
+           - Searchable options
+           - Keyboard navigation (↑↓ Enter Escape)
+           - ARIA combobox/listbox pattern
+           - Smooth open/close animation
+      ── -->
+        <div class="form-group" id="fg-campus">
+          <label class="form-label" id="campus-label">Campus</label>
+
+          <!-- Hidden native select for form data / fallback -->
+          <select class="native-select-fallback" id="campusNative" name="campus" aria-hidden="true" tabindex="-1">
+            <option value="">Select campus…</option>
+            <option value="campus_a">Campus A — Main Campus</option>
+            <option value="campus_b">Campus B — North Wing</option>
+            <option value="campus_c">Campus C — Engineering Block</option>
+          </select>
+
+          <!-- Custom trigger button -->
+          <div class="custom-select-wrap">
+            <button type="button" class="custom-select-trigger placeholder-state" id="campusTrigger"
+              aria-haspopup="listbox" aria-expanded="false" aria-labelledby="campus-label campusTrigger"
+              aria-controls="campusPanel">
+              <span id="campusLabel">Select your campus…</span>
+              <i class="fa-solid fa-chevron-down cst-chevron" aria-hidden="true"></i>
+            </button>
+
+            <!-- Dropdown panel -->
+            <div class="custom-select-panel" id="campusPanel" role="listbox" aria-labelledby="campus-label"
+              aria-multiselectable="false">
+
+              <!-- Search input -->
+              <div class="csp-search-wrap">
+                <i class="fa-solid fa-magnifying-glass csp-search-icon" aria-hidden="true"></i>
+                <input type="text" class="csp-search" id="campusSearch" placeholder="Search campus…"
+                  aria-label="Search campus options" autocomplete="off" role="searchbox" />
+              </div>
+
+              <!-- Options list -->
+              <div class="csp-list" id="campusList">
+                <div class="csp-option" role="option" aria-selected="false" data-value="campus_a" tabindex="-1">
+                  <i class="fa-solid fa-check csp-option-check" aria-hidden="true"></i>
+                  <span>Campus A — Main Campus</span>
+                </div>
+                <div class="csp-option" role="option" aria-selected="false" data-value="campus_b" tabindex="-1">
+                  <i class="fa-solid fa-check csp-option-check" aria-hidden="true"></i>
+                  <span>Campus B — North Wing</span>
+                </div>
+                <div class="csp-option" role="option" aria-selected="false" data-value="campus_c" tabindex="-1">
+                  <i class="fa-solid fa-check csp-option-check" aria-hidden="true"></i>
+                  <span>Campus C — Engineering Block</span>
+                </div>
+              </div>
+
+              <!-- No results -->
+              <div class="csp-empty" id="campusEmpty" aria-live="polite">
+                No campus found
+              </div>
+            </div>
+          </div>
+
+          <div class="field-msg err" id="campus-msg" role="alert"><i
+              class="fa-solid fa-circle-exclamation"></i><span></span></div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group" id="fg-password">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input class="form-input" type="password" id="password" placeholder="Min. 8 characters"
+              autocomplete="new-password" aria-required="true" aria-describedby="pwd-reqs password-msg" />
+            <!-- Password visibility toggle -->
+            <button type="button" class="input-action" id="pwdToggle" aria-label="Show password"
+              onclick="togglePwd('password','pwdIcon','pwdToggle')">
+              <i class="fa-solid fa-eye" id="pwdIcon" style="font-size:13px" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Strength indicator bars -->
+          <div class="strength-row" id="strengthRow" style="display:none">
+            <div class="strength-bars">
+              <div class="strength-bar" id="sb1"></div>
+              <div class="strength-bar" id="sb2"></div>
+              <div class="strength-bar" id="sb3"></div>
+              <div class="strength-bar" id="sb4"></div>
+            </div>
+            <div class="strength-label" id="strengthLabel">Too short</div>
+          </div>
+
+          <!-- ── Requirements checklist — shown when user starts typing ── -->
+          <div class="pwd-req-list" id="pwd-reqs" aria-label="Password requirements">
+            <div class="pwd-req-item unmet" id="req-len">
+              <div class="pwd-req-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              At least 8 characters
+            </div>
+            <div class="pwd-req-item unmet" id="req-upper">
+              <div class="pwd-req-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              One uppercase letter (A–Z)
+            </div>
+            <div class="pwd-req-item unmet" id="req-lower">
+              <div class="pwd-req-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              One lowercase letter (a–z)
+            </div>
+            <div class="pwd-req-item unmet" id="req-num">
+              <div class="pwd-req-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              One number (0–9)
+            </div>
+            <div class="pwd-req-item unmet" id="req-special">
+              <div class="pwd-req-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+              One special character (!@#$...)
+            </div>
+          </div>
+
+          <div class="field-msg err" id="password-msg" role="alert"><i
+              class="fa-solid fa-circle-exclamation"></i><span></span></div>
+        </div>
+
+        <!-- Confirm password -->
+        <div class="form-group" id="fg-confirm">
+          <label class="form-label" for="confirmPassword">Confirm Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input class="form-input" type="password" id="confirmPassword" placeholder="Repeat password"
+              autocomplete="new-password" aria-required="true" aria-describedby="confirm-msg" />
+            <button type="button" class="input-action" id="confToggle" aria-label="Show confirm password"
+              onclick="togglePwd('confirmPassword','confIcon','confToggle')">
+              <i class="fa-solid fa-eye" id="confIcon" style="font-size:13px" aria-hidden="true"></i>
+            </button>
+            <span class="field-status" style="right:38px"><i class="fa-solid fa-check" style="color:#10B981"></i></span>
+          </div>
+          <div class="field-msg err" id="confirm-msg" role="alert"><i
+              class="fa-solid fa-circle-exclamation"></i><span></span></div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary btn-glow" id="submitBtn">
+          Create My Account
         </button>
-      </div>
-      <div class="strength-bars">
-        <div class="strength-bar" id="bar1"></div><div class="strength-bar" id="bar2"></div>
-        <div class="strength-bar" id="bar3"></div><div class="strength-bar" id="bar4"></div>
-      </div>
-      <div class="strength-text" id="strengthText">Minimum 8 characters</div>
-    </div>
 
-    <div class="form-group">
-      <label class="form-label">Confirm Password</label>
-      <div class="input-wrap">
-        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <input class="form-input" type="password" id="confirmPassword" placeholder="Repeat password"/>
+      </form>
+
+      <div class="auth-switch" style="margin-top:16px">
+        Already have an account? <a href="/login">Sign in</a>
       </div>
     </div>
 
-    <button class="btn btn-primary" id="emailBtn" onclick="registerWithEmail()" style="width:100%;padding:12px;margin-top:4px">Create My Account</button>
-
-    <div class="or-divider">or register with</div>
-
-    <button class="social-btn google" id="googleBtn" onclick="signUpWith('google')">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Sign up with Google
-    </button>
-
-    <button class="social-btn github" id="githubBtn" onclick="signUpWith('github')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      Sign up with GitHub
-    </button>
-
-    <div class="auth-switch">Already have an account? <a href="/login">Sign in</a></div>
   </div>
-</div>
 
-<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-<script src="/assets/js/auth-guard.js"></script>
-<script src="/assets/js/main.js"></script>
-<script src="/assets/js/pwa.js"></script>
+  <script src="/assets/js/auth-guard.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/pwa.js"></script>
 
-<script type="module">
-  import {
-    auth, API_BASE,
-    GoogleAuthProvider, GithubAuthProvider, signInWithPopup,
-    createUserWithEmailAndPassword, sendEmailVerification
-  } from '/assets/js/firebase-config.js';
+  <!-- ══════════════════════════════════════════════
+     CUSTOM DROPDOWN LOGIC
+     Keyboard nav: ↑↓ to move, Enter to select,
+     Escape to close, type to search
+══════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      const trigger = document.getElementById('campusTrigger');
+      const panel = document.getElementById('campusPanel');
+      const search = document.getElementById('campusSearch');
+      const list = document.getElementById('campusList');
+      const emptyEl = document.getElementById('campusEmpty');
+      const labelEl = document.getElementById('campusLabel');
+      const nativeSel = document.getElementById('campusNative');
+      const options = Array.from(list.querySelectorAll('.csp-option'));
+      let focusedIdx = -1;
+      let selectedVal = '';
 
-  const BLOCKED = ['mailinator.com','guerrillamail.com','tempmail.com','10minutemail.com','yopmail.com'];
-  function showError(msg) { const b = document.getElementById('errorBox'); b.textContent = msg; b.classList.add('visible'); }
+      /* Open / close */
+      function openDropdown() {
+        panel.classList.add('open');
+        trigger.classList.add('open');
+        trigger.setAttribute('aria-expanded', 'true');
+        search.value = '';
+        filterOptions('');
+        /* Focus search input after animation (~100ms) */
+        setTimeout(() => search.focus(), 100);
+      }
+      function closeDropdown() {
+        panel.classList.remove('open');
+        trigger.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+        focusedIdx = -1;
+        clearFocus();
+      }
 
-  async function saveSession(user, campusId, name) {
-    const token = await user.getIdToken();
-    let backendUser = null;
-    try {
-      const res = await fetch(`${API_BASE}/api/auth/session`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken: token, campusId, name }),
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        panel.classList.contains('open') ? closeDropdown() : openDropdown();
       });
-      backendUser = (await res.json()).user;
-    } catch { /* non-critical */ }
-    const displayName = backendUser?.name || name || user.displayName || user.email.split('@')[0];
-    sessionStorage.setItem('rx_token', token);
-    sessionStorage.setItem('rx_user', JSON.stringify({
-      uid: user.uid, email: user.email, name: displayName,
-      photo: backendUser?.photo || user.photoURL || '',
-      trust_score: backendUser?.trust_score || 0,
-    }));
-  }
+      trigger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+          e.preventDefault(); openDropdown();
+        }
+      });
 
-  window.signUpWith = async function (provider) {
-    document.getElementById('errorBox').classList.remove('visible');
-    const p   = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
-    const btn = document.getElementById(provider + 'Btn');
-    btn.disabled = true;
-    try {
-      const result = await signInWithPopup(auth, p);
-      await saveSession(result.user, 'campus_a', null);
-      window.location.href = '/dashboard';
-    } catch (err) {
-      btn.disabled = false;
-      if (err.code === 'auth/popup-closed-by-user') return;
-      if (err.code === 'auth/account-exists-with-different-credential') return showError('Account exists with a different sign-in method.');
-      if (err.code === 'auth/popup-blocked') return showError('Popup blocked — allow popups for this site.');
-      showError('Sign-up failed. Please try again.');
-    }
-  };
+      /* Close on outside click */
+      document.addEventListener('click', (e) => {
+        if (!trigger.contains(e.target) && !panel.contains(e.target)) closeDropdown();
+      });
 
-  window.registerWithEmail = async function () {
-    document.getElementById('errorBox').classList.remove('visible');
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName  = document.getElementById('lastName').value.trim();
-    const email     = document.getElementById('email').value.trim();
-    const campus    = document.getElementById('campus').value;
-    const password  = document.getElementById('password').value;
-    const confirm   = document.getElementById('confirmPassword').value;
+      /* Select an option */
+      function selectOption(opt) {
+        selectedVal = opt.dataset.value;
 
-    if (!firstName || !lastName) return showError('Please enter your first and last name.');
-    if (!email) return showError('Please enter your email.');
-    if (BLOCKED.includes(email.split('@')[1])) return showError('Disposable emails are not allowed.');
-    if (!campus) return showError('Please select your campus.');
-    if (password.length < 8) return showError('Password must be at least 8 characters.');
-    if (password !== confirm) return showError('Passwords do not match.');
+        /* Update trigger label */
+        labelEl.textContent = opt.querySelector('span').textContent;
+        trigger.classList.remove('placeholder-state');
 
-    const btn = document.getElementById('emailBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loading-spinner"></span> Creating account…';
+        /* Update ARIA + visual state */
+        options.forEach(o => {
+          o.classList.remove('selected');
+          o.setAttribute('aria-selected', 'false');
+        });
+        opt.classList.add('selected');
+        opt.setAttribute('aria-selected', 'true');
 
-    try {
-      const cred     = await createUserWithEmailAndPassword(auth, email, password);
-      const fullName = `${firstName} ${lastName}`.trim();
-      await sendEmailVerification(cred.user);
-      await saveSession(cred.user, campus, fullName);
-      btn.textContent = '✓ Done!';
-      alert(`Account created! Verification email sent to ${email}.\n\nIf you don't see it, check your SPAM folder and mark it as "Not Spam".`);
-      window.location.href = '/login';
-    } catch (err) {
-      btn.disabled = false; btn.textContent = 'Create My Account';
-      const msgs = {
-        'auth/email-already-in-use': 'An account with this email already exists.',
-        'auth/invalid-email':        'Please enter a valid email address.',
-        'auth/weak-password':        'Password is too weak.',
-      };
-      showError(msgs[err.code] || err.message);
-    }
-  };
+        /* Sync native select for form data */
+        nativeSel.value = selectedVal;
 
-  window.updateStrength = function (pwd) {
-    let score = 0;
-    if (pwd.length >= 8)  score++;
-    if (pwd.length >= 12) score++;
-    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
-    if (/\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
-    const labels  = ['','Weak','Fair','Good','Strong'];
-    const classes = ['','weak','medium','strong','strong'];
-    ['bar1','bar2','bar3','bar4'].forEach((id, i) => {
-      const bar = document.getElementById(id);
-      bar.className = 'strength-bar';
-      if (i < score) bar.classList.add(classes[score]);
+        /* Mark field as success */
+        setFieldSuccess('fg-campus');
+
+        closeDropdown();
+        trigger.focus();
+      }
+
+      options.forEach((opt, idx) => {
+        opt.addEventListener('click', () => selectOption(opt));
+        opt.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); selectOption(opt); }
+        });
+      });
+
+      /* Search filter */
+      function filterOptions(query) {
+        const q = query.toLowerCase().trim();
+        let visible = 0;
+        options.forEach(opt => {
+          const text = opt.querySelector('span').textContent.toLowerCase();
+          const show = !q || text.includes(q);
+          opt.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        emptyEl.classList.toggle('visible', visible === 0);
+        focusedIdx = -1; clearFocus();
+      }
+
+      search.addEventListener('input', (e) => filterOptions(e.target.value));
+
+      /* Keyboard navigation inside panel */
+      function getVisibleOptions() {
+        return options.filter(o => o.style.display !== 'none');
+      }
+      function clearFocus() {
+        options.forEach(o => o.classList.remove('focused'));
+      }
+      function moveFocus(dir) {
+        const visible = getVisibleOptions();
+        if (!visible.length) return;
+        clearFocus();
+        focusedIdx = (focusedIdx + dir + visible.length) % visible.length;
+        visible[focusedIdx].classList.add('focused');
+        visible[focusedIdx].scrollIntoView({ block: 'nearest' });
+      }
+
+      panel.addEventListener('keydown', (e) => {
+        const visible = getVisibleOptions();
+        if (e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); moveFocus(-1); }
+        else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (focusedIdx >= 0 && visible[focusedIdx]) selectOption(visible[focusedIdx]);
+        }
+        else if (e.key === 'Escape') { closeDropdown(); trigger.focus(); }
+        else if (e.key === 'Tab') { closeDropdown(); }
+      });
+
+      /* Expose selected value for form validation */
+      window.getCampusValue = () => selectedVal;
+    })();
+  </script>
+
+  <!-- ══════════════════════════════════════════════
+     PASSWORD REQUIREMENTS + STRENGTH
+══════════════════════════════════════════════ -->
+  <script>
+    /* Requirements config */
+    const reqs = [
+      { id: 'req-len', test: (p) => p.length >= 8 },
+      { id: 'req-upper', test: (p) => /[A-Z]/.test(p) },
+      { id: 'req-lower', test: (p) => /[a-z]/.test(p) },
+      { id: 'req-num', test: (p) => /\d/.test(p) },
+      { id: 'req-special', test: (p) => /[^A-Za-z0-9]/.test(p) },
+    ];
+
+    const strengthConfig = [
+      { label: 'Too short', class: '' },
+      { label: 'Weak', class: 'weak' },
+      { label: 'Fair', class: 'medium' },
+      { label: 'Good', class: 'strong' },
+      { label: 'Strong', class: 'very-strong' },
+    ];
+
+    document.getElementById('password').addEventListener('input', function () {
+      const val = this.value;
+
+      /* Show requirements list and strength bar on first input */
+      if (val.length > 0) {
+        document.getElementById('pwd-reqs').classList.add('visible');
+        document.getElementById('strengthRow').style.display = 'flex';
+      } else {
+        document.getElementById('pwd-reqs').classList.remove('visible');
+        document.getElementById('strengthRow').style.display = 'none';
+      }
+
+      /* Evaluate each requirement */
+      let metCount = 0;
+      reqs.forEach(r => {
+        const el = document.getElementById(r.id);
+        const met = r.test(val);
+        el.classList.toggle('met', met);
+        el.classList.toggle('unmet', !met);
+        if (met) metCount++;
+      });
+
+      /* Strength bars */
+      const score = val.length === 0 ? 0 : Math.min(metCount, 4);
+      const bars = ['sb1', 'sb2', 'sb3', 'sb4'];
+      const cfg = strengthConfig[score];
+      bars.forEach((id, i) => {
+        const bar = document.getElementById(id);
+        bar.className = 'strength-bar';
+        if (i < score) bar.classList.add(cfg.class);
+      });
+      const lbl = document.getElementById('strengthLabel');
+      lbl.textContent = cfg.label;
+      lbl.style.color = score === 0 ? 'var(--text-muted)'
+        : score === 1 ? 'var(--danger)'
+          : score === 2 ? 'var(--warning)'
+            : score === 3 ? '#10B981'
+              : 'var(--accent)';
     });
-    document.getElementById('strengthText').textContent = pwd.length === 0 ? 'Minimum 8 characters' : labels[score];
-  };
 
-  window.togglePwd = function () {
-    const p = document.getElementById('password');
-    p.type = p.type === 'password' ? 'text' : 'password';
-  };
+    /* Password visibility toggle — reusable for both fields */
+    window.togglePwd = function (inputId, iconId, btnId) {
+      const inp = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      const btn = document.getElementById(btnId);
+      const show = inp.type === 'text';
+      inp.type = show ? 'password' : 'text';
+      icon.className = show ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+      btn.setAttribute('aria-label', show ? 'Show password' : 'Hide password');
+    };
+  </script>
 
-  ['firstName','lastName','email','campus','password','confirmPassword'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => {
-      if (e.key === 'Enter') { e.preventDefault(); window.registerWithEmail(); }
+  <!-- ══════════════════════════════════════════════
+     FIELD VALIDATION HELPERS
+══════════════════════════════════════════════ -->
+  <script>
+    /* Mark a field group as success state */
+    function setFieldSuccess(groupId) {
+      const fg = document.getElementById(groupId);
+      if (!fg) return;
+      fg.classList.add('success');
+      fg.classList.remove('field-error');
+      /* Hide any error messages */
+      const msg = fg.querySelector('.field-msg');
+      if (msg) msg.classList.remove('visible');
+    }
+
+    /* Mark a field group as error state */
+    function setFieldError(groupId, message) {
+      const fg = document.getElementById(groupId);
+      if (!fg) return;
+      fg.classList.remove('success');
+      fg.classList.add('field-error');
+      const msg = fg.querySelector('.field-msg.err');
+      if (msg) {
+        msg.querySelector('span').textContent = message;
+        msg.classList.add('visible');
+      }
+    }
+
+    /* Clear all validation states */
+    function clearFieldState(groupId) {
+      const fg = document.getElementById(groupId);
+      if (!fg) return;
+      fg.classList.remove('success', 'field-error');
+      const msg = fg.querySelector('.field-msg');
+      if (msg) msg.classList.remove('visible');
+    }
+
+    /* Real-time: validate first name */
+    document.getElementById('firstName').addEventListener('blur', function () {
+      if (this.value.trim().length >= 2) setFieldSuccess('fg-firstName');
+      else if (this.value.trim()) setFieldError('fg-firstName', 'Minimum 2 characters');
     });
-  });
-</script>
+    document.getElementById('firstName').addEventListener('input', function () {
+      if (this.value.trim().length >= 2) setFieldSuccess('fg-firstName');
+      else clearFieldState('fg-firstName');
+    });
+
+    /* Real-time: validate last name */
+    document.getElementById('lastName').addEventListener('blur', function () {
+      if (this.value.trim().length >= 2) setFieldSuccess('fg-lastName');
+      else if (this.value.trim()) setFieldError('fg-lastName', 'Minimum 2 characters');
+    });
+    document.getElementById('lastName').addEventListener('input', function () {
+      if (this.value.trim().length >= 2) setFieldSuccess('fg-lastName');
+      else clearFieldState('fg-lastName');
+    });
+
+    /* Real-time: validate email */
+    const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const BLOCKED = ['mailinator.com', 'guerrillamail.com', 'tempmail.com', '10minutemail.com', 'yopmail.com'];
+    document.getElementById('email').addEventListener('blur', function () {
+      const val = this.value.trim();
+      if (!val) return;
+      if (!emailRx.test(val)) { setFieldError('fg-email', 'Please enter a valid email address.'); return; }
+      const domain = val.split('@')[1];
+      if (BLOCKED.includes(domain)) { setFieldError('fg-email', 'Disposable emails are not allowed.'); return; }
+      setFieldSuccess('fg-email');
+    });
+    document.getElementById('email').addEventListener('input', function () {
+      if (emailRx.test(this.value.trim())) setFieldSuccess('fg-email');
+      else clearFieldState('fg-email');
+    });
+
+    /* Real-time: confirm password match */
+    document.getElementById('confirmPassword').addEventListener('input', function () {
+      const pwd = document.getElementById('password').value;
+      const conf = this.value;
+      if (!conf) { clearFieldState('fg-confirm'); return; }
+      if (conf === pwd && conf.length >= 8) setFieldSuccess('fg-confirm');
+      else if (conf.length >= pwd.length) setFieldError('fg-confirm', 'Passwords do not match.');
+    });
+  </script>
+
+  <!-- ══════════════════════════════════════════════
+     AUTH — FIREBASE
+══════════════════════════════════════════════ -->
+  <script type="module">
+    import {
+      auth, API_BASE,
+      GoogleAuthProvider, GithubAuthProvider, signInWithPopup,
+      createUserWithEmailAndPassword, sendEmailVerification
+    } from '/assets/js/firebase-config.js';
+
+    /* Show / clear top-level error */
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      document.getElementById('errorText').textContent = msg;
+      box.classList.add('visible');
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function clearError() { document.getElementById('errorBox').classList.remove('visible'); }
+
+    /* OAuth loading state */
+    function setOAuthLoading(btn, loading, label) {
+      btn.disabled = loading;
+      if (loading) {
+        btn.innerHTML = `
+        <div class="newtons-cradle">
+          <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+          <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+        </div>Signing up with ${label}…`;
+      }
+    }
+
+    /* Persist session */
+    async function saveSession(user, campusId, name) {
+      const token = await user.getIdToken();
+      let backendUser = null;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken: token, campusId, name }),
+        });
+        backendUser = (await res.json()).user;
+      } catch { /* non-critical — backend may be cold-starting */ }
+
+      const displayName = backendUser?.name || name || user.displayName || user.email.split('@')[0];
+      sessionStorage.setItem('rx_token', token);
+      sessionStorage.setItem('rx_user', JSON.stringify({
+        uid: user.uid, email: user.email, name: displayName,
+        photo: backendUser?.photo || user.photoURL || '',
+        trust_score: backendUser?.trust_score || 0,
+      }));
+      localStorage.setItem('rx_campus_id', backendUser?.campus_id || campusId);
+    }
+
+    /* ── OAuth signup ── */
+    async function signUpWith(provider) {
+      clearError();
+      const campusId = window.getCampusValue() || 'campus_a';
+      const p = provider === 'google' ? new GoogleAuthProvider() : new GithubAuthProvider();
+      const btn = document.getElementById(provider + 'Btn');
+      const orig = btn.innerHTML;
+      setOAuthLoading(btn, true, provider === 'google' ? 'Google' : 'GitHub');
+      try {
+        const result = await signInWithPopup(auth, p);
+        await saveSession(result.user, campusId, null);
+        window.location.href = '/dashboard';
+      } catch (err) {
+        btn.innerHTML = orig;
+        setOAuthLoading(btn, false);
+        if (err.code === 'auth/popup-closed-by-user') return;
+        if (err.code === 'auth/popup-blocked') return showError('Popup blocked — allow popups for this site.');
+        if (err.code === 'auth/account-exists-with-different-credential') return showError('Account exists with a different sign-in method.');
+        showError('Sign-up failed. Please try again.');
+      }
+    }
+    document.getElementById('googleBtn').addEventListener('click', () => signUpWith('google'));
+    document.getElementById('githubBtn').addEventListener('click', () => signUpWith('github'));
+
+    /* ── Email registration ── */
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const campus = window.getCampusValue();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      /* ── Client-side validation ── */
+      let hasError = false;
+      if (!firstName || firstName.length < 2) { setFieldError('fg-firstName', 'Enter your first name.'); hasError = true; }
+      if (!lastName || lastName.length < 2) { setFieldError('fg-lastName', 'Enter your last name.'); hasError = true; }
+      const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRx.test(email)) { setFieldError('fg-email', 'Enter a valid email address.'); hasError = true; }
+      if (!campus) { setFieldError('fg-campus', 'Please select your campus.'); hasError = true; }
+      if (password.length < 8) { setFieldError('fg-password', 'Password must be at least 8 characters.'); hasError = true; }
+      if (password !== confirm) { setFieldError('fg-confirm', 'Passwords do not match.'); hasError = true; }
+      if (hasError) return;
+
+      /* ── Submit ── */
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `
+      <div class="newtons-cradle" style="--uib-color:#000">
+        <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+        <div class="newtons-cradle__dot"></div><div class="newtons-cradle__dot"></div>
+      </div>Creating account…`;
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(cred.user);
+        await saveSession(cred.user, campus, `${firstName} ${lastName}`);
+        btn.textContent = '✓ Account created!';
+        window.ReclaimX?.toast(`Verification email sent to ${email} — check your inbox.`, 'success');
+        /* Redirect to login so they verify first */
+        setTimeout(() => { window.location.href = '/login'; }, 2000);
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Create My Account';
+        const msgs = {
+          'auth/email-already-in-use': 'An account with this email already exists.',
+          'auth/invalid-email': 'Please enter a valid email address.',
+          'auth/weak-password': 'Password is too weak — use a stronger password.',
+        };
+        showError(msgs[err.code] || err.message || 'Registration failed. Please try again.');
+      }
+    });
+  </script>
 </body>
+
 </html>
