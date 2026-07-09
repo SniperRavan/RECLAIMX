@@ -118,3 +118,9 @@ frontend/node_modules/
 ############################
 .cache/
 .eslintcache
+
+############################
+# 🔹 Temporary Documentation 
+############################
+problems-and-solutions.md
+ponytail-improvements.md
