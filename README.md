@@ -895,60 +895,35 @@ Open **http://localhost:3000** in your browser.
 
 ## 🧪 Testing & CI
 
-### Running Tests (Current Status)
+### E2E Testing Stack (Playwright)
 
-⚠️ **Tests are not yet implemented** — this is a TODO for v1.1.
+We have implemented End-to-End (E2E) testing for the critical auth and login pages.
 
-### Planned Testing Stack
+* **E2E Runner**: Playwright
+* **Local Server Routing**: Configured via `frontend/serve.json` to handle Vercel-like `cleanUrls` and routing rewrites during local testing.
+* **Offline Fallback**: If the live backend is cold-starting or offline, the frontend automatically falls back to a mock Firebase configuration on `localhost`, preventing page crashes and ensuring reliable test runs.
 
-- **Backend**: Jest + Supertest for API endpoint tests
-- **Frontend**: Vitest + Testing Library for component tests
-- **E2E**: Playwright for critical user flows (login → report → match → verify)
+### Running E2E Tests Locally
 
-### How to Add Tests (Contributor Guide)
-
-1. Install dev dependencies:
+1. Go to the frontend directory:
    ```bash
-   cd backend
-   npm install --save-dev jest supertest
+   cd frontend
    ```
-2. Create `backend/tests/api.test.js`
-3. Add test:
-   ```javascript
-   const request = require('supertest');
-   const app = require('../server');
-
-   describe('GET /api/health', () => {
-     it('should return 200 OK', async () => {
-       const response = await request(app).get('/api/health');
-       expect(response.status).toBe(200);
-       expect(response.body.status).toBe('ok');
-     });
-   });
+2. Install Playwright and its browser binaries:
+   ```bash
+   npm install
+   npx playwright install --with-deps
    ```
-4. Run: `npm test`
+3. Run tests (either all projects or chromium only):
+   ```bash
+   npx playwright test
+   # Or run Chromium only
+   npx playwright test --project=chromium
+   ```
 
-### CI Pipeline (Planned — GitHub Actions)
+### CI Pipeline (GitHub Actions)
 
-Create `.github/workflows/ci.yml`:
-
-```yaml
-name: CI
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: cd backend && npm install
-      - run: cd backend && npm test
-      - run: cd backend && npm run lint
-```
+The repository is configured with a GitHub Actions workflow (`.github/workflows/playwright.yml`) that automatically runs the Playwright test suite on every push or pull request to the `main` or `master` branches.
 
 ---
 
