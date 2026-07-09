@@ -1,3 +1,4 @@
+// frontend/playwright.config.js
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
