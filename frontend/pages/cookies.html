@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookie Policy — ReclaimX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <style>
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .security-nav {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .security-container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .security-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .security-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: inline-block;
+      text-shadow: 0 0 30px rgba(0, 212, 170, 0.3);
+    }
+
+    .security-title {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .security-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .legal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .sec-card {
+      padding: 40px;
+    }
+
+    .sec-card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+    }
+
+    .sec-card-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .sec-card-desc p {
+      margin-bottom: 14px;
+    }
+
+    .sec-card-desc p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sec-footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sec-footer-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Ambient background grids -->
+  <div class="bg-grid" style="position:absolute;inset:0;pointer-events:none;z-index:1;"></div>
+
+  <!-- Navigation header -->
+  <header class="security-nav">
+    <a href="/" class="nav-logo">Reclaim<span>X</span></a>
+    <a href="/" class="btn-gh" style="font-size:0.8rem;padding:8px 16px;border-radius:8px">
+      <i class="fa-solid fa-arrow-left" style="font-size:11px"></i> Back to Home
+    </a>
+  </header>
+
+  <!-- Security content container -->
+  <main class="security-container">
+    <div class="security-header">
+      <div class="security-icon">
+        <i class="fa-solid fa-cookie-bite"></i>
+      </div>
+      <h1 class="security-title">Cookie Policy</h1>
+      <p class="security-subtitle">
+        ReclaimX utilizes only essential session tokens and local storage preferences to ensure secure and smooth operations.
+      </p>
+    </div>
+
+    <div class="legal-content">
+      <!-- 1. What are Cookies -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">1. What are Cookies & Local Storage?</h2>
+        <div class="sec-card-desc">
+          <p>
+            Cookies and Local Storage are small text data fragments stored inside your web browser. ReclaimX uses these mechanisms exclusively to remember your sign-in state and visual settings across pages.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Essential Cookies We Use -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">2. Essential Data Elements We Store</h2>
+        <div class="sec-card-desc">
+          <p>
+            ReclaimX does not use cookies for tracking or advertising. We only store functional tokens needed to operate the system:
+          </p>
+          <p>
+            <strong>Firebase Authentication (Essential)</strong>: We store temporary user authentication tokens to keep you safely logged into your dashboard, profile, and claiming pages. These tokens expire automatically and are cleared when you log out.
+          </p>
+          <p>
+            <strong>Theme Preference (Essential)</strong>: We cache your selected light/dark theme preference inside your browser's local storage. This enables the theme-loader to render the interface instantly without any screen flickering.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. Zero Third-Party Tracker Guarantee -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">3. Zero Third-Party Advertising Cookies</h2>
+        <div class="sec-card-desc">
+          <p>
+            <strong>We guarantee that ReclaimX contains zero commercial tracking scripts.</strong>
+          </p>
+          <p>
+            We do not load advertising networks, cross-site profiling pixels, Google Analytics trackers, or social sharing analytics. Your campus search history, claimed items, and credentials are completely private and are never shared with any corporate marketing systems.
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. Managing Your Preferences -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">4. How to Manage Cookies</h2>
+        <div class="sec-card-desc">
+          <p>
+            You can delete or block cookies and local storage values through your browser settings. However, please note that disabling authentication cookies will prevent you from logging in and reporting items, as the system requires session tokens to authenticate claims.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="sec-footer">
+      <p class="sec-footer-text">© 2026 ReclaimX. Designed with academic integrity for campus communities.</p>
+    </footer>
+  </main>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>
