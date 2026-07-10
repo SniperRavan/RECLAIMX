@@ -351,6 +351,34 @@ if (user) {
 
   document.getElementById('trustLevel').innerHTML =
     getTrustBadge(user.trust_score || 0);
+
+  // Sync trust scores and levels from backend on load
+  (async function syncDashboardUser() {
+    try {
+      const token = await window.getToken();
+      if (token) {
+        const r = await fetch(`${window.API_BASE}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (r.ok) {
+          const data = await r.json();
+          const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
+          u.trust_score = data.trust_score;
+          u.name = data.name;
+          u.photo = data.photo;
+          sessionStorage.setItem('rx_user', JSON.stringify(u));
+
+          document.getElementById('statTrust').textContent = data.trust_score || 0;
+          document.getElementById('trustLevel').innerHTML = getTrustBadge(data.trust_score || 0);
+          if (data.name) {
+            document.getElementById('greetMsg').textContent = `${greet}, ${data.name.split(' ')[0]} 👋`;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[Dashboard] Sync failed:', e);
+    }
+  })();
 }
   // ── Close any open dot-menu when clicking elsewhere ──────────
   document.addEventListener('click', e => {
