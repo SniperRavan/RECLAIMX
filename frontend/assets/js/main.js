@@ -44,8 +44,14 @@ window.ReclaimX.toast = function (message, type, duration) {
   type     = type     || 'success';
   duration = duration || 4000;
 
-  const container = document.getElementById('toastContainer');
-  if (!container) return;
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    container.setAttribute('aria-live', 'polite');
+    document.body.appendChild(container);
+  }
 
   const ICONS  = { success: '✓', error: '✕', warning: '!', info: 'i' };
   const COLORS = {
@@ -231,3 +237,16 @@ const sidebarObserver = new MutationObserver(() => {
   if (document.getElementById('appSidebar')) initSidebar();
 });
 sidebarObserver.observe(document.body, { childList: true, subtree: true });
+
+// Automatically load sidebar if placeholder is present and empty
+(async function loadSidebar() {
+  const placeholder = document.getElementById('sidebar-placeholder');
+  if (placeholder && !placeholder.innerHTML.trim()) {
+    try {
+      const res = await fetch('/components/sidebar.html');
+      if (res.ok) placeholder.innerHTML = await res.text();
+    } catch (err) {
+      console.warn('[Sidebar] Load failed:', err.message);
+    }
+  }
+})();
