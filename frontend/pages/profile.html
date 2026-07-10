@@ -281,9 +281,29 @@
           .then(r => r.ok ? r.json() : null)
           .then(data => {
             if(!data) return;
+            
+            // Sync sessionStorage
+            const u = JSON.parse(sessionStorage.getItem('rx_user') || '{}');
+            u.trust_score = data.trust_score;
+            u.name = data.name;
+            u.photo = data.photo;
+            sessionStorage.setItem('rx_user', JSON.stringify(u));
+
+            // Update UI elements
             document.getElementById('statReturned').textContent = data.trust_score ? Math.floor(data.trust_score/10) : 0;
             document.getElementById('statFailed').textContent   = data.failed_claims || 0;
             document.getElementById('profileLevel').innerHTML   = getTrustBadge(data.trust_score || 0);
+            document.getElementById('trustScore').textContent    = data.trust_score || 0;
+            
+            const pct = Math.min(((data.trust_score || 0) / 100) * 100, 100);
+            document.getElementById('trustBarFill').style.width = pct + '%';
+            
+            const nextAt = data.trust_score < 50 ? 50 : data.trust_score < 100 ? 100 : null;
+            if (nextAt) {
+              document.getElementById('trustNextMsg').textContent = `${nextAt - data.trust_score} pts to next level`;
+            } else {
+              document.getElementById('trustNextMsg').textContent = 'Maximum trust level reached! 🎉';
+            }
           }).catch(e => console.error(e));
 
         fetch(`${window.API_BASE}/api/items/me`, { headers: { 'Authorization': `Bearer ${tkn}` } })
