@@ -1,7 +1,7 @@
 {
   "outputDirectory": ".",
   "cleanUrls": true,
-
+  
   "rewrites": [
     { "source": "/login", "destination": "/pages/login" },
     { "source": "/register", "destination": "/pages/register" },
@@ -10,6 +10,10 @@
     { "source": "/matches", "destination": "/pages/matches" },
     { "source": "/profile", "destination": "/pages/profile" },
     { "source": "/report-lost", "destination": "/pages/report-lost" },
-    { "source": "/report-found", "destination": "/pages/report-found" }
+    { "source": "/report-found", "destination": "/pages/report-found" },
+    { "source": "/security", "destination": "/pages/security" },
+    { "source": "/privacy", "destination": "/pages/privacy" },
+    { "source": "/terms", "destination": "/pages/terms" },
+    { "source": "/cookies", "destination": "/pages/cookies" }
   ]
 }
