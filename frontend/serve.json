@@ -8,6 +8,10 @@
     { "source": "/matches", "destination": "/pages/matches.html" },
     { "source": "/profile", "destination": "/pages/profile.html" },
     { "source": "/report-lost", "destination": "/pages/report-lost.html" },
-    { "source": "/report-found", "destination": "/pages/report-found.html" }
+    { "source": "/report-found", "destination": "/pages/report-found.html" },
+    { "source": "/security", "destination": "/pages/security.html" },
+    { "source": "/privacy", "destination": "/pages/privacy.html" },
+    { "source": "/terms", "destination": "/pages/terms.html" },
+    { "source": "/cookies", "destination": "/pages/cookies.html" }
   ]
 }
