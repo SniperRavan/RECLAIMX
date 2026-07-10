@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security & Privacy — ReclaimX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <style>
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .security-nav {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .security-container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .security-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .security-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: inline-block;
+      text-shadow: 0 0 30px rgba(0, 212, 170, 0.3);
+    }
+
+    .security-title {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .security-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .security-grid {
+        grid-template-columns: 1fr;
+      }
+      .security-nav {
+        padding: 0 20px;
+      }
+    }
+
+    .sec-card {
+      padding: 32px;
+    }
+
+    .sec-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .sec-card-icon.violet {
+      background: var(--violet-dim);
+      border-color: rgba(124, 92, 252, 0.2);
+      color: var(--violet);
+    }
+
+    .sec-card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .sec-card-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .sec-footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sec-footer-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Ambient background grids -->
+  <div class="bg-grid" style="position:absolute;inset:0;pointer-events:none;z-index:1;"></div>
+
+  <!-- Navigation header -->
+  <header class="security-nav">
+    <a href="/" class="nav-logo">Reclaim<span>X</span></a>
+    <a href="/" class="btn-gh" style="font-size:0.8rem;padding:8px 16px;border-radius:8px">
+      <i class="fa-solid fa-arrow-left" style="font-size:11px"></i> Back to Home
+    </a>
+  </header>
+
+  <!-- Security content container -->
+  <main class="security-container">
+    <div class="security-header">
+      <div class="security-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h1 class="security-title">Security & Privacy Protocol</h1>
+      <p class="security-subtitle">
+        ReclaimX is built with a privacy-first architecture to protect campus students, prevent fraudulent claiming, and secure personal information.
+      </p>
+    </div>
+
+    <div class="security-grid">
+      <!-- 1. Handover Verification -->
+      <div class="card sec-card">
+        <div class="sec-card-icon">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h2 class="sec-card-title">Handover Verification (OTP)</h2>
+        <p class="sec-card-desc">
+          When a claim state transitions to verified, the backend generates a secure 6-digit numeric One-Time Password (OTP). This key is visible solely to the lost item owner. The finder must physically retrieve this code from the owner at handover and verify it via the app to complete the transaction, eliminating false claims.
+        </p>
+      </div>
+
+      <!-- 2. Anti-Fraud Claims -->
+      <div class="card sec-card">
+        <div class="sec-card-icon violet">
+          <i class="fa-solid fa-user-lock"></i>
+        </div>
+        <h2 class="sec-card-title">Anti-Fraud Questionnaires</h2>
+        <p class="sec-card-desc">
+          To claim a found item, owners must configure secret verification questions. Claims are evaluated using text similarity algorithms to rank credibility. To block brute-force attempts on secret questions, users are automatically suspended after 3 failed verification attempts.
+        </p>
+      </div>
+
+      <!-- 3. Sensitive Data Masking -->
+      <div class="card sec-card">
+        <div class="sec-card-icon violet">
+          <i class="fa-solid fa-ban"></i>
+        </div>
+        <h2 class="sec-card-title">Sensitive Data Prevention</h2>
+        <p class="sec-card-desc">
+          All postings undergo RegEx filtering via our backend Sensitive Data Middleware. Submissions containing personal ID numbers (Aadhaar, PAN cards) or telephone details in public fields are automatically flagged and blocked before reaching the database, keeping private data safe.
+        </p>
+      </div>
+
+      <!-- 4. Privacy-First Visibility -->
+      <div class="card sec-card">
+        <div class="sec-card-icon">
+          <i class="fa-solid fa-eye-slash"></i>
+        </div>
+        <h2 class="sec-card-title">Masked Public Feeds</h2>
+        <p class="sec-card-desc">
+          Only general category names, dates, and campus zones are public. Detailed descriptions, photographs, and precise locations are locked. Finder identities are hidden behind the claim interface, and emails are only exposed after matching ownership is verified.
+        </p>
+      </div>
+
+      <!-- 5. Database & Auth Rules -->
+      <div class="card sec-card" style="grid-column: 1 / -1;">
+        <div class="sec-card-icon" style="margin: 0 auto 20px;">
+          <i class="fa-solid fa-database"></i>
+        </div>
+        <h2 class="sec-card-title" style="text-align:center;">Infrastructure Integrity</h2>
+        <p class="sec-card-desc" style="text-align:center; max-width: 800px; margin: 0 auto;">
+          User logins and sessions are encrypted using Firebase Auth tokens. The backend database uses strict Row Level Security (RLS) policies in PostgreSQL, preventing unauthorized users from accessing or modifying claims, reports, or match scoring metrics belonging to other students.
+        </p>
+      </div>
+    </div>
+
+    <footer class="sec-footer">
+      <p class="sec-footer-text">© 2026 ReclaimX. Designed with academic integrity for campus communities.</p>
+    </footer>
+  </main>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>
