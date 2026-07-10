@@ -2,6 +2,12 @@
 // Global utilities. Load first on every page.
 // Change API_BASE here when backend URL changes — nowhere else.
 
+// Initialize theme from localStorage immediately to prevent layout flashes
+(function () {
+  const activeTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', activeTheme);
+})();
+
 window.API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:5000'
   : 'https://reclaimx.onrender.com';
@@ -250,3 +256,144 @@ sidebarObserver.observe(document.body, { childList: true, subtree: true });
     }
   }
 })();
+
+// ── Theme toggle injection ──────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const activeTheme = localStorage.getItem('theme') || 'dark';
+  const toggleBtn = document.createElement('button');
+  toggleBtn.id = 'globalThemeToggle';
+  toggleBtn.className = 'theme-toggle-btn';
+  toggleBtn.setAttribute('aria-label', 'Toggle theme');
+  toggleBtn.innerHTML = activeTheme === 'light' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+
+  const navCta = document.querySelector('.nav-cta');
+
+  if (navCta) {
+    // Static placement in landing page navbar CTA
+    navCta.insertBefore(toggleBtn, navCta.firstChild);
+    toggleBtn.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      toggleBtn.innerHTML = newTheme === 'light' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+    });
+  } else {
+    // Floating, draggable, snappable button for App pages & Login/Register
+    document.body.appendChild(toggleBtn);
+    makeButtonDraggableAndSnappable(toggleBtn);
+  }
+});
+
+// Drag-and-snap logic for floating theme toggler
+function makeButtonDraggableAndSnappable(btn) {
+  let isDragging = false;
+  let startX, startY;
+  let initialLeft, initialTop;
+  let hasMoved = false;
+
+  // Initial style placement: bottom-right
+  btn.style.position = 'fixed';
+  btn.style.bottom = '28px';
+  btn.style.right = '28px';
+  btn.style.left = 'auto';
+  btn.style.top = 'auto';
+  btn.style.zIndex = '99999';
+  btn.style.cursor = 'grab';
+  btn.style.transition = 'none';
+
+  const onStart = (e) => {
+    isDragging = true;
+    btn.style.cursor = 'grabbing';
+    btn.style.transition = 'none';
+    hasMoved = false;
+
+    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+    const rect = btn.getBoundingClientRect();
+    startX = clientX;
+    startY = clientY;
+    initialLeft = rect.left;
+    initialTop = rect.top;
+
+    // Shift layout styles to absolute left/top for tracking
+    btn.style.right = 'auto';
+    btn.style.bottom = 'auto';
+    btn.style.left = `${initialLeft}px`;
+    btn.style.top = `${initialTop}px`;
+
+    // Only prevent default on touch to stop scrolling, but allow mouse events
+    if (e.type === 'touchstart') e.preventDefault();
+  };
+
+  const onMove = (e) => {
+    if (!isDragging) return;
+
+    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+      hasMoved = true;
+    }
+
+    let newLeft = initialLeft + dx;
+    let newTop = initialTop + dy;
+
+    // Viewport bounds restrictions
+    const size = 36;
+    newLeft = Math.max(12, Math.min(window.innerWidth - size - 12, newLeft));
+    newTop = Math.max(12, Math.min(window.innerHeight - size - 12, newTop));
+
+    btn.style.left = `${newLeft}px`;
+    btn.style.top = `${newTop}px`;
+  };
+
+  const onEnd = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    btn.style.cursor = 'grab';
+
+    // Snap target positions with smooth transition spring
+    btn.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'; // slight bounce feel!
+
+    const rect = btn.getBoundingClientRect();
+    const midPoint = window.innerWidth / 2;
+    const snapMargin = 28;
+
+    let finalLeft;
+    if (rect.left + rect.width / 2 < midPoint) {
+      // Snap to left vertical edge
+      finalLeft = snapMargin;
+    } else {
+      // Snap to right vertical edge
+      finalLeft = window.innerWidth - rect.width - snapMargin;
+    }
+
+    let finalTop = Math.max(snapMargin, Math.min(window.innerHeight - rect.height - snapMargin, rect.top));
+
+    btn.style.left = `${finalLeft}px`;
+    btn.style.top = `${finalTop}px`;
+
+    // Toggle theme only if it was a click (not dragged)
+    if (!hasMoved) {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      btn.innerHTML = newTheme === 'light' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+    }
+  };
+
+  btn.addEventListener('mousedown', onStart);
+  btn.addEventListener('touchstart', onStart, { passive: false });
+
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('touchend', onEnd);
+}
