@@ -137,6 +137,10 @@ RECLAIMX/
 │ │ ├── report-found.html
 │ │ ├── matches.html ← Score ring, verify claim flow
 │ │ ├── profile.html ← Avatar, trust score, activity
+│ │ ├── security.html ← Security protocol and details page
+│ │ ├── privacy.html ← Data collection and user privacy policy
+│ │ ├── terms.html ← Terms of Service and physical safety liability shield
+│ │ ├── cookies.html ← Cookie policy and session tokens usage page
 │ │ └── 404.html
 │ │
 │ ├── assets/
