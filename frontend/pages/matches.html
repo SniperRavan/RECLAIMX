@@ -786,7 +786,7 @@
                   </div>` : ''}
               </div>
               <div class="match-card-footer">
-                <div style="font-size:0.75rem;color:var(--text-muted)">Status: ${c.status}</div>
+                <div style="font-size:0.75rem;color:var(--text-secondary);font-weight:600;">Status: <span style="color:${c.status === 'Resolved' ? 'var(--success)' : c.status === 'Verified' ? 'var(--accent)' : c.status === 'Pending' ? 'var(--warning)' : 'var(--danger)'};text-transform:uppercase;font-family:var(--font-mono);font-weight:700;">${c.status}</span></div>
                 <div class="match-actions">
                   ${tab === 'new' ? `
                     <button class="btn btn-primary btn-sm" onclick="openVerify('${c.id}')">
