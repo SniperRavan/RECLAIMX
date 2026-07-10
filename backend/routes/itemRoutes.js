@@ -10,9 +10,7 @@ const { sensitiveDataMiddleware } = require('../utils/sensitiveDataFilter');
 // GET /api/items/me — current user's reports
 router.get('/me', protect, async (req, res, next) => {
   try {
-    const { data: user } = await supabase
-      .from('users').select('id').eq('firebase_uid', req.user.uid).single();
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const user = req.dbUser;
 
     const [lostRes, foundRes] = await Promise.all([
       supabase.from('lost_items').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
@@ -54,9 +52,7 @@ router.post('/lost', protect, upload.array('images', 2), sensitiveDataMiddleware
       return res.status(400).json({ error: 'itemName, category, and campusId are required.' });
     }
 
-    const { data: user } = await supabase.from('users').select('*').eq('firebase_uid', req.user.uid).single();
-    if (!user)             return res.status(404).json({ error: 'User not found.' });
-    if (user.is_suspended) return res.status(403).json({ error: 'Account suspended.' });
+    const user = req.dbUser;
 
     const hidden = JSON.parse(hiddenAttributes || '{}');
 
@@ -97,9 +93,7 @@ router.post('/found', protect, upload.single('image'), sensitiveDataMiddleware, 
       return res.status(400).json({ error: 'itemName, category, and campusId are required.' });
     }
 
-    const { data: user } = await supabase.from('users').select('*').eq('firebase_uid', req.user.uid).single();
-    if (!user)             return res.status(404).json({ error: 'User not found.' });
-    if (user.is_suspended) return res.status(403).json({ error: 'Account suspended.' });
+    const user = req.dbUser;
 
     let imageUrl = '';
     if (req.file) {
@@ -129,8 +123,7 @@ router.post('/found', protect, upload.single('image'), sensitiveDataMiddleware, 
 // DELETE /api/items/lost/:id — owner only, cascades claims
 router.delete('/lost/:id', protect, async (req, res, next) => {
   try {
-    const { data: user } = await supabase.from('users').select('id').eq('firebase_uid', req.user.uid).single();
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const user = req.dbUser;
 
     const { data: item } = await supabase.from('lost_items').select('id,user_id').eq('id', req.params.id).single();
     if (!item)                    return res.status(404).json({ error: 'Item not found.' });
@@ -147,8 +140,7 @@ router.delete('/lost/:id', protect, async (req, res, next) => {
 // DELETE /api/items/found/:id — owner only, cascades claims
 router.delete('/found/:id', protect, async (req, res, next) => {
   try {
-    const { data: user } = await supabase.from('users').select('id').eq('firebase_uid', req.user.uid).single();
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const user = req.dbUser;
 
     const { data: item } = await supabase.from('found_items').select('id,user_id').eq('id', req.params.id).single();
     if (!item)                    return res.status(404).json({ error: 'Item not found.' });
