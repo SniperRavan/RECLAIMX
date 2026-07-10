@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — ReclaimX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <style>
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .security-nav {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .security-container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .security-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .security-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: inline-block;
+      text-shadow: 0 0 30px rgba(0, 212, 170, 0.3);
+    }
+
+    .security-title {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .security-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .legal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .sec-card {
+      padding: 40px;
+    }
+
+    .sec-card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+    }
+
+    .sec-card-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .sec-card-desc p {
+      margin-bottom: 14px;
+    }
+
+    .sec-card-desc p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sec-footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sec-footer-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Ambient background grids -->
+  <div class="bg-grid" style="position:absolute;inset:0;pointer-events:none;z-index:1;"></div>
+
+  <!-- Navigation header -->
+  <header class="security-nav">
+    <a href="/" class="nav-logo">Reclaim<span>X</span></a>
+    <a href="/" class="btn-gh" style="font-size:0.8rem;padding:8px 16px;border-radius:8px">
+      <i class="fa-solid fa-arrow-left" style="font-size:11px"></i> Back to Home
+    </a>
+  </header>
+
+  <!-- Security content container -->
+  <main class="security-container">
+    <div class="security-header">
+      <div class="security-icon">
+        <i class="fa-solid fa-file-contract"></i>
+      </div>
+      <h1 class="security-title">Terms of Service</h1>
+      <p class="security-subtitle">
+        By accessing ReclaimX, you agree to comply with our campus usage guidelines and liability disclaimers outlined below.
+      </p>
+    </div>
+
+    <div class="legal-content">
+      <!-- 1. Academic Sandbox -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">1. Educational Sandbox Scope</h2>
+        <div class="sec-card-desc">
+          <p>
+            ReclaimX is an educational demo and portfolio project designed for university lost-and-found matching demonstrations.
+          </p>
+          <p>
+            It is not a commercial service, does not represent a licensed business, and is not officially endorsed or managed by any campus administration. It is operated on an volunteer basis, and we reserve the right to suspend or delete accounts or records at any time.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Account Eligibility -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">2. Account Responsibility & Verification</h2>
+        <div class="sec-card-desc">
+          <p>
+            To prevent fraud and spam, only registered campus members are eligible to log in. You are responsible for maintaining the confidentiality of your Firebase credentials.
+          </p>
+          <p>
+            <strong>Account Suspensions</strong>: Attempting to falsely claim items is strictly prohibited. If a user submits incorrect answers to ownership verification questions three (3) consecutive times, their account is automatically locked and suspended from further claim requests.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. Prohibited Conduct -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">3. Postings & Submissions</h2>
+        <div class="sec-card-desc">
+          <p>
+            Users are solely responsible for the description text and images they submit.
+          </p>
+          <p>
+            <strong>Illegal Items</strong>: Posting weapons, narcotics, offensive materials, or fraudulent items is prohibited and will trigger immediate account deletion.
+          </p>
+          <p>
+            <strong>Private Data Leak Prevention</strong>: In order to protect privacy, you may not post Aadhaar cards, PAN numbers, or telephone details in public description fields. Such posts will be automatically rejected by our backend sensitive data filters.
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. Physical Handover Safety Disclaimer -->
+      <div class="card sec-card" style="border: 1px solid rgba(251, 191, 36, 0.3) !important;">
+        <h2 class="sec-card-title" style="border-left-color: var(--warning)">4. Physical Handover Safety Warning</h2>
+        <div class="sec-card-desc">
+          <p>
+            <strong>ReclaimX merely acts as a match finding utility. The physical exchange of lost property is conducted entirely at the users' own risk.</strong>
+          </p>
+          <p>
+            For your personal safety, we strongly advise adhering to the following rules:
+          </p>
+          <ul>
+            <li>Conduct physical handovers <strong>strictly during daylight hours</strong>.</li>
+            <li>Meet only in <strong>crowded, public campus areas</strong>, such as the Central Library lobby, student cafeteria, or next to a campus Security Office.</li>
+            <li>Never meet in private residences, off-campus zones, or secluded areas.</li>
+          </ul>
+          <p>
+            ReclaimX, its developers, and contributors hold no liability for any disputes, damages, theft, or physical harm that may occur during physical meetings.
+          </p>
+        </div>
+      </div>
+
+      <!-- 5. Limitation of Liability -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">5. Warranty & Liability Disclaimer</h2>
+        <div class="sec-card-desc" style="font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase;">
+          <p>
+            THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+          </p>
+          <p>
+            IN NO EVENT SHALL THE CREATORS, DEVELOPERS, OR CONTRIBUTORS OF RECLAIMX BE LIABLE FOR ANY CLAIM, DAMAGES, LOSS OF PERSONAL PROPERTY, STOLEN ITEMS, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="sec-footer">
+      <p class="sec-footer-text">© 2026 ReclaimX. Designed with academic integrity for campus communities.</p>
+    </footer>
+  </main>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>
