@@ -302,6 +302,7 @@ CREATE TABLE claims (
   match_score FLOAT DEFAULT 0,
   answer_1 TEXT, answer_2 TEXT, answer_3 TEXT,
   verification_score FLOAT DEFAULT 0,
+  handover_otp VARCHAR(6),
   loster_confirmed BOOLEAN DEFAULT false,
   founder_confirmed BOOLEAN DEFAULT false,
   status TEXT DEFAULT 'Pending',    -- Pending \[|\] Verified \[|\] Rejected \[|\] Resolved
@@ -345,6 +346,7 @@ Base URL: `https://reclaimx.onrender.com/api` (production) or `http://localhost:
 | GET | `/` | ✅ | Get all claims for current user |
 | POST | `/verify` | ✅ | Submit ownership verification answers |
 | POST | `/confirm-handover/:id` | ✅ | Confirm physical handover |
+| POST | `/resolve/:id` | ✅ | Verify OTP and resolve claim |
 | POST | `/dismiss/:id` | ✅ | Dismiss a match |
 
 ### Config & Health
@@ -620,9 +622,27 @@ curl -X POST https://reclaimx.onrender.com/api/matches/confirm-handover/claim-uu
 }
 ```
 
+### 8. Verify OTP and Resolve Claim
+
+```bash
+curl -X POST https://reclaimx.onrender.com/api/matches/resolve/claim-uuid-here \
+  -H "Authorization: Bearer YOUR_FIREBASE_ID_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "otp": "123456"
+  }'
+```
+
+**Response:**
+```json
+{
+  "success": true
+}
+```
+
 ---
 
-### 8. Dismiss a Match
+### 9. Dismiss a Match
 
 ```bash
 curl -X POST https://reclaimx.onrender.com/api/matches/dismiss/claim-uuid-here \
