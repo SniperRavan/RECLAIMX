@@ -39,10 +39,12 @@
     banner.id = 'installBanner';
     banner.style.cssText = `
       position:fixed;bottom:80px;right:24px;z-index:9998;
-      background:var(--bg-card);border:1px solid var(--border);
-      border-radius:var(--radius-lg);padding:16px 20px;
-      box-shadow:0 8px 32px rgba(0,0,0,0.5);
-      display:flex;align-items:center;gap:14px;
+      background:rgba(10, 15, 30, 0.45);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border:1px solid rgba(255, 255, 255, 0.08);
+      border-radius:20px;padding:18px 24px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.55), inset 0 1px 1px rgba(255,255,255,0.05);
+      display:flex;align-items:center;gap:16px;
       font-size:0.85rem;max-width:320px;animation:fadeUp 0.3s ease;`;
     banner.innerHTML = `
       <span style="font-size:1.8rem">📱</span>
@@ -52,7 +54,8 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:6px">
         <button onclick="window.ReclaimXPWA.install()" style="background:var(--accent);color:#000;
-          border:none;border-radius:6px;padding:6px 12px;font-size:0.78rem;font-weight:600;cursor:pointer">
+          border:none;border-radius:8px;padding:8px 16px;font-size:0.78rem;font-weight:600;cursor:pointer;
+          box-shadow: 0 4px 12px rgba(0, 212, 170, 0.2); transition: transform 0.2s;">
           Install
         </button>
         <button onclick="document.getElementById('installBanner').remove()" style="background:none;
