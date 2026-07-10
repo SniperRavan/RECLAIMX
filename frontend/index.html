@@ -117,81 +117,71 @@
       align-items: center;
     }
 
-    /* Uiverse Burger */
+    /* ── Burger Button (Diamond Style) ── */
     .square {
       border: 1px solid rgba(0, 212, 170, 0.45);
-      height: 28px;
-      width: 28px;
+      height: 32px;
+      width: 32px;
       display: none;
       margin: 0;
       transform: rotate(45deg);
-      overflow: hidden;
       cursor: pointer;
-      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
+      transition: all 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
       text-decoration: none;
       flex-shrink: 0;
+      background: rgba(10, 15, 30, 0.4);
+      border-radius: 6px;
+      position: relative;
     }
 
     .square .burgerwrap {
-      height: 18px;
-      width: 21px;
+      height: 14px;
+      width: 16px;
       transform: rotate(-45deg);
-      padding-left: 3px;
-      padding-top: 8px;
-      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
-    }
-
-    .square:hover {
-      transform: rotate(135deg);
-      border-color: rgba(0, 212, 170, 0.9);
-      box-shadow: 0 0 12px rgba(0, 212, 170, 0.2);
-    }
-
-    .square:hover .burgerwrap {
-      transform: rotate(-135deg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
     .square span {
       height: 2px;
-      width: 14px;
+      width: 16px;
       background: linear-gradient(145deg, #00d4aa, #7c5cfc);
       display: block;
-      margin-bottom: 2px;
-      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
+      transition: all 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+      transform-origin: center;
+      border-radius: 1px;
     }
 
-    .square span::after {
-      content: '';
-      height: 2px;
-      width: 14px;
-      position: absolute;
-      background: #fff;
-      left: -22px;
-      margin-top: -4px;
-      transition: all 500ms cubic-bezier(0.97, 0, 0.395, 0.995);
+    .square:hover {
+      border-color: rgba(0, 212, 170, 0.9);
+      box-shadow: 0 0 12px rgba(0, 212, 170, 0.25);
+      background: rgba(0, 212, 170, 0.08);
     }
 
-    .square:hover span {
-      margin-left: 26px;
+    /* Burger to X Animation when open */
+    .square.open {
+      transform: rotate(225deg);
+      border-color: var(--accent);
     }
 
-    .square:hover span::after {
-      left: 0.2px;
+    .square.open .burgerwrap {
+      transform: rotate(-225deg);
     }
 
-    .square span:nth-of-type(1),
-    .square span:nth-of-type(1)::after {
-      transition-delay: 0.1s;
+    .square.open span:nth-of-type(1) {
+      transform: translateY(6px) rotate(45deg);
     }
 
-    .square span:nth-of-type(2),
-    .square span:nth-of-type(2)::after {
-      transition-delay: 0.2s;
+    .square.open span:nth-of-type(2) {
+      transform: scale(0);
+      opacity: 0;
     }
 
-    .square span:nth-of-type(3),
-    .square span:nth-of-type(3)::after {
-      transition-delay: 0.3s;
+    .square.open span:nth-of-type(3) {
+      transform: translateY(-6px) rotate(-45deg);
     }
 
     .mobile-nav {
@@ -405,29 +395,65 @@
 
     .hero-img {
       width: 100%;
-      border-radius: 16px;
+      border-radius: 24px;
       border: 1px solid rgba(0, 212, 170, 0.12);
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
       display: block;
+      transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.6s ease, border-color 0.6s ease;
+    }
+
+    .hero-img-wrap:hover .hero-img {
+      transform: scale(1.02) translateY(-6px) rotate(0.5deg);
+      box-shadow: 
+        0 36px 80px rgba(0, 0, 0, 0.55),
+        0 0 30px rgba(0, 212, 170, 0.15);
+      border-color: rgba(0, 212, 170, 0.25);
     }
 
     .hero-float {
       position: absolute;
-      background: rgba(13, 19, 32, 0.9);
+      background: rgba(10, 15, 30, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 10px 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      padding: 16px 20px;
+      box-shadow: 
+        0 12px 36px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1),
+        inset 0 10px 20px rgba(255, 255, 255, 0.03);
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      z-index: 10;
     }
 
     .hero-float-1 {
-      bottom: -16px;
-      left: -16px;
+      top: 38%;
+      left: -64px;
+      transform: translateY(-50%) rotate(-1deg);
     }
 
     .hero-float-2 {
-      top: 16px;
-      right: -16px;
+      bottom: 8%;
+      right: -64px;
+      transform: rotate(1deg);
+    }
+
+    .hero-float-1:hover {
+      transform: translateY(-50%) translateY(-8px) scale(1.04) rotate(0deg);
+      border-color: rgba(0, 212, 170, 0.4);
+      box-shadow: 
+        0 24px 50px rgba(0, 0, 0, 0.55),
+        0 0 20px rgba(0, 212, 170, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-float-2:hover {
+      transform: translateY(-8px) scale(1.04) rotate(0deg);
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 
+        0 24px 50px rgba(0, 0, 0, 0.55),
+        0 0 20px rgba(251, 191, 36, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
     }
 
     .fl {
@@ -1059,125 +1085,107 @@
 
     /* ── FAQ ── */
 
-    .faq-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      max-width: 1000px;
-      align-items: start;
+    @keyframes faqMarquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
 
-    .faq-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 14px;
-      padding: 24px;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-
-    .faq-item:hover {
-      border-color: rgba(0, 212, 170, 0.18);
-    }
-
-    .faq-item.open {
-      border-color: rgba(0, 212, 170, 0.25);
-    }
-
-    .faq-q {
+    .faq-carousel-outer {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      padding: 12px 0;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-primary);
     }
 
-    .faq-q i {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      transition: transform 0.25s;
-      flex-shrink: 0;
+    .faq-carousel-outer::before,
+    .faq-carousel-outer::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 15%;
+      z-index: 2;
+      pointer-events: none;
     }
 
-    .faq-item.open .faq-q i {
-      transform: rotate(180deg);
-      color: var(--accent);
+    .faq-carousel-outer::before {
+      left: 0;
+      background: linear-gradient(90deg, #0b0f19 0%, transparent 100%);
     }
 
-    .faq-a {
-      font-size: 0.84rem;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      display: none;
+    .faq-carousel-outer::after {
+      right: 0;
+      background: linear-gradient(270deg, #0b0f19 0%, transparent 100%);
     }
 
-    .faq-item.open .faq-a {
-      display: block;
+    .faq-carousel-container {
+      overflow: hidden;
+      width: 100%;
     }
 
-    /* ── Social proof ── */
-    .proof-section {
-      background: rgba(11, 15, 26, 0.5);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .proof-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    .faq-carousel-track {
+      display: flex;
       gap: 16px;
+      animation: faqMarquee 38s linear infinite;
+      width: max-content;
+      will-change: transform;
     }
 
-    .proof-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 14px;
-      padding: 24px;
+    .faq-carousel-track:hover {
+      animation-play-state: paused;
     }
 
-    .proof-text {
-      font-size: 0.88rem;
+    .faq-carousel-card {
+      flex: 0 0 340px;
+      width: 340px;
+      height: 250px;
+      background: rgba(10, 15, 30, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: 
+        0 12px 32px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 12px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .faq-carousel-card:hover {
+      border-color: rgba(0, 212, 170, 0.35);
+      background: rgba(10, 15, 30, 0.6);
+      box-shadow: 
+        0 16px 40px rgba(0, 0, 0, 0.55),
+        0 0 20px rgba(0, 212, 170, 0.1);
+    }
+
+    .faq-card-idx {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .faq-card-q {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+
+    .faq-card-a {
+      font-size: 0.8rem;
       color: var(--text-secondary);
       line-height: 1.7;
-      margin-bottom: 16px;
-      font-style: italic;
-    }
-
-    .proof-author {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .proof-av {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(0, 212, 170, 0.12);
-      border: 1px solid rgba(0, 212, 170, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .proof-name {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .proof-role {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
     }
 
     /* ── CTA ── */
@@ -1947,13 +1955,21 @@
       }
 
       .hero-float-1 {
-        left: 0;
-        bottom: -12px;
+        left: -32px;
+        top: auto;
+        bottom: 6%;
+        transform: rotate(-1deg);
       }
 
       .hero-float-2 {
-        right: 0;
-        top: 12px;
+        right: -32px;
+        bottom: auto;
+        top: 6%;
+        transform: rotate(1deg);
+      }
+
+      .scroll-hint {
+        display: none;
       }
 
       .showcase-item {
@@ -1999,12 +2015,17 @@
         grid-column: span 1;
       }
 
-      .proof-cards {
-        grid-template-columns: 1fr;
+      .faq-carousel-card {
+        flex: 0 0 280px;
+        width: 280px;
+        height: 270px;
+        padding: 20px;
       }
-
-      .faq-grid {
-        grid-template-columns: 1fr;
+      .faq-card-q {
+        font-size: 1.05rem;
+      }
+      .faq-card-a {
+        font-size: 0.76rem;
       }
 
       .footer {
@@ -2130,7 +2151,6 @@
   <!-- ── Hero ── -->
   <section class="hero">
     <div class="hero-left">
-      <div class="hero-eyebrow"><span class="hero-dot"></span>For college students · Free forever</div>
       <h1 class="hero-title">
         Lost something<br />
         <span class="hl">on campus?</span><br />
@@ -2150,25 +2170,12 @@
           Browse Items
         </a>
       </div>
-      <div class="hero-trust">
-        <div class="trust-avs">
-          <div class="trust-av">SR</div>
-          <div class="trust-av">MK</div>
-          <div class="trust-av">AJ</div>
-          <div class="trust-av" style="font-size:0.55rem">+10</div>
-        </div>
-        <div class="tdiv"></div>
-        <span>Trusted by students on campus</span>
-        <div class="tdiv"></div>
-        <span style="color:var(--accent)"><i class="fa-solid fa-shield-check"
-            style="margin-right:4px;font-size:10px"></i>Privacy-first</span>
-      </div>
     </div>
 
     <div class="hero-right">
       <div class="hero-img-wrap">
         <div class="hero-img-glow"></div>
-        <img src="/assets/images/hero.png" alt="ReclaimX dashboard showing matched items" class="hero-img" />
+        <img src="/assets/images/hero.png" alt="ReclaimX dashboard showing matched items" class="hero-img" style="border-radius: 24px;" />
         <div class="hero-float hero-float-1">
           <div class="fl"><i class="fa-solid fa-bolt"
               style="color:var(--accent);margin-right:4px;font-size:9px"></i>Match Score</div>
@@ -2532,111 +2539,19 @@
     </div>
   </section>
 
-  <!-- ── Social Proof ── -->
-  <section class="section-wrap proof-section section-pad-sm">
-    <div style="max-width:1060px;margin:0 auto">
-      <div class="section-tag">Student feedback</div>
-      <h2 class="section-h" style="margin-bottom:36px">What students say</h2>
-      <div class="proof-cards">
-        <div class="proof-card">
-          <div class="proof-text">"Reported my lost keys and got matched the same day. The verification questions were
-            smart — it was immediately obvious only I would know those answers."</div>
-          <div class="proof-author">
-            <div class="proof-av">SR</div>
-            <div>
-              <div class="proof-name">Sniper R.</div>
-              <div class="proof-role">Computer Science · Campus A</div>
-            </div>
-          </div>
-        </div>
-        <div class="proof-card">
-          <div class="proof-text">"I found a wallet near the library. Reported it as found and within 20 minutes the
-            engine had matched it to someone's lost report. No awkward posting on groups."</div>
-          <div class="proof-author">
-            <div class="proof-av">MK</div>
-            <div>
-              <div class="proof-name">Meera K.</div>
-              <div class="proof-role">Information Technology · Campus B</div>
-            </div>
-          </div>
-        </div>
-        <div class="proof-card">
-          <div class="proof-text">"The privacy model is exactly right. I didn't have to post photos of my ID on a
-            WhatsApp group. My details stayed private until ownership was actually verified."</div>
-          <div class="proof-author">
-            <div class="proof-av">AJ</div>
-            <div>
-              <div class="proof-name">Arjun J.</div>
-              <div class="proof-role">Electronics · Campus A</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ── FAQ ── -->
-  <section class="section-wrap section-pad" id="faq">
-    <div style="max-width:1060px;margin:0 auto">
-      <div class="section-tag">FAQ</div>
-      <h2 class="section-h">Common questions</h2>
-      <p class="section-sub">Answers to what students actually ask about matching, verification, and privacy.</p>
-      <div class="faq-grid">
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">How does the matching engine actually work? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">When a report is submitted, the engine scores it against every open opposing report on the
-            same campus with the same category. The score is a weighted combination of: text similarity (40%), image
-            presence signal (30%), location token overlap (20%), and time decay (10%). A score of 40 or above creates a
-            match claim. Campus and category must match exactly — no cross-campus matching.</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">What are the 3 verification questions? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">The questions are generated from 3 private fields you fill in when reporting a lost item:
-            interior colour or lining, unique marks/scratches/stickers/engravings, and what the item contains. These are
-            never shown publicly. The claimer's answers are compared using Jaccard word similarity — 60% or above is a
-            pass. Wrong answers below 60% count as failed attempts. 3 failures trigger account suspension and fraud
-            logging.</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">What information is publicly visible? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">Only the item name is publicly visible in the browse feed. Your description, photos, hidden
-            verification attributes, and contact information are never shown to any other user. Images are stored
-            privately on Cloudinary and are only used internally by the scoring engine for the image presence signal.
+  <section class="section-wrap section-pad" id="faq" style="padding-bottom: 80px;">
+    <div style="max-width:1200px;margin:0 auto;position:relative;">
+      <div class="section-tag" style="text-align:center;">FAQ</div>
+      <h2 class="section-h" style="text-align:center;">Common questions</h2>
+      <p class="section-sub" style="text-align:center;margin:0 auto 44px;">Answers to what students actually ask about matching, verification, and privacy.</p>
+      
+      <!-- FAQ Glassy Marquee Carousel -->
+      <div class="faq-carousel-outer">
+        <div class="faq-carousel-container">
+          <div class="faq-carousel-track" id="faqTrack">
+            <!-- FAQ cards and duplicates dynamically rendered here -->
           </div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">How does campus isolation work? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">Every lost and found report stores a campus_id field. The matching engine only queries
-            items where campus_id matches exactly. There is no cross-campus matching. Students on Campus A will never
-            see or be matched with reports from Campus B. This is a query filter, not a separate database — adding new
-            campuses requires no schema changes.</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">Can I be scammed or impersonated? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">The verification system is specifically designed to prevent this. Since only you know the
-            hidden attributes (interior colour, unique marks, contents), anyone trying to falsely claim your item would
-            fail the 3-question verification. Three failed attempts suspend the account and log the fraud. There is no
-            way to pass verification without knowing the private details you stored when reporting.</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">Does ReclaimX work on mobile? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">Yes. ReclaimX is a Progressive Web App (PWA). You can install it on Android or iOS from the
-            browser — no app store needed. It works offline: reports submitted without a network connection are queued
-            in IndexedDB and automatically synced when you reconnect.</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">Is there a cost for students or campuses? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">ReclaimX is completely free for students. There are no subscriptions, no premium tiers, no
-            ads. It is an academic final year project. Adding a new campus requires only a new campus_id value — no
-            infrastructure cost or admin setup.</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q">What data does ReclaimX store about me? <i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">ReclaimX stores your name, email, campus, trust score, and submitted reports. Report data
-            includes the item name, category, location, description, and hidden verification attributes. Photos are
-            stored on Cloudinary. Firebase handles authentication — ReclaimX only stores the Firebase UID, not your
-            password. Sensitive data like Aadhaar numbers, PAN, and card numbers are actively filtered from
-            descriptions.</div>
         </div>
       </div>
     </div>
@@ -2827,17 +2742,114 @@
     burgerBtn.addEventListener('click', e => {
       e.preventDefault();
       const o = mobileNav.classList.toggle('open');
+      burgerBtn.classList.toggle('open', o);
       mobileNav.setAttribute('aria-hidden', !o);
     });
-    mobileNav.querySelectorAll('a').forEach(l => l.addEventListener('click', () => { mobileNav.classList.remove('open'); mobileNav.setAttribute('aria-hidden', 'true'); }));
-    document.addEventListener('click', e => { if (!burgerBtn.contains(e.target) && !mobileNav.contains(e.target)) mobileNav.classList.remove('open'); });
+    mobileNav.querySelectorAll('a').forEach(l => l.addEventListener('click', () => { 
+      mobileNav.classList.remove('open'); 
+      burgerBtn.classList.remove('open'); 
+      mobileNav.setAttribute('aria-hidden', 'true'); 
+    }));
+    document.addEventListener('click', e => { 
+      if (!burgerBtn.contains(e.target) && !mobileNav.contains(e.target)) {
+        mobileNav.classList.remove('open'); 
+        burgerBtn.classList.remove('open'); 
+      }
+    });
+
+    // Toast demo/test trigger via URL query: ?test-toast=true
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('test-toast') === 'true') {
+        setTimeout(() => {
+          window.ReclaimX?.toast('Your item match report was successfully matching!', 'success');
+        }, 1000);
+        setTimeout(() => {
+          window.ReclaimX?.toast('Verification attempt failed. Please check your answers.', 'error');
+        }, 2200);
+        setTimeout(() => {
+          window.ReclaimX?.toast('Your session is about to expire soon.', 'warning');
+        }, 3400);
+        setTimeout(() => {
+          window.ReclaimX?.toast('Offline queue is active — report is queued.', 'info');
+        }, 4600);
+      }
+    });
 
     // FAQ accordion
-    function toggleFaq(el) {
-      const isOpen = el.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-      if (!isOpen) el.classList.add('open');
+    const FAQ_DATA = [
+      {
+        q: "How does the matching engine actually work?",
+        a: "When a report is submitted, the engine scores it against every open opposing report on the same campus with the same category. The score is a weighted combination of: text similarity (40%), image presence signal (30%), location token overlap (20%), and time decay (10%). A score of 40 or above creates a match claim. Campus and category must match exactly — no cross-campus matching."
+      },
+      {
+        q: "What are the 3 verification questions?",
+        a: "The questions are generated from 3 private fields you fill in when reporting a lost item: interior colour or lining, unique marks/scratches/stickers/engravings, and what the item contains. These are never shown publicly. The claimer's answers are compared using Jaccard word similarity — 60% or above is a pass. Wrong answers below 60% count as failed attempts. 3 failures trigger account suspension."
+      },
+      {
+        q: "What information is publicly visible?",
+        a: "Only the item name and category are publicly visible in the browse feed. Your description, photos, hidden verification attributes, and contact information are never shown to any other user. Images are stored privately on Cloudinary and are only used internally by the scoring engine."
+      },
+      {
+        q: "How does campus isolation work?",
+        a: "Every lost and found report stores a campus_id field. The matching engine only queries items where campus_id matches exactly. There is no cross-campus matching. Students on Campus A will never see or be matched with reports from Campus B."
+      },
+      {
+        q: "Can I be scammed or impersonated?",
+        a: "The verification system is specifically designed to prevent this. Since only you know the hidden attributes (interior colour, unique marks, contents), anyone trying to falsely claim your item would fail the 3-question verification. Three failed attempts suspend the account."
+      },
+      {
+        q: "Does ReclaimX work on mobile?",
+        a: "Yes. ReclaimX is a Progressive Web App (PWA). You can install it on Android or iOS from the browser — no app store needed. It works offline: reports submitted without a network connection are queued in IndexedDB and automatically synced when you reconnect."
+      },
+      {
+        q: "Is there a cost for students or campuses?",
+        a: "ReclaimX is completely free for students. There are no subscriptions, no premium tiers, no ads. It is an academic final year project. Adding a new campus requires only a new campus_id value — no infrastructure cost or admin setup."
+      },
+      {
+        q: "What data does ReclaimX store about me?",
+        a: "ReclaimX stores your name, email, campus, trust score, and submitted reports. Photos are stored on Cloudinary. Firebase handles authentication — ReclaimX only stores the Firebase UID, not your password. Sensitive data like Aadhaar numbers, PAN, and card numbers are actively filtered."
+      },
+      {
+        q: "How do I get my trust points?",
+        a: "Trust points (+10 per user) are awarded instantly when the finder completes the handover process. The finder inputs the 6-digit secure handover OTP provided by the owner. When submitted and verified, the claim is resolved and trust points are added to both accounts."
+      },
+      {
+        q: "Can I report an item found outside campus?",
+        a: "ReclaimX is localized for smart campus communities. We only support reporting and matching items within designated campus areas. This keeps matches hyper-relevant and physically reachable for easy handovers."
+      }
+    ];
+
+    function renderFaqCarousel() {
+      const track = document.getElementById('faqTrack');
+      if (!track) return;
+
+      // Duplicate list to create continuous loop marquee
+      const doubledFaq = [...FAQ_DATA, ...FAQ_DATA];
+
+      track.innerHTML = doubledFaq.map((item, idx) => `
+        <div class="faq-carousel-card">
+          <div class="faq-card-idx">FAQ ${String((idx % FAQ_DATA.length) + 1).padStart(2, '0')}</div>
+          <h3 class="faq-card-q">${item.q}</h3>
+          <p class="faq-card-a">${item.a}</p>
+        </div>
+      `).join('');
     }
+
+    function moveFaq(direction) {
+      currentFaqIndex = (currentFaqIndex + direction + FAQ_DATA.length) % FAQ_DATA.length;
+      updateFaqPosition();
+    }
+
+    function goToFaq(index) {
+      currentFaqIndex = index;
+      updateFaqPosition();
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderFaqCarousel();
+    });
 
     // Reveal observer
     const ro = new IntersectionObserver(entries => {
@@ -2850,7 +2862,7 @@
         }
       });
     }, { threshold: 0.08 });
-    document.querySelectorAll('.feat-card,.why-card,.proof-card,.faq-item,.tl-item,.showcase-item').forEach(el => {
+    document.querySelectorAll('.feat-card,.why-card,.faq-carousel-card,.tl-item,.showcase-item').forEach(el => {
       el.style.opacity = '0'; el.style.transform = 'translateY(18px)'; ro.observe(el);
     });
 
