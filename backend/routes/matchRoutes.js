@@ -8,9 +8,7 @@ const { checkAnswers } = require('../utils/verificationEngine');
 // GET /api/matches — both loser-side and founder-side claims
 router.get('/', protect, async (req, res, next) => {
   try {
-    const { data: user } = await supabase
-      .from('users').select('*').eq('firebase_uid', req.user.uid).single();
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const user = req.dbUser;
 
     // Side 1: user is the loser (claimant_id = user.id)
     const { data: lostSide } = await supabase
@@ -42,7 +40,59 @@ router.get('/', protect, async (req, res, next) => {
       return true;
     });
 
-    res.json(unique);
+    // Fetch all unique user IDs involved to get their emails
+    const userIds = new Set();
+    unique.forEach(c => {
+      if (c.claimant_id) userIds.add(c.claimant_id);
+      if (c.found_items && c.found_items.user_id) {
+        userIds.add(c.found_items.user_id);
+      }
+    });
+
+    const userMap = {};
+    if (userIds.size > 0) {
+      const { data: usersData } = await supabase
+        .from('users')
+        .select('id, email')
+        .in('id', Array.from(userIds));
+      if (usersData) {
+        usersData.forEach(u => {
+          userMap[u.id] = u.email;
+        });
+      }
+    }
+
+    const processedClaims = await Promise.all(unique.map(async (c) => {
+      const claimCopy = { ...c };
+
+      // If verified but no OTP exists (e.g. legacy claims), generate & save one on the fly
+      if (claimCopy.status === 'Verified' && !claimCopy.handover_otp) {
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        await supabase
+          .from('claims')
+          .update({ handover_otp: generatedOtp })
+          .eq('id', claimCopy.id);
+        claimCopy.handover_otp = generatedOtp;
+      }
+
+      // 1. Reveal opposing party's email if status is Verified or Resolved
+      if (claimCopy.status === 'Verified' || claimCopy.status === 'Resolved') {
+        const isClaimant = claimCopy.claimant_id === user.id;
+        const opposingUserId = isClaimant ? claimCopy.found_items?.user_id : claimCopy.claimant_id;
+        if (opposingUserId && userMap[opposingUserId]) {
+          claimCopy.opposing_email = userMap[opposingUserId];
+        }
+      }
+
+      // 2. Hide handover_otp if current user is not the owner (claimant)
+      if (claimCopy.claimant_id !== user.id) {
+        delete claimCopy.handover_otp;
+      }
+
+      return claimCopy;
+    }));
+
+    res.json(processedClaims);
   } catch (err) { next(err); }
 });
 
@@ -56,12 +106,8 @@ router.post('/verify', protect, async (req, res, next) => {
 
     const { data: claim } = await supabase
       .from('claims').select('*, lost_items(*)').eq('id', claimId).single();
-    const { data: user } = await supabase
-      .from('users').select('*').eq('firebase_uid', req.user.uid).single();
-
     if (!claim) return res.status(404).json({ error: 'Claim not found.' });
-    if (!user)  return res.status(404).json({ error: 'User not found.' });
-    if (user.is_suspended) return res.status(403).json({ error: 'Account suspended.' });
+    const user = req.dbUser;
 
     const hidden = {
       colorInside: claim.lost_items?.hidden_color_inside || '',
@@ -71,10 +117,13 @@ router.post('/verify', protect, async (req, res, next) => {
 
     const result = checkAnswers(answers, hidden);
 
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
     if (result.unverifiable) {
       await supabase.from('claims').update({
         status: 'Verified', verification_score: 1.0,
         answer_1: answers.q1, answer_2: answers.q2, answer_3: answers.q3,
+        handover_otp: otp
       }).eq('id', claimId);
       await supabase.from('lost_items').update({ status: 'Pending' }).eq('id', claim.lost_item_id);
       return res.json({ success: true, passed: true, score: 1.0, unverifiable: true });
@@ -84,6 +133,7 @@ router.post('/verify', protect, async (req, res, next) => {
       await supabase.from('claims').update({
         status: 'Verified', verification_score: result.score,
         answer_1: answers.q1, answer_2: answers.q2, answer_3: answers.q3,
+        handover_otp: otp
       }).eq('id', claimId);
       await supabase.from('lost_items').update({ status: 'Pending' }).eq('id', claim.lost_item_id);
       return res.json({ success: true, passed: true, score: result.score });
@@ -103,8 +153,12 @@ router.post('/verify', protect, async (req, res, next) => {
 router.post('/confirm-handover/:claimId', protect, async (req, res, next) => {
   try {
     const { data: claim } = await supabase.from('claims').select('*').eq('id', req.params.claimId).single();
-    const { data: user }  = await supabase.from('users').select('*').eq('firebase_uid', req.user.uid).single();
-    if (!claim || !user) return res.status(404).json({ error: 'Not found.' });
+    if (!claim) return res.status(404).json({ error: 'Not found.' });
+    const user = req.dbUser;
+
+    if (claim.status === 'Resolved') {
+      return res.status(400).json({ error: 'Claim is already resolved.' });
+    }
 
     const isLoser = claim.claimant_id === user.id;
     const update  = isLoser ? { loster_confirmed: true } : { founder_confirmed: true };
@@ -148,8 +202,7 @@ router.post('/confirm-handover/:claimId', protect, async (req, res, next) => {
 // POST /api/matches/dismiss/:claimId — claimant only
 router.post('/dismiss/:claimId', protect, async (req, res, next) => {
   try {
-    const { data: user } = await supabase.from('users').select('id').eq('firebase_uid', req.user.uid).single();
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const user = req.dbUser;
 
     const { data: claim } = await supabase.from('claims').select('claimant_id').eq('id', req.params.claimId).single();
     if (!claim) return res.status(404).json({ error: 'Claim not found.' });
@@ -160,6 +213,68 @@ router.post('/dismiss/:claimId', protect, async (req, res, next) => {
     await supabase.from('claims').delete().eq('id', req.params.claimId);
     res.json({ success: true });
   } catch (err) { next(err); }
+});
+
+// POST /api/matches/resolve/:claimId — finder verifies OTP and resolves the claim
+router.post('/resolve/:claimId', protect, async (req, res, next) => {
+  try {
+    const { otp } = req.body;
+    if (!otp) {
+      return res.status(400).json({ error: 'OTP is required.' });
+    }
+
+    const { data: claim, error: claimErr } = await supabase
+      .from('claims')
+      .select('*, found_items(*)')
+      .eq('id', req.params.claimId)
+      .single();
+
+    if (claimErr || !claim) {
+      return res.status(404).json({ error: 'Claim not found.' });
+    }
+
+    if (claim.status !== 'Verified') {
+      return res.status(400).json({ error: 'Claim must be Verified to be resolved.' });
+    }
+
+    const user = req.dbUser;
+    const finderId = claim.found_items?.user_id;
+
+    if (!finderId || finderId !== user.id) {
+      return res.status(403).json({ error: 'Only the finder can resolve the claim with OTP.' });
+    }
+
+    if (claim.handover_otp !== otp.trim()) {
+      return res.status(400).json({ error: 'Invalid handover OTP.' });
+    }
+
+    // Update statuses to Resolved
+    await Promise.all([
+      supabase.from('claims').update({ status: 'Resolved' }).eq('id', claim.id),
+      supabase.from('lost_items').update({ status: 'Resolved' }).eq('id', claim.lost_item_id),
+      supabase.from('found_items').update({ status: 'Resolved' }).eq('id', claim.found_item_id),
+    ]);
+
+    // +10 trust to current user (finder)
+    const newScore = (user.trust_score || 0) + 10;
+    const newLevel = newScore >= 100 ? 'Gold' : newScore >= 50 ? 'Silver' : 'Bronze';
+    await supabase.from('users').update({ trust_score: newScore, trust_level: newLevel }).eq('id', user.id);
+
+    // +10 trust to claimant
+    const claimantId = claim.claimant_id;
+    if (claimantId && claimantId !== user.id) {
+      const { data: claimant } = await supabase.from('users').select('*').eq('id', claimantId).single();
+      if (claimant) {
+        const oScore = (claimant.trust_score || 0) + 10;
+        const oLevel = oScore >= 100 ? 'Gold' : oScore >= 50 ? 'Silver' : 'Bronze';
+        await supabase.from('users').update({ trust_score: oScore, trust_level: oLevel }).eq('id', claimantId);
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
