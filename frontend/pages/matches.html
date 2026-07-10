@@ -522,7 +522,7 @@
   <script>
     fetch('/components/sidebar.html')
       .then(r => r.text())
-      .then(html => {document.getElementById('sidebar-placeholder').innerHTML = html;});
+      .then(html => { document.getElementById('sidebar-placeholder').innerHTML = html; });
 
     const CATEGORY_ICONS = {
       Accessories: '<i class="fa-solid fa-gem"></i>',
@@ -610,7 +610,7 @@
           },
           body: JSON.stringify({
             claimId: activeClaimId,
-            answers: {q1, q2, q3},
+            answers: { q1, q2, q3 },
           }),
         });
 
@@ -706,13 +706,22 @@
     async function loadMatches() {
       try {
         const token = await window.getToken();
+
+        // Fetch current user database profile to get the actual database UUID (id)
+        const meRes = await fetch(`${window.API_BASE}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!meRes.ok) throw new Error('Failed to fetch user profile');
+        const currentUser = await meRes.json();
+        const currentUserId = currentUser.id;
+
         const res = await fetch(`${window.API_BASE}/api/matches`, {
-          headers: {'Authorization': `Bearer ${token}`},
+          headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!res.ok) throw new Error(`${res.status}`);
         const claims = await res.json();
 
-        const counts = {new: 0, pending: 0, resolved: 0, dismissed: 0};
+        const counts = { new: 0, pending: 0, resolved: 0, dismissed: 0 };
 
         const html = claims.map(c => {
           let tab = 'new';
@@ -725,6 +734,7 @@
           const found = c.found_items || {};
           const icon = CATEGORY_ICONS[lost.category] || CATEGORY_ICONS['Other'];
           const isHigh = c.match_score > 80;
+          const isFinder = found.user_id === currentUserId;
 
           return `
             <div class="match-card ${isHigh ? 'high-confidence' : ''}"
@@ -750,7 +760,30 @@
                 </div>
               </div>
               <div class="match-card-body">
-                Lost at: ${lost.last_seen_location || '—'} &nbsp;·&nbsp; Found at: ${found.found_location || '—'}
+                <div>Lost at: ${lost.last_seen_location || '—'} &nbsp;·&nbsp; Found at: ${found.found_location || '—'}</div>
+                ${c.opposing_email ? `
+                  <div style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);display:flex;align-items:center;gap:6px;">
+                    <i class="fa-solid fa-envelope" style="color:var(--accent)"></i>
+                    Opposing Party: <a href="mailto:${c.opposing_email}" style="color:var(--accent);text-decoration:none;font-weight:500;">${c.opposing_email}</a>
+                  </div>` : ''}
+                ${c.handover_otp ? `
+                  <div style="margin-top:12px;background:var(--accent-dim);border:1px dashed var(--accent);border-radius:var(--radius-md);padding:10px 14px;display:inline-flex;align-items:center;gap:10px;">
+                    <i class="fa-solid fa-key" style="color:var(--accent)"></i>
+                    <div>
+                      <div style="font-size:0.7rem;text-transform:uppercase;font-family:var(--font-mono);color:var(--text-muted)">Handover OTP (Share with finder)</div>
+                      <div style="font-size:1.2rem;font-weight:800;font-family:var(--font-mono);letter-spacing:2px;color:var(--accent);">${c.handover_otp}</div>
+                    </div>
+                  </div>` : ''}
+                ${c.status === 'Verified' && isFinder ? `
+                  <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;">Enter Handover OTP from Claimant</label>
+                    <div style="display:flex;gap:8px;">
+                      <input class="form-input" type="text" id="otp-input-${c.id}" placeholder="6-digit OTP" maxLength="6" style="text-align:center;font-family:var(--font-mono);letter-spacing:2px;font-weight:700;font-size:1rem;height:34px;padding:4px 8px;border-radius:var(--radius-md);" />
+                      <button class="btn btn-primary btn-sm" onclick="resolveClaim('${c.id}')" id="otp-btn-${c.id}">
+                        Verify & Complete
+                      </button>
+                    </div>
+                  </div>` : ''}
               </div>
               <div class="match-card-footer">
                 <div style="font-size:0.75rem;color:var(--text-muted)">Status: ${c.status}</div>
@@ -762,12 +795,12 @@
                   ${tab === 'pending' ? `
                     <span style="font-size:0.78rem;color:var(--warning)">
                       <i class="fa-solid fa-hourglass-half" style="margin-right:4px"></i>
-                      Awaiting handover confirmation
+                      ${isFinder ? 'Enter OTP to resolve' : 'Awaiting finder OTP verification'}
                     </span>` : ''}
                   ${tab === 'resolved' ? `
                     <span style="font-size:0.78rem;color:var(--accent)">
                       <i class="fa-solid fa-circle-check" style="margin-right:4px"></i>
-                      Successfully returned
+                      ${isFinder ? 'Item handed over' : 'Item received successfully'}
                     </span>` : ''}
                 </div>
               </div>
@@ -807,6 +840,48 @@
             <h3 style="font-size:1.2rem;margin-bottom:8px;">Connection Lost</h3>
             <p style="font-size:0.85rem;color:var(--text-secondary);">Check your connection or start your backend.</p>
           </div>`;
+      }
+    }
+
+    // ── Resolve claim with OTP ────────────────────────────────
+    async function resolveClaim(claimId) {
+      const input = document.getElementById(`otp-input-${claimId}`);
+      const btn = document.getElementById(`otp-btn-${claimId}`);
+      const otp = input ? input.value.trim() : '';
+
+      if (!otp || otp.length !== 6) {
+        window.ReclaimX?.toast('Please enter a valid 6-digit OTP.', 'warning');
+        return;
+      }
+
+      btn.disabled = true;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="loading-spinner" style="width:14px;height:14px;border-width:2px"></span> Verifying…';
+
+      try {
+        const token = await window.getToken();
+        const res = await fetch(`${window.API_BASE}/api/matches/resolve/${claimId}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ otp }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Resolution failed');
+        }
+
+        window.ReclaimX?.toast('Handover verified! Claim successfully resolved.', 'success');
+
+        loadMatches();
+      } catch (err) {
+        window.ReclaimX?.toast(err.message || 'Error resolving claim', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
       }
     }
 
