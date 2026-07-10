@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — ReclaimX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/global.css" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <style>
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .security-nav {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .security-container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .security-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .security-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: inline-block;
+      text-shadow: 0 0 30px rgba(0, 212, 170, 0.3);
+    }
+
+    .security-title {
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .security-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .legal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .sec-card {
+      padding: 40px;
+    }
+
+    .sec-card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+    }
+
+    .sec-card-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .sec-card-desc p {
+      margin-bottom: 14px;
+    }
+
+    .sec-card-desc p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sec-footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sec-footer-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Ambient background grids -->
+  <div class="bg-grid" style="position:absolute;inset:0;pointer-events:none;z-index:1;"></div>
+
+  <!-- Navigation header -->
+  <header class="security-nav">
+    <a href="/" class="nav-logo">Reclaim<span>X</span></a>
+    <a href="/" class="btn-gh" style="font-size:0.8rem;padding:8px 16px;border-radius:8px">
+      <i class="fa-solid fa-arrow-left" style="font-size:11px"></i> Back to Home
+    </a>
+  </header>
+
+  <!-- Security content container -->
+  <main class="security-container">
+    <div class="security-header">
+      <div class="security-icon">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <h1 class="security-title">Privacy Policy</h1>
+      <p class="security-subtitle">
+        Your privacy is our priority. Read below to understand how your campus account, item reports, and claim history are handled on ReclaimX.
+      </p>
+    </div>
+
+    <div class="legal-content">
+      <!-- 1. Data Collection -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">1. Information We Collect</h2>
+        <div class="sec-card-desc">
+          <p>
+            ReclaimX collects minimal student information to facilitate matching and trust verification within our campus ecosystem:
+          </p>
+          <p>
+            <strong>Account Profiles</strong>: When signing in, we utilize Firebase Auth tokens to store your name, email address, profile photo (optional), and campus identifier.
+          </p>
+          <p>
+            <strong>Item Listings</strong>: When reporting lost or found property, we store the item name, general category, general campus zone, date last seen, and an uploaded image.
+          </p>
+          <p>
+            <strong>Verification Logs</strong>: We store secret questions set by lost item owners and the answers submitted by claimants during the ownership matching flow.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Data Usage -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">2. How We Use Data</h2>
+        <div class="sec-card-desc">
+          <p>
+            Collected information is used exclusively to operate and secure the campus matching service:
+          </p>
+          <p>
+            <strong>Matching Engine</strong>: Category, name similarity, and location zones are cross-referenced to automatically flag possible matching pairs.
+          </p>
+          <p>
+            <strong>Trust Score Ratings</strong>: Complete handovers (+10) and failed claim attempts (-5) are logged to automatically calculate trust score rankings (Gold, Silver, Bronze) to deter spam.
+          </p>
+          <p>
+            <strong>Ownership Verification</strong>: Answer submissions are compared on the server to help owners identify the correct claimant.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. Zero Commercialization -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">3. Zero Commercial Sharing</h2>
+        <div class="sec-card-desc">
+          <p>
+            <strong>Your data is never sold, leased, or rented</strong>. ReclaimX is an academic project built strictly to serve campus communities. We do not participate in marketing campaigns, run advertisement networks, or share user lists with third-party brokers.
+          </p>
+          <p>
+            <strong>Contact Info Restrictions</strong>: Your email address is kept hidden from other users. It is only shared with the finder or owner of an item after a claim is verified, allowing coordination of the physical handback.
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. Security Measures -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">4. Data Security</h2>
+        <div class="sec-card-desc">
+          <p>
+            We implement multiple layers of security to defend student data against unauthorized access:
+          </p>
+          <p>
+            <strong>Sensitive Data Masking</strong>: A backend middleware actively blocks any postings that contain Aadhaar, PAN cards, or phone numbers, preventing private identifiers from leaking into public feeds.
+          </p>
+          <p>
+            <strong>Row Level Security (RLS)</strong>: The database layer utilizes strict RLS rules in PostgreSQL, preventing users from altering other users' claims or reports.
+          </p>
+        </div>
+      </div>
+
+      <!-- 5. Legal Safe Harbor -->
+      <div class="card sec-card">
+        <h2 class="sec-card-title">5. Liability Disclaimer (Safe Harbor)</h2>
+        <div class="sec-card-desc">
+          <p>
+            ReclaimX is an educational sandbox platform provided "AS IS" and "AS AVAILABLE" for portfolio and demonstration purposes. We make no representations or warranties regarding database uptime, matching engine accuracy, or recovery rates. By using the app, you agree that the creators of ReclaimX are not responsible for any personal property loss, data loss, or physical safety during handovers.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="sec-footer">
+      <p class="sec-footer-text">© 2026 ReclaimX. Designed with academic integrity for campus communities.</p>
+    </footer>
+  </main>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>
