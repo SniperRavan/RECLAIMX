@@ -104,8 +104,47 @@ p { color: var(--text-secondary); line-height: 1.7; }
 .checkbox-wrap input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); margin-top: 2px; cursor: pointer; flex-shrink: 0; }
 
 /* ── Cards & Badges ───────────────────────────────────────────── */
-.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
-.card:hover { border-color: var(--border-hover); }
+/* ── Dark Liquid Glass Cards ── */
+.card,
+.stat-card,
+.item-card,
+.match-card,
+.profile-header,
+.activity-card,
+.modal-box,
+.details-modal,
+.feat-card,
+.why-card,
+.faq-carousel-card,
+.hero-float,
+.report-card,
+.verify-modal,
+.browser-frame {
+  background: rgba(10, 15, 30, 0.45) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4), 
+    inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.3s ease;
+}
+
+.card:hover,
+.stat-card:hover,
+.item-card:hover,
+.match-card:hover,
+.activity-card:hover,
+.feat-card:hover,
+.why-card:hover,
+.faq-carousel-card:hover,
+.hero-float:hover,
+.report-card:hover {
+  border-color: rgba(0, 212, 170, 0.3) !important;
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5), 
+    0 0 15px rgba(0, 212, 170, 0.05) !important;
+}
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 0.7rem; font-family: var(--font-mono); font-weight: 600; letter-spacing: 0.3px; }
 .badge-accent  { background: var(--accent-dim);  color: var(--accent);  border: 1px solid rgba(0,212,170,0.2); }
 .badge-violet  { background: var(--violet-dim);  color: var(--violet);  border: 1px solid rgba(124,92,252,0.2); }
@@ -306,4 +345,222 @@ p { color: var(--text-secondary); line-height: 1.7; }
   .navbar { padding: 0 16px; }
   .toast-container { left: 16px; right: 16px; bottom: 16px; }
   .toast { max-width: 100%; }
+}
+
+/* ── Theme Toggle Button ── */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  outline: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle-btn i {
+  font-size: 1rem;
+  transition: transform 0.4s ease;
+}
+
+.theme-toggle-btn:active i {
+  transform: rotate(45deg) scale(0.9);
+}
+
+/* ── Light Theme Configuration ── */
+[data-theme="light"] {
+  --bg-base:      #f5f7fa;
+  --bg-surface:   #ffffff;
+  --bg-elevated:  #e4e8f0;
+  --bg-card:      #ffffff;
+  --accent:       #009688;
+  --accent-dim:   rgba(0, 150, 136, 0.08);
+  --accent-glow:  rgba(0, 150, 136, 0.2);
+  --text-primary:   #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted:     #6b7280;
+  --border:         rgba(0, 0, 0, 0.12);
+  --border-hover:   rgba(0, 150, 136, 0.25);
+}
+
+/* Light Liquid Glass Cards Override */
+[data-theme="light"] .card,
+[data-theme="light"] .stat-card,
+[data-theme="light"] .item-card,
+[data-theme="light"] .match-card,
+[data-theme="light"] .profile-header,
+[data-theme="light"] .activity-card,
+[data-theme="light"] .modal-box,
+[data-theme="light"] .details-modal,
+[data-theme="light"] .feat-card,
+[data-theme="light"] .why-card,
+[data-theme="light"] .faq-carousel-card,
+[data-theme="light"] .hero-float,
+[data-theme="light"] .report-card,
+[data-theme="light"] .verify-modal,
+[data-theme="light"] .browser-frame {
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.05), 
+    inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="light"] .card:hover,
+[data-theme="light"] .stat-card:hover,
+[data-theme="light"] .item-card:hover,
+[data-theme="light"] .match-card:hover,
+[data-theme="light"] .activity-card:hover,
+[data-theme="light"] .feat-card:hover,
+[data-theme="light"] .why-card:hover,
+[data-theme="light"] .faq-carousel-card:hover,
+[data-theme="light"] .hero-float:hover,
+[data-theme="light"] .report-card:hover {
+  border-color: rgba(0, 150, 136, 0.3) !important;
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.08), 
+    0 0 15px rgba(0, 150, 136, 0.1) !important;
+}
+
+/* Light Theme Button styling */
+[data-theme="light"] .theme-toggle-btn {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Header and Background details overrides */
+[data-theme="light"] .main-header {
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="light"] .bg-base {
+  background: #f5f7fa !important;
+}
+
+[data-theme="light"] .bg-grid {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px) !important;
+}
+
+[data-theme="light"] .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+[data-theme="light"] .mobile-nav {
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+[data-theme="light"] .why-section,
+[data-theme="light"] .showcase-section {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .cta-box {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .footer {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .footer-top {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .faq-carousel-outer::before {
+  background: linear-gradient(90deg, #f5f7fa 0%, transparent 100%) !important;
+}
+
+[data-theme="light"] .faq-carousel-outer::after {
+  background: linear-gradient(270deg, #f5f7fa 0%, transparent 100%) !important;
+}
+
+/* Landing Page Text Gradient Override */
+[data-theme="light"] .hero-title {
+  background: linear-gradient(135deg, #111827 30%, var(--accent) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Browser Mockup Details in Light Mode */
+[data-theme="light"] .browser-url {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .browser-bar {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Additional Light Theme Tweaks */
+[data-theme="light"] .feat-score-visual {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .score-bar-track {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .btn-gh {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .btn-gh:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: rgba(0, 150, 136, 0.25) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .msgbox {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .msgbox:focus-within {
+  border-color: rgba(0, 150, 136, 0.3) !important;
+}
+
+[data-theme="light"] .auth-right {
+  background: var(--bg-surface) !important;
+}
+
+[data-theme="light"] .stats-bar {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .stat-item {
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
